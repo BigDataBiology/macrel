@@ -10,13 +10,13 @@ FACS is a pipeline to:
 
 With FACS you can treat a metagenome file of 631.2Mbp as fast as 24 min, using 3 cpus and 100Mb sequence buckets in a Ubuntu v.18 64x bits.
 
-## History
+## Background
 
 Since the discovery of penicillin and its use in the 1940's, the antibiotics resistance developed by the microorganisms during the medical treatment is a recurrent problem in modern medicine. The fact is to each new discovered antibiotic an emerging resistance trait raises right after six months after their release in market. Part of this is due to the huge metabolism diversity presented by prokaryotes as can be observed in Figure 1. There are two main mechanisms of resistance, one obtained via vertical transference; and the other is action of genes in mobile elements, transmitted both vertically and horizontally to other bacteria. These mobile genetic elements such as plasmids, can carry one or more resistance genes. The prevalent and extremelly quick mobility of resistance genes in previously sensitive bacterial populations, now established an world crisis.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig1.png)
 
-**Figure 1.** The antibiotics mechanisms and their overcoming (Extracted from: Wright, [2010](https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-8-123)).
+**Figure 1.** The antibiotics mechanisms and their overcoming (Source: Wright, [2010](https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-8-123)).
 
 The superbugs risen is faster than the time it takes to develop new antibiotics (Figure 2). However, many of these new antibiotics are just chemical modifications of the molecular structure of the old compounds, which makes them prone to be skipped by bacteria using slightly modificated strategies. But the question is "can anything be done to slow down the emergence of resistance?". Antibiotics represent an evolutionary pressure that eventually is the reason to them become obsolete. So, reducing the exposure of microbes to antibiotics can reduce the opportunity for selection and dissemination of resistance. Despite initiatives such as those taken by European Union and in North America, foccus mainly in surveillance and restriction of use. However, these measures are only able to delay the emergence of antibiotcs resistance. Thus, those strategies are welcome, but new drugs will always be needed, since resistance risen is inevitable.
 
@@ -44,13 +44,47 @@ Other important side of this problem is the economy. Antibiotic resistance can s
 
 The growing antimicrobial resistance problem feed a continuous need for new antibiotic drugs, and there are a number of reasons for the scarcity of new antibiotics. Some of them include government regulatory approval adding risk for the pharmaceutical industry, what is usually too criterious, since they will be taken by patients over short periods of time only to cure the disease. Other reason for antibiotic discovery and development decline is scientific. Few compounds discovered with antibiotic properties have had the requisite properties to become drugs. Researchers have argumented that most antibiotics are natural products isolated from soil bacteria, which could suggest the exhaustion of this source now. Many of these 'natural' antibiotics have desirable drug-like qualities: good bioavailability, they can cross the cell membrane and have the ability to evade efflux systems, and chemical structures that favor binding to vital cellular targets. However, there is an increasing difficulty of identifying new chemical compounds with equally suitable drug-like characteristics from natural sources which has caused natural-product-based screening programs diseappear in the past few decades. However, the advantages of synthetic compounds are clear to industry, after decades of emphasis on such molecules and millions of dollars spent, no new synthetic antibiotics have emerged. 
 
-The promise of the genomic era and the reality of hundreds of available bacterial genomes have so far failed to deliver the hoped-for new molecular targets for antibiotics. However, so far it always have focused in the active molecules produced by the metabolism, instead searching for active peptides or proteins. The best reason to bet in host defense antimicrobial peptides or AMPs is that they remained potent for millions of years, constituting a useful strategy to develop a new generation of antimicrobials to meet the growing antibiotic resistance problem worldwide. The current informations about AMPs is extended what regards the eukaryotes' peptides (Figure 6), and their presence in several phyla in that domain.  
+The genomic era was constrasted by the reality of hundreds of available bacterial genomes that have so far failed to deliver the hoped-for new molecular targets for antibiotics. However, so far it always have focused in the active molecules produced by the metabolism, instead searching for active peptides or proteins. The best reason to bet in host defense antimicrobial peptides or AMPs is that they remained potent for millions of years, constituting a useful strategy to develop a new generation of antimicrobials to meet the growing antibiotic resistance problem worldwide. The current informations about AMPs is extended in that regarding eukaryotes' peptides (Figure 6), and their presence in several phyla in that domain. Although well known in eukaryotes, prokaryotes remain under represented and the few information available does not reflect the entire diversity present in that domain. Archaea is another few explored domain, that can contribute to future drugs development. 
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig5.png)
 
-**Figure 6.** Number of antimicrobial peptides found in different domains of life. (Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
+**Figure 6.** Number of antimicrobial peptides found in different domains of life. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
+AMPs definition comprises peptides with a huge variety of biological activities (Figure 7), and their sequences are key to that activity. AMP producing microbes can limit the growth of other microorganisms and should be considered another normal source of them. AMPs from microbes are quite distinct from those of vertebrates, since they can be obtained from a nonribosomal peptide synthase. Thus, nonribosomal peptides can adopt different structures, such as cyclic or branched structures, and carry modifications like N-methyl and N-formyl groups, glycosylations, acylations, halogenation, or hydroxylation. Some examples of commercial microbial AMPs include polymyxin B and vancomycin, both FDA-approved antibiotics (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)).
 
+![](https://github.com/celiosantosjr/FACS/blob/master/fig6.png)
+
+**Figure 7.** Antimicrobial peptide biological activities. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
+
+Most AMPs are peptides 10-50 amino acids long, also being longer until 100 amino acids in some cases, with charge ranging between 2 and 11 (some of them being anionic) and consituted of approximately 50% of hydrophobic residues (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)). There is a pronounced pH-dependent AMPs charge, mostly resulting in membrane lysis and antibacterial activity at acidic conditions, with many of them not presenting activity at pH higher than 6.0. Thus, the charge seems a key feature in the interaction of AMPs and membranes, where its distribution and nature along the sequence changes the antimicrobial activity (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278); Pasupuleti et al., [2012](www.ncbi.nlm.nih.gov/pubmed/22074402?dopt=Abstract); Ringstad et al., [2006](https://www.ncbi.nlm.nih.gov/pubmed/16700592?dopt=Abstract)). Furthermore, the formation of amphiphilic ordered structures is correlated to peptide-induced membrane disruption. These structures induction, mostly alpha-helices, works as a driving force for membrane binding. Also, the helix destabilization oftenly can reduce the cytotoxicity of AMPs, although this can result in reduction of antimicrobial effects (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278); Borgden, [2005](https://www.ncbi.nlm.nih.gov/pubmed/15703760?dopt=Abstract); Pasupuleti et al., [2012](www.ncbi.nlm.nih.gov/pubmed/22074402?dopt=Abstract); Hancok and Sahl, [2006](https://www.ncbi.nlm.nih.gov/pubmed/17160061?dopt=Abstract); Shai, [2002](https://www.ncbi.nlm.nih.gov/pubmed/12491537?dopt=Abstract); Stromstedt et al., [2006](https://www.ncbi.nlm.nih.gov/pubmed/19029324?dopt=Abstract)).
+
+AMPs can be classified into 5 families accordingly to their origin and composition (Perumal et al., [2013](http://xueshu.baidu.com/usercenter/paper/show?paperid=6033547256f3e45f884306a14bbff34c&site=xueshu_se)):
+
+	1. Anionic peptides: rich in aspartic and glutamic acids. Example: Maxinimin H5 (from amphibians);
+
+	2. Linear alpha-helical cationic peptides: Lack in cysteine. Example: Cecropins (from insects), dermaceptin (from amphibians);
+
+	3. Cationic peptides: rich in proline, arginine, phenylalanine, glycine and thryptophan. Example: Indolicidin (from cattle), prophenin (from frogs);
+
+	4. Anionic and cationic peptides that contain dissulphide bonds: contain cysteine. Examples: 1 dissulphide bond (brevinins), 2 dissulphide bonds (protregrin) and 3 dissulphide bonds (drosomycins and defensins);
+
+	5. Anionic and cationic peptide fragments of larger proteins: contains unusual amounts of tryptophan, lysine, valine, arginine, proline, histidine, leucine. Examples: Haemoglobin (from humans), lysozyme, ovoalbumin and lactoferricin from lactoferrin.
+
+Families 1-3 are largely found in all domains of life, while families 4 and 5 are more related to eukaryotes and their contribution from microbes is very few (Perumal et al., [2013](http://xueshu.baidu.com/usercenter/paper/show?paperid=6033547256f3e45f884306a14bbff34c&site=xueshu_se)).
+
+As previously mentioned, these families can be folded into some structural arrangements (Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3)). The most common are shown in Figure 8. The alpha-helical peptides (Figure 8-a) are usually related to a strong pore-forming activity in bacterial membranes, as well as, the alpha-beta structures (Figure 8-c). The beta-sheet peptides usually change their conformation in apolar environments to an alpha-helical structure that can be refolded into beta-sheet (Figure 8-b) after transposition of the lipophilic phase. The random coiled peptides (Figure 8-d) are usually associated to a mixed function, and usually assume helical structures in the membrane, forming pores and compromising cell functions. Mostly the activities of AMPs are associated to the rupture of cell membrane or promoting the leakage of cell contents, ending in the bacterial cell death. Different biological activites have different mechanisms, however in this review the antibacterial activity will be prioritized.
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig8.png)
+
+**Figure 8.** Antimicrobial peptide folding groups. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
+
+ffff
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig22.png)
+
+**Figure 9.** Proposed mechanisms of actions of AMPs: Energy indpendent mechanisms - barrel stave model, carpet model, and toroidal pore model (a); and energy dependent mechanisms (b). (Source: Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391))
+
+## Pipeline
 
 **Table 1.** Classess adopted to the sequence encoding of the distribution at Residue0. The Solvent Accessibility was adopted as other studies previously Dubchak et al. [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/),[1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667), however the new feature "Free energy to transfer to lipophilic phase" was adopted from Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x).
 
@@ -87,7 +121,6 @@ The promise of the genomic era and the reality of hundreds of available bacteria
 | Random Forest 	| Chaudhary et al., 2016 	| 94.1 	| 94.6 	| 94.3 	| 0.89 	|
 | ORFsvm 	| This study 	| 95.5 	| 95.5 	| 95.5 	| 0.91 	|
 
-
 ## Installing
 
 The installation can be performed with downloading the scripts as:
@@ -111,9 +144,8 @@ FACS.sh "[options]" --fwd <R1.file.gz> --rev <R2.file.gz>
 There are few options to make the running of the program a bit customized and speed up process according to the systems settings available.
 
 
-    Here's a guide for avaiable options. Defaults for each option are showed between brackets: [default].
-
     Basic options:
+    
     -h, --help	        Show help page
     --fwd               Illumina sequencing file in Fastq format (R1), please leave it compressed and full adress
     --rev		Illumina sequencing file in Fastq format (R2), please leave it compressed and full address
@@ -133,10 +165,12 @@ Usage: FACS_merger.sh "[options]"
 	
 	
         Basic options:
+	
 	-h, --help	        Shows help message	
 	--output [file]	        File where output is sent, it needs to be gzipped (ending em .gz)
 	-t, --threads [N]	Number of threads [90% of avaiable threads]
-	--reference [folder]	Folder where your reference files are located, if none current folder will be used [Reference_seqs]
+	--reference [folder]	Folder where your reference files are located, if none current folder will be used   
+	                        [Reference_seqs]
 
 ## Third party softwares
 
