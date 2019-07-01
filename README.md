@@ -96,7 +96,7 @@ ffff
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig17.png)
 
-**Figure 12.** FACS structure.
+**Figure 12.** Decision tree to classification of peptides into different classes accordingly to their composition and capacity in forming dissulphide bonds.
 
 ## Descriptors system: Distribution
 
@@ -131,8 +131,6 @@ ffff
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig16.png)
 
 **Figure 17.** Measures of model accuracy. (Source: []())
-Figs 15,18
-Fig 16
 
 ## Models and prediction accuracy
 
@@ -165,7 +163,28 @@ Fig 16
 
 ## Testing
 
+
+**Table 4.** FACS assessment of runs performed with two different metagenomes.
+
+| **Access** 	| SRR9016022 	| SRR9097106 	|
+|:-----------:	|:----------:	|:-------------:	|
+| **Size** 	| 631.2 Mbp 	| 2.9 Gbp 	|
+| **User time** 	| 33m 49.703s 	| 28h 14m 37.909s 	|
+| **System time** 	| 39m 25.515s 	| 30h 57m 35.064s 	|
+| **Real time** 	| 1m 17.210s 	| 44m 29.606s 	|
+| **AMP called** 	| 129,398 	| 6,376,290 	|
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig19.png)
+
+**Figure 18.** Results of test involving metagenome 631.2Mbp.
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig20.png)
+
+**Figure 19.** Results of test involving metagenome 2.9Gbp.
+
 ## Applications
+
+FACS can be used in a wide ranging of scenarios, such as: screening for novel AMPs generating candidates to further testing and patenting, as well as, determination of microbiome quorum sensing mechanisms linking AMPs to health conditions or presence of diseases. 
 
 ## Installing
 
