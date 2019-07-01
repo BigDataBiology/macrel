@@ -1,14 +1,6 @@
 # FACS pipeline - Fast AMP Clustering System
 
-FACS is a pipeline to:
-
-1. merge paired-end reads,
-2. predict peptides,
-3. cluster them at 100% of similarity and 100% coverage,
-4. calculate their abundance in peptides per million (ppm), and
-5. select those with antimicrobial potential discriminating their hemolytic pontential.
-
-With FACS you can treat a metagenome file of 631.2Mbp as fast as 24 min, using 3 cpus and 100Mb sequence buckets in a Ubuntu v.18 64x bits.
+Fast AMP Clustering System pipeline is a system created by Celio Dias Santos Jr. and Luis Pedro Coelho, from Fudan University (Shanghai / CN). It is distributed under MIT license and represents a new way to prospect AMPs in natural environments using metagenomic data or genomic data to generate large datasets of antimicrobial peptides.
 
 ## Background
 
@@ -85,6 +77,16 @@ ffff
 **Figure 9.** Proposed mechanisms of actions of AMPs: Energy indpendent mechanisms - barrel stave model, carpet model, and toroidal pore model (a); and energy dependent mechanisms (b). (Source: Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391))
 
 ## Pipeline overview
+
+FACS is a pipeline to:
+
+1. merge paired-end reads,
+2. predict peptides,
+3. cluster them at 100% of similarity and 100% coverage,
+4. calculate their abundance in peptides per million (ppm), and
+5. select those with antimicrobial potential discriminating their hemolytic pontential.
+
+With FACS you can treat a metagenome file of 631.2Mbp as fast as 24 min, using 3 cpus and 100Mb sequence buckets in a Ubuntu v.18 64x bits.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig11.png)
 
