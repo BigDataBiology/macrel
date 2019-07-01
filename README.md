@@ -84,7 +84,29 @@ ffff
 
 **Figure 9.** Proposed mechanisms of actions of AMPs: Energy indpendent mechanisms - barrel stave model, carpet model, and toroidal pore model (a); and energy dependent mechanisms (b). (Source: Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391))
 
-## Pipeline
+## Pipeline overview
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig11.png)
+
+**Figure 10.** FACS workflow.
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig12.png)
+
+**Figure 11.** FACS structure.
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig17.png)
+
+**Figure 12.** FACS structure.
+
+## Descriptors system: Distribution
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig13.png)
+
+**Figure 13.** Method of sequence encoding using CTD (Composition, Distribution and Transition).
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig14.png)
+
+**Figure 14.** Example of CTD application to AMP discovery in AMPEP software. (Source: []())
 
 **Table 1.** Classess adopted to the sequence encoding of the distribution at Residue0. The Solvent Accessibility was adopted as other studies previously Dubchak et al. [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/),[1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667), however the new feature "Free energy to transfer to lipophilic phase" was adopted from Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x).
 
@@ -93,6 +115,26 @@ ffff
 | Solvent accessibility 	| A, L, F, C, G, I, V, W 	| R, K, Q, E, N, D 	| M, S, P, T, H, Y 	|
 | Free energy to transfer from water to lipophilic phase 	| I,L,V,W,A,M,G,T 	| F,Y,S,Q,C,N 	| P,H,K,E,D,R 	|
 
+
+## Datasets and training
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig15.png)
+
+**Figure 15.** Dataset for training and validation of antimicrobial peptides prediction model. (Source: []())
+
+## Descriptors system: Distribution
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig18.png)
+
+**Figure 16.** Dataset for training and validation of hemolytic peptides prediction model. (Source: []())
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig16.png)
+
+**Figure 17.** Measures of model accuracy. (Source: []())
+Figs 15,18
+Fig 16
+
+## Models and prediction accuracy
 
 **Table 2.** Models to predict antimicrobial peptides were tested to benchmark the results obtained with the new set of descriptors adopted in this classifier. All models and systems were tested with the benchmark validation dataset from the AMPEP study available [elsewhere](doi:10.1038/s41598-018-19752-w).
 
@@ -120,6 +162,10 @@ ffff
 | J48 	| Chaudhary et al., 2016 	| 89.6 	| 88.5 	| 89.0 	| 0.78 	|
 | Random Forest 	| Chaudhary et al., 2016 	| 94.1 	| 94.6 	| 94.3 	| 0.89 	|
 | ORFsvm 	| This study 	| 95.5 	| 95.5 	| 95.5 	| 0.91 	|
+
+## Testing
+
+## Applications
 
 ## Installing
 
