@@ -42,13 +42,13 @@ Other important side of this problem is the economy. Antibiotic resistance can s
 
 **Figure 5.** The economy of treatments of antimicrobial resistance cases. (Source: World Bank Group)
 
-So, why new drugs are not discovered? 
+The growing antimicrobial resistance problem feed a continuous need for new antibiotic drugs, and there are a number of reasons for the scarcity of new antibiotics. Some of them include government regulatory approval adding risk for the pharmaceutical industry, what is usually too criterious, since they will be taken by patients over short periods of time only to cure the disease. Other reason for antibiotic discovery and development decline is scientific. Few compounds discovered with antibiotic properties have had the requisite properties to become drugs. Researchers have argumented that most antibiotics are natural products isolated from soil bacteria, which could suggest the exhaustion of this source now. Many of these 'natural' antibiotics have desirable drug-like qualities: good bioavailability, they can cross the cell membrane and have the ability to evade efflux systems, and chemical structures that favor binding to vital cellular targets. However, there is an increasing difficulty of identifying new chemical compounds with equally suitable drug-like characteristics from natural sources which has caused natural-product-based screening programs diseappear in the past few decades. However, the advantages of synthetic compounds are clear to industry, after decades of emphasis on such molecules and millions of dollars spent, no new synthetic antibiotics have emerged. 
 
-
+The promise of the genomic era and the reality of hundreds of available bacterial genomes have so far failed to deliver the hoped-for new molecular targets for antibiotics. However, so far it always have focused in the active molecules produced by the metabolism, instead searching for active peptides or proteins. The best reason to bet in host defense antimicrobial peptides or AMPs is that they remained potent for millions of years, constituting a useful strategy to develop a new generation of antimicrobials to meet the growing antibiotic resistance problem worldwide. The current informations about AMPs is extended what regards the eukaryotes' peptides (Figure 6), and their presence in several phyla in that domain.  
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig5.png)
 
-**Figure 6.** The economy of treatments of antimicrobial resistance cases. (Source: World Bank Group)
+**Figure 6.** Number of antimicrobial peptides found in different domains of life. (Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
 
 
