@@ -70,11 +70,28 @@ As previously mentioned, these families can be folded into some structural arran
 
 **Figure 8.** Antimicrobial peptide folding groups. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
-ffff
+There is a dynamic interchange in AMPs structure and topologies along the interaction with the microbial cell membranes (Samson, [1998](https://www.sciencedirect.com/science/article/pii/S1359029498800277)). The outer surface of prokaryotic cells is negatively charged (mainly due to lipopolysaccharides and teichoic acid), what promotes an electrostatic interaction of AMPs with the membrane being the primary mechanism for antimicrobial activity. Other cases are based in the AMP translocation across the cell membrane and the inhibition of essential cellular processes (e.g. protein synthesis, nucleic acid synthesis, enzymatic activities) (Brogden, [2005](https://www.ncbi.nlm.nih.gov/pubmed/15703760)). Based on the mechanisms of action, AMPs are categorized into membrane acting and nonmembrane acting peptides. The first ones are capable of forming transient pores on the membrane, whereas the second ones have the ability to translocate across the cell membrane without permeabilizing it (Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391)).
+
+Several models have been proposed to describe the mechanism of action of antimicrobial peptides (Figure 9), and can be categorized into energy dependent and energy independent uptake. In barrel-stave mechanism, there is an aggregation of peptide monomers on the surface of the membrane. This aggregated peptides are inserted into the membrane and get such an orientation that the hydrophilic surfaces of peptides point inward and form a water filled transmembrane pore that kills the cell by leakage. In carpet model, AMPs initially get associated on the surface of the membrane, forming a carpet. Once a concentration reaches a threshold, there is a peptide induced membrane permeation. This leads to the cell membrane disruption. In toroidal pore model, peptides get aggregated prior or after binding with the membrane surface. It induces a membrane depolarization and form a toroidal shaped transmembrane pore. The energy independent uptake involves macropinocytosis. Once uptaken in the form of macropinosomes, the AMPs get released into the cytoplasm exerting their antimicrobial action (Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391)).
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig22.png)
 
 **Figure 9.** Proposed mechanisms of actions of AMPs: Energy indpendent mechanisms - barrel stave model, carpet model, and toroidal pore model (a); and energy dependent mechanisms (b). (Source: Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391))
+
+Microbes were thought to be unable to develop resistance towards AMPs. However, recently some resistance mechanisms have been reported, such as upregulation of proteolytic enzymes able to degrade
+AMPs, membrane modifications resulting in decreased negative potential of bacterial membranes, and release of glucose aminoglycans, polysaccharides, and other polyanionic species able to
+scavenge AMPs (Nizet, [2006](https://www.ncbi.nlm.nih.gov/pubmed/16450883?dopt=Abstract)). Despite having been convincingly demonstrated *in vitro*, resistance development to AMPs *in vivo* needs to be further clarified, since conditions experienced by bacteria in a laboratory setting are likely to differ from those *in vivo*. In the latter case, the microbes are exposed to a cocktail of AMPs, which may reduce or alter the selection pressure underlying resistance development (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278)). 
+
+In summary, the AMPs represent a multidimensional group of molecules with several applications, among them:
+
+ - Drug delivery vectors
+ - Mitogenic agent
+ - Antitumour agent
+ - Signaling molecules
+ - Contraceptive agent for vaginal prophylaxis
+ - Plant Transgenesis
+
+
 
 ## Pipeline overview
 
