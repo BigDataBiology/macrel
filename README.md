@@ -111,13 +111,17 @@ FACS pretty much works in three main steps (Figure 10). The first step is about 
 
 **Figure 10.** FACS workflow.
 
-The second step is about calculation of descriptors. In FACS a two way system of descriptors was adopted using cheminformatics allied to sequence encoding, since the both methods were previously applied to AMP screening, but we believe there is a sinergy of those informations. We will further discuss about the descriptors used in FACS in detail. The descriptors calculation is made entirely in R using subscripts that run along the FACS pipeline using the sequence buckets and returning only AMP sequences that are then classified into hemolytic or non-hemolytic. The classifiers adopted in FACS are based in random forest algorithms (further discussed in details later) that proved to be more efficient than those previously reported (Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9), Meher et al., [2017](https://www.nature.com/articles/srep42362)). Finally, in the third step FACS performs a classification using a decisions tree (Figure 11) that classifies the detected AMPs into four different families accordingly their nature (Cationic or Anionic) and structure (linear or dissulphide bond forming). These classifications are then make available in a table where the sequence, random identifiers, abundance in ppm and hemolytic nature is also added.
+The second step is about calculation of descriptors. In FACS a two way system of descriptors was adopted using cheminformatics allied to sequence encoding, since the both methods were previously applied to AMP screening, but we believe there is a sinergy of those informations. We will further discuss about the descriptors used in FACS in detail. The descriptors calculation is made entirely in R using subscripts that run along the FACS pipeline using the sequence buckets and returning only AMP sequences that are then classified into hemolytic or non-hemolytic. The classifiers adopted in FACS are based in random forest algorithms (further discussed in details later) that proved to be more efficient than those previously reported (Gabere and Noble, [2017](https://www.ncbi.nlm.nih.gov/pubmed/28203715); Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9), Meher et al., [2017](https://www.nature.com/articles/srep42362)). Finally, in the third step FACS performs a classification using a decisions tree (Figure 11) that classifies the detected AMPs into four different families accordingly their nature (Cationic or Anionic) and structure (linear or dissulphide bond forming). These classifications are then make available in a table where the sequence, random identifiers, abundance in ppm and hemolytic nature is also added. Interestingly, the FACS workflow depends on few third party softwares and some R libraries (Figure 12). 
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig17.png)
 
 **Figure 11.** Decision tree to classification of peptides into different classes accordingly to their composition and capacity in forming dissulphide bonds (Legend: AcidicAA - Acidic amino acids: B + D + E + Z; BasicAA - Alkaline amino acids: H + K + R).
 
-Interestingly, the FACS workflow depends on few third party softwares and some R libraries (Figure 12). In general use the pigz software was used to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. In order to make it clear, the processes are explained in order to their steps:
+![](https://github.com/celiosantosjr/FACS/blob/master/fig12.png)
+
+**Figure 11.** FACS structure.
+
+In general use the pigz software was used to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. In order to make it clear, the processes are explained in order to their steps:
 
 1. Reads sorting and trimming (Trimmomatic), Reads merging (Pandaseq);
 
@@ -133,11 +137,9 @@ Interestingly, the FACS workflow depends on few third party softwares and some R
 
 7. The final formatting of files is performed by shell functions.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig12.png)
-
-**Figure 11.** FACS structure.
-
 ## Descriptors system: Distribution
+
+The descriptors adopted by FACS are hybrid being partially cheminformatics and sequence encodings. A recent prediction method released by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9), Meher et al., [2017](https://www.nature.com/articles/srep42362)) has shown that sequence encoding methods are  
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig13.png)
 
@@ -155,6 +157,8 @@ Interestingly, the FACS workflow depends on few third party softwares and some R
 | Free energy to transfer from water to lipophilic phase 	| I,L,V,W,A,M,G,T 	| F,Y,S,Q,C,N 	| P,H,K,E,D,R 	|
 
 ## Datasets and training
+
+A recent [study](https://www.ncbi.nlm.nih.gov/pubmed/28203715) has shown that Random Forests models provide a statistically significant improvement in performance of AMPs detection, as measured by the area under the receiver operating characteristic (ROC) curve in comparison to other methods. 
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig15.png)
 
