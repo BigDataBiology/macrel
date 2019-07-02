@@ -212,7 +212,9 @@ These descriptors are used to prediction and are calculated to each sequence tha
 
 ## Datasets and training
 
-A recent [study](https://www.ncbi.nlm.nih.gov/pubmed/28203715) has shown that Random Forests models provide a statistically significant improvement in performance of AMPs detection, as measured by the area under the receiver operating characteristic (ROC) curve in comparison to other methods. 
+In a recent study, Gabere and Noble ([2017](https://www.ncbi.nlm.nih.gov/pubmed/28203715)) have shown that Random Forests models provide a statistically significant improvement in performance of AMPs detection, as measured by the area under the receiver operating characteristic (ROC) curve in comparison to other methods. Following this trend, many classifiers, such as AMPep and others, also make use of random forests models and presented highly accuracy in AMPs detection. Due to this, we opted to use random forests after some tests using alternative algorithms, such as: treebag, rpart, cpart, adaboost and others (results not shown).
+
+In order to be able to trace a comparison among the other classifiers and our model, we opted to use the same training and validation datasets used by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig15.png)
 
