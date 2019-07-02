@@ -212,23 +212,27 @@ These descriptors are used to prediction and are calculated to each sequence tha
 
 ## Datasets and training
 
-In a recent study, Gabere and Noble ([2017](https://www.ncbi.nlm.nih.gov/pubmed/28203715)) have shown that Random Forests models provide a statistically significant improvement in performance of AMPs detection, as measured by the area under the receiver operating characteristic (ROC) curve in comparison to other methods. Following this trend, many classifiers, such as AMPep and others, also make use of random forests models and presented highly accuracy in AMPs detection. Due to this, we opted to use random forests after some tests using alternative algorithms, such as: treebag, rpart, cpart, adaboost and others (results not shown).
-
-In order to be able to trace a comparison among the other classifiers and our model, we opted to use the same training and validation datasets used by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
+In a recent study, Gabere and Noble ([2017](https://www.ncbi.nlm.nih.gov/pubmed/28203715)) have shown that Random Forests models provide a statistically significant improvement in performance of AMPs detection, as measured by the area under the receiver operating characteristic (ROC) curve in comparison to other methods. Following this trend, many classifiers, such as AMPep and others, also make use of random forests models and presented highly accuracy in AMPs detection. Due to this, we opted to use random forests after some tests using alternative algorithms, such as: treebag, rpart, cpart, adaboost and others (results not shown). In order to be able to trace a comparison among the other classifiers and our model, we opted to use the same training and validation datasets used by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)), shown in Figure 15.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig15.png)
 
-**Figure 15.** Dataset for training and validation of antimicrobial peptides prediction model. (Source: []())
+**Figure 15.** Dataset for training and validation of antimicrobial peptides prediction model. (Source: Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
+
+dddDDDdddDDD
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig18.png)
 
 **Figure 16.** Dataset for training and validation of hemolytic peptides prediction model. (Source: []())
 
+## Models and prediction accuracy
+
+The classifiers of AMP and hemolytic peptides were then assessed and compared to the state of art methods of AMP prediction and hemolytic classification. The results were taken using the same databases of the works cited as reference. Calculations of the statistics of accuracy, sensitivity, McNeymar's Correlation Coefficient (MCC), and F-score were shown in Figure 17.
+
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig16.png)
 
-**Figure 17.** Measures of model accuracy. (Source: []())
+**Figure 17.** Measures of model accuracy. Legend: FN - False Negatives, TP - True Positives, TN - True Negatives, FP - False Positives. (Source: Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
 
-## Models and prediction accuracy
+The AMP prediction model was compared at two levels the first level with it trained with the small training dataset and when trained with the AMPEP complete dataset, presenting a ratio of 1:3 (positives:negatives). The final results (Table 2) shows clearly that R22 models are comparable efficient in retrieving AMPs from the validation dataset reaching accuracies very close to the best system so far (AMPEP). However, R22 trained with the complete dataset (R22_LargeTrainingset) outperforms AMPEP with a better accuracy, specificity and precision. These features also reflects a better global adjustment of this model, since its MCC and F-score were higher than those from AMPEP. Thus, R22_LargeTrainingset seems the best model to be used in the AMPs prediction, besides use less descriptors and memory. Besides, It also is all implemented in R, what gives portability to the process that could be entirely implemented in FACS just by external scripts, composing a bigger workflow.
 
 **Table 2.** Models to predict antimicrobial peptides were tested to benchmark the results obtained with the new set of descriptors adopted in this classifier. All models and systems were tested with the benchmark validation dataset from the AMPEP study available [elsewhere](doi:10.1038/s41598-018-19752-w).
 
@@ -245,6 +249,15 @@ In order to be able to trace a comparison among the other classifiers and our mo
 | R22_Ctrained 	| 0.952 	| 0.972 	| 0.932 	| 0.971 	| 0.951 	| 0.904 	| This study 	| 22 	|
 | R22_LargeTrainingset 	| 0.967 	| 1 	| 0.934 	| 1 	| 0.966 	| 0.936 	| This study 	| 22 	|
 
+The specific results of the confusion matrix are presented now (Table 3) to the R22_LargeTrainingset. The 100% of specificity does not mean an overfitting since there is a clear misclassification of positive peptides, which also ensures that the model is still reliable to be used in other datasets.
+
+**Table 2.** Confusion Matrix of R22_LargeTrainingset model.
+
+|Prediction/Reference|AMP|Non-AMP|
+|:--------:|:-----:|:-----:|
+|AMP|859|0|
+|Non-AMP|920|61|
+
 **Table 3.** Models used to predict hemolytic activity were trained with the same dataset used by Chaudhary et al. [2016](https://www.nature.com/articles/srep22843) and were tested with the same test dataset used by them to benchmark the results obtained with another model used to generate this classifier.
 
 | Methods 	| Study 	| Sn (%) 	| Sp (%) 	| Acc (%) 	| MCC 	|
@@ -258,7 +271,6 @@ In order to be able to trace a comparison among the other classifiers and our mo
 | ORFsvm 	| This study 	| 95.5 	| 95.5 	| 95.5 	| 0.91 	|
 
 ## Testing
-
 
 **Table 4.** FACS assessment of runs performed with two different metagenomes.
 
@@ -298,9 +310,9 @@ And executing the installation script:
 
 ## Usage
 
-Basically it can be run using the command line in bash:
+Basically, it can be run using the following command line in bash:
 
-FACS.sh "[options]" --fwd <R1.file.gz> --rev <R2.file.gz>
+`$ ./FACS.sh "[options]" --fwd <R1.file.gz> --rev <R2.file.gz>`
 
 There are few options to make the running of the program a bit customized and speed up process according to the systems settings available.
 
@@ -322,7 +334,9 @@ There are few options to make the running of the program a bit customized and sp
 
 FACS merger was designed to join results of each different metagenome and return a table of abundances of each detected peptide in ppm to each metagenome.
 
-Usage: FACS_merger.sh "[options]"
+Usage:
+
+`$ ./FACS_merger.sh "[options]"`
 	
 	
         Basic options:
