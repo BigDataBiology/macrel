@@ -222,7 +222,7 @@ dddDDDdddDDD
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig18.png)
 
-**Figure 16.** Dataset for training and validation of hemolytic peptides prediction model. (Source: []())
+**Figure 16.** Dataset for training and validation of hemolytic peptides prediction model. (Source: Chaudhary et al., [2016](https://www.nature.com/articles/srep22843))
 
 ## Models and prediction accuracy
 
@@ -251,14 +251,16 @@ The AMP prediction model was compared at two levels the first level with it trai
 
 The specific results of the confusion matrix are presented now (Table 3) to the R22_LargeTrainingset. The 100% of specificity does not mean an overfitting since there is a clear misclassification of positive peptides, which also ensures that the model is still reliable to be used in other datasets.
 
-**Table 2.** Confusion Matrix of R22_LargeTrainingset model.
+**Table 3.** Confusion Matrix of R22_LargeTrainingset model.
 
 |Prediction/Reference|AMP|Non-AMP|
 |:--------:|:-----:|:-----:|
 |AMP|859|0|
-|Non-AMP|920|61|
+|Non-AMP|61|920|
 
-**Table 3.** Models used to predict hemolytic activity were trained with the same dataset used by Chaudhary et al. [2016](https://www.nature.com/articles/srep22843) and were tested with the same test dataset used by them to benchmark the results obtained with another model used to generate this classifier.
+Meanwhile, the hemolytic prediction model was evaluated using its own datasets and trained as previously informed. The results of this model and the comparisons to the standard system currently available are shown in the Table 4. The model obtained with oblique random forests supported by vector machines was a bit less accurate, however the sensitivity and specificity were higher than that obtained previously. Moreover, the MCC measure also shows our model performance similar to the best model currently implemented in the server, based in support vector machines (SVM). The similarities among their performances are important to make sure our model is reliable, regarding the convenience of being implemented in R with a set of descriptors previously calculated to the AMP prediction model. In this way, the previous tables can be reused in this case, saving time and memory.
+
+**Table 4.** Models used to predict hemolytic activity were trained with the same dataset used by Chaudhary et al. [2016](https://www.nature.com/articles/srep22843) and were tested with the same test dataset used by them to benchmark the results obtained with another model used to generate this classifier.
 
 | Methods 	| Study 	| Sn (%) 	| Sp (%) 	| Acc (%) 	| MCC 	|
 |:---------------------:	|:----------------------:	|:------:	|:------:	|:-------:	|:----:	|
@@ -269,6 +271,14 @@ The specific results of the confusion matrix are presented now (Table 3) to the 
 | J48 	| Chaudhary et al., 2016 	| 89.6 	| 88.5 	| 89.0 	| 0.78 	|
 | Random Forest 	| Chaudhary et al., 2016 	| 94.1 	| 94.6 	| 94.3 	| 0.89 	|
 | ORFsvm 	| This study 	| 95.5 	| 95.5 	| 95.5 	| 0.91 	|
+
+Our classifiers seems to be extremely interesting in the execution of the filtering off non-AMP peptides and classifying them into hemolytic or non-hemolytic peptides. Also, the models were implemented in the same programming language (R) and used the same set of descriptors, what saved time and memory in the process.
+
+Some efforts recently have being done, in order to achieve a classifier of the biological activity presented by those AMPs. A test was carried out using the same set of descriptors and training with the AMPEP training dataset available [elsewhere](doi:10.1038/s41598-018-19752-w). This model showed a limited capacity of classification (Figure 18), with a specificity and sensitivity ranging to very low values in some classes and very high values in another. This suggests a bigger training set, well annotated and maybe another conditions of training could improve the performance.
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig23.png)
+
+**Figure 18.** Confusion matrix of model "Mixedmodel_multiclassifier". This model tried to classify the 8 different AMP biological activities. To train it we have used the large training dataset, previously provided by Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9).
 
 ## Testing
 
