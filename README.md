@@ -121,40 +121,94 @@ The second step is about calculation of descriptors. In FACS a two way system of
 
 **Figure 11.** FACS structure.
 
-In general use the pigz software was used to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. In order to make it clear, the processes are explained in order to their steps:
+In general FACS make use of the pigz software to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. In order to make it clear, the processes are explained into small single steps:
 
-1. Reads sorting and trimming (Trimmomatic), Reads merging (Pandaseq);
+1. Reads sorting and trimming (Trimmomatic);
+
+2. Reads merging (Pandaseq);
 
 2. ORFs prediction (ORFm);
 
-3. Clustering is made all using simple shell functions and their memory options;
+3. Sorting of sequences using sort with memory options;
 
-4. Abundance is calculated mainly by awk functions;
+4. Clustering using uniq -c and memory options;
 
-5. Descriptors calculations is made by using R scripts that relies on R packages: Peptides, data.table, dplyr, parallel, doParallel;
+5. Abundance is calculated mainly by awk functions;
 
-6. AMPs prediction and Hemolytic activity classification as well as the families identification is basically implemented in R language and uses mostly the following R packages: randomForest, caret, data.table, dplyr;
+6. Descriptors calculations is made by using R scripts that relies on R packages: Peptides, data.table, dplyr, parallel, doParallel;
 
-7. The final formatting of files is performed by shell functions.
+7. AMPs prediction and Hemolytic activity classification as well as the families identification is basically implemented in R language and uses mostly the following R packages: randomForest, caret, data.table, dplyr;
+
+8. The final formatting of files is performed by shell functions.
 
 ## Descriptors system: Distribution
 
-The descriptors adopted by FACS are hybrid being partially cheminformatics and sequence encodings. A recent prediction method released by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9), Meher et al., [2017](https://www.nature.com/articles/srep42362)) has shown that sequence encoding methods are  
+Spänig and Heider ([2019](https://biodatamining.biomedcentral.com/track/pdf/10.1186/s13040-019-0196-x)) recently released a series of sequence encoding methods and a review of the main machine learning models using them. For a better comprehension of the following topics, we strongly recommend the its reading.
+
+A recent prediction method released by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)), has shown that sequence encoding methods are enough to a good classification of AMPs in a large dataset of peptides. However, the proportion of AMPs to non-AMPs in the dataset influenced the results of the classifier. In this sense, they used a total of **23** different descriptors mostly based in the CTD method (Figure 13).
+
+The CTD method was firstly described by Dubchak et al. ([1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/),[1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667)) and it is based in the classification of residues into three different classes accordingly to some specific features, such as hydrophobicity, solvent accessibility or secondary structure. The peptide sequence then is encoded into these three classes and the composition, distribution and transition of classes can be calculated. Mostly the composition and transition are important to other applications than AMP prediction, since they have shown small correlation to AMP peptides, besides not being explicative in some tested models performed by us previously.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig13.png)
 
-**Figure 13.** Method of sequence encoding using CTD (Composition, Distribution and Transition).
+**Figure 13.** Method of sequence encoding using CTD (Composition, Distribution and Transition). (Source: Dubchak et al., [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/))
+
+As above mentioned, since distribution of the residues classes seemed to be more effective to explain and classify AMPs, AMPep software (Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)) was mostly based in the distribution of the classes of the five canonical features (hydrophobicity, normalized van der Waals volume, polarity, polarizability, charge,  secondary structure, and solvent accessibility), as shown in Figure 14.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig14.png)
 
-**Figure 14.** Example of CTD application to AMP discovery in AMPEP software. (Source: []())
+**Figure 14.** Example of CTD application to AMP discovery in AMPEP software. (Source: Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
 
-**Table 1.** Classess adopted to the sequence encoding of the distribution at Residue0. The Solvent Accessibility was adopted as other studies previously Dubchak et al. [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/),[1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667), however the new feature "Free energy to transfer to lipophilic phase" was adopted from Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x).
+However, Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)) observed that the distribution was more important when taken from the first residue, calculated as: 
+
+                                                   𝑍 = ⌊ 𝑅 × 𝑌 / 100 ⌋, where:
+
+                                  - R is the total number of class residues in the sequence,
+
+                                              - Y denotes the desired percentage.
+
+In this sense, despite the high Accuracy and sensitivity, other works still suggest that methods independent of sequence order and mostly based in cheminformatics have with comparable statistics (Boone et al., [2018](https://bmcbioinformatics.biomedcentral.com/track/pdf/10.1186/s12859-018-2514-6)). Thus, Fjell et al. ([2009](https://pubs.acs.org/doi/10.1021/jm8015365)) has shown using a combination of 77 QSAR (quantitative structure-activity relationships) descriptors that artificial neural network models could predict the extension of peptides activity, not only classify them. 
+
+Thus, these methods could be joined to achieve a better performance and also economy of computational resources, since sequence encoding represents a considerable cost of processing. The alliance between those two methods can fix their pitfalls, since the sequence order independent methods fail in classify, however are good to describe activity; and sequence encoding is essential to a good classification, but fails when predict activity extent.
+
+The descriptors adopted by FACS are hybrid being partially cheminformatics and sequence encodings, what by itself represents a breakthrough. FACS performs firstly a distribution analysis of three classes of residues in two different features (Solvent accessibility and *Free energy to transfer from water to lipophilic phase*) as shown in Table 1.
+
+**Table 1.** Classess adopted to the sequence encoding of the distribution at Residue0. The Solvent Accessibility was adopted as other studies previously Dubchak et al. [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/), [1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667), however the new feature "Free energy to transfer to lipophilic phase" was adopted from Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x).
 
 | Properties 	| Class I 	| Class II 	| Class III 	|
-|--------------------------------------------------------	|------------------------	|------------------	|------------------	|
+|:--------------------------------------------------------:	|:------------------------:	|:------------------	|------------------:	|
 | Solvent accessibility 	| A, L, F, C, G, I, V, W 	| R, K, Q, E, N, D 	| M, S, P, T, H, Y 	|
-| Free energy to transfer from water to lipophilic phase 	| I,L,V,W,A,M,G,T 	| F,Y,S,Q,C,N 	| P,H,K,E,D,R 	|
+| FT 	| I,L,V,W,A,M,G,T 	| F,Y,S,Q,C,N 	| P,H,K,E,D,R 	|
+
+The novelty in this method is use the *Free energy to transfer from water to lipophilic phase* (FT) firstly described by Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x). This measure is based in the estimation of free energy difference for the transfer of a residue from a random coil conformation in water to an alpha-helical conformation in a lipophilic phase (membrane). FT is calculate taking in account hydrophobicity, charge and polarity of the residues what reduces 3 features used to calculate CTD to one. Besides that, it also seems much more credible and important to predict AMPs since their functions are mostly based in the membranes interaction, and FT seems a measure of the potential of peptide insertion into them. To build the three classes, FT measures by residue were normalized as Zeta-Scores and  then sorted into three groups (Table 1). From the distribution of those three classes, FACS uses the first residue measure, getting the following descriptors:
+
+ - SA.G1.residue0
+ - SA.G2.residue0
+ - SA.G3.residue0
+ - hb.Group.1.residue0
+ - hb.Group.2.residue0
+ - hb.Group.3.residue0
+ 
+The other cheminformatic descriptors are widely used in the AMPs description, and follows:
+
+ - tinyAA (A + C + G + S + T)
+ - smallAA (A + B + C + D + G + N + P + S + T + V)
+ - aliphaticAA (A + I + L + V)
+ - aromaticAA (F + H + W + Y)
+ - nonpolarAA (A + C + F + G + I + L + M + P + V + W + Y)
+ - polarAA (D + E + H + K + N + Q + R + S + T + Z)
+ - chargedAA (B + D + E + H + K + R + Z)
+ - basicAA (H + K + R)
+ - acidicAA (B + D + E + Z)
+ - charge (pH = 7, pKscale = "EMBOSS")
+ - pI (pKscale = "EMBOSS")
+ - aindex (relative volume occupied by aliphatic side chains - A, V, I, and L)
+ - instaindex -> stability of a protein based on its amino acid composition
+ - boman -> overall estimate of the potential of a peptide to bind tomembranes or other proteins as receptor
+ - hydrophobicity (scale = "KyteDoolittle") -> GRAVY index
+ - hmoment (angle = 100, window = 11) -> quantitative measure of the amphiphilicity perpendicular to theaxis of any periodic peptide structure, such as the alpha-helix or beta-sheet
+
+These descriptors are used to prediction and are calculated to each sequence that was identified as a potential peptide.
 
 ## Datasets and training
 
