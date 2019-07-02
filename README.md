@@ -48,7 +48,7 @@ AMPs definition comprises peptides with a huge variety of biological activities 
 
 **Figure 7.** Antimicrobial peptide biological activities. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
-Most AMPs are peptides 10-50 amino acids long, also being longer until 100 amino acids in some cases, with charge ranging between 2 and 11 (some of them being anionic) and consituted of approximately 50% of hydrophobic residues (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)). There is a pronounced pH-dependent AMPs charge, mostly resulting in membrane lysis and antibacterial activity at acidic conditions, with many of them not presenting activity at pH higher than 6.0. Thus, the charge seems a key feature in the interaction of AMPs and membranes, where its distribution and nature along the sequence changes the antimicrobial activity (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278); Pasupuleti et al., [2012](www.ncbi.nlm.nih.gov/pubmed/22074402?dopt=Abstract); Ringstad et al., [2006](https://www.ncbi.nlm.nih.gov/pubmed/16700592?dopt=Abstract)). Furthermore, the formation of amphiphilic ordered structures is correlated to peptide-induced membrane disruption. These structures induction, mostly alpha-helices, works as a driving force for membrane binding. Also, the helix destabilization oftenly can reduce the cytotoxicity of AMPs, although this can result in reduction of antimicrobial effects (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278); Borgden, [2005](https://www.ncbi.nlm.nih.gov/pubmed/15703760?dopt=Abstract); Pasupuleti et al., [2012](www.ncbi.nlm.nih.gov/pubmed/22074402?dopt=Abstract); Hancok and Sahl, [2006](https://www.ncbi.nlm.nih.gov/pubmed/17160061?dopt=Abstract); Shai, [2002](https://www.ncbi.nlm.nih.gov/pubmed/12491537?dopt=Abstract); Stromstedt et al., [2006](https://www.ncbi.nlm.nih.gov/pubmed/19029324?dopt=Abstract)).
+Most AMPs are peptides 10-50 amino acids long, they also can reach until 100 amino acids in some cases, with charge ranging between 2 and 11 (some of them being anionic) and consituted of approximately 50% of hydrophobic residues (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)). There is a pronounced pH-dependent AMPs charge, mostly resulting in membrane lysis and antibacterial activity at acidic conditions, with many of them not presenting activity at pH higher than 6.0. Thus, the charge seems a key feature in the interaction of AMPs and membranes, where its distribution and nature along the sequence changes the antimicrobial activity (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278); Pasupuleti et al., [2012](www.ncbi.nlm.nih.gov/pubmed/22074402?dopt=Abstract); Ringstad et al., [2006](https://www.ncbi.nlm.nih.gov/pubmed/16700592?dopt=Abstract)). Furthermore, the formation of amphiphilic ordered structures is correlated to peptide-induced membrane disruption. These structures induction, mostly alpha-helices, works as a driving force for membrane binding. Also, the helix destabilization oftenly can reduce the cytotoxicity of AMPs, although this can result in reduction of antimicrobial effects (Malmsten, [2014](https://www.tandfonline.com/doi/full/10.3109/03009734.2014.899278); Borgden, [2005](https://www.ncbi.nlm.nih.gov/pubmed/15703760?dopt=Abstract); Pasupuleti et al., [2012](www.ncbi.nlm.nih.gov/pubmed/22074402?dopt=Abstract); Hancok and Sahl, [2006](https://www.ncbi.nlm.nih.gov/pubmed/17160061?dopt=Abstract); Shai, [2002](https://www.ncbi.nlm.nih.gov/pubmed/12491537?dopt=Abstract); Stromstedt et al., [2006](https://www.ncbi.nlm.nih.gov/pubmed/19029324?dopt=Abstract)).
 
 AMPs can be classified into 5 families accordingly to their origin and composition (Perumal et al., [2013](http://xueshu.baidu.com/usercenter/paper/show?paperid=6033547256f3e45f884306a14bbff34c&site=xueshu_se)):
 
@@ -91,7 +91,7 @@ In summary, the AMPs represent a multidimensional group of molecules with severa
  - Contraceptive agent for vaginal prophylaxis
  - Plant Transgenesis
 
-
+Our main goal with FACS is a highthroughput screening system of AMPs classifying them into the main classes accordingly to their electrostatic nature and 3-D structure, also regarding their natural propensity to cause hemolysis or not. These data can be used in several future applications, such as a catalogue to biotechnological production or screening of activity and description of environments or conditions related to the microbial population regulations.
 
 ## Pipeline overview
 
@@ -105,17 +105,37 @@ FACS is a pipeline to:
 
 With FACS you can treat a metagenome file of 631.2Mbp as fast as 24 min, using 3 cpus and 100Mb sequence buckets in a Ubuntu v.18 64x bits.
 
+FACS pretty much works in three main steps (Figure 10). The first step is about ordering the paired-end reads of the files forward and reverse by name, also realizing a quality trimming and eliminating orphan reads. This step is crucial to ensure the reads will be sorted correctly to be merged into longer quasi-contigs. These sequences then are screened by ORF sequences with minimum of 30 base pairs. This ensures the AMP sequences are being sampled and also eliminates short peptides without possibility to be selected in the next steps for bein too short. Then, this ORFs are ordered by sequence and the redundant sequences with 100% of identity and 100% of coverage are collapsed and this number is counted. The abundance of the peptides are then calculated by summing the total of detected peptides and dividing the occurences by this total and after multiplying it by 1e6. This abundance measure is given as "ppm" (peptides per million). During this process of clustering the sequences are divided into sequence buckets of a customizable size that is related to the total amount of RAM memory available in the computer. It can help to speed up the process and allows large datasets being processed without memory errors. These buckets are then used in the downstream operations until the end of the program when the informations are gathered in a final table.
+
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig11.png)
 
 **Figure 10.** FACS workflow.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig12.png)
-
-**Figure 11.** FACS structure.
+The second step is about calculation of descriptors. In FACS a two way system of descriptors was adopted using cheminformatics allied to sequence encoding, since the both methods were previously applied to AMP screening, but we believe there is a sinergy of those informations. We will further discuss about the descriptors used in FACS in detail. The descriptors calculation is made entirely in R using subscripts that run along the FACS pipeline using the sequence buckets and returning only AMP sequences that are then classified into hemolytic or non-hemolytic. The classifiers adopted in FACS are based in random forest algorithms (further discussed in details later) that proved to be more efficient than those previously reported (Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9), Meher et al., [2017](https://www.nature.com/articles/srep42362)). Finally, in the third step FACS performs a classification using a decisions tree (Figure 11) that classifies the detected AMPs into four different families accordingly their nature (Cationic or Anionic) and structure (linear or dissulphide bond forming). These classifications are then make available in a table where the sequence, random identifiers, abundance in ppm and hemolytic nature is also added.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig17.png)
 
-**Figure 12.** Decision tree to classification of peptides into different classes accordingly to their composition and capacity in forming dissulphide bonds.
+**Figure 11.** Decision tree to classification of peptides into different classes accordingly to their composition and capacity in forming dissulphide bonds (Legend: AcidicAA - Acidic amino acids: B + D + E + Z; BasicAA - Alkaline amino acids: H + K + R).
+
+Interestingly, the FACS workflow depends on few third party softwares and some R libraries (Figure 12). In general use the pigz software was used to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. In order to make it clear, the processes are explained in order to their steps:
+
+1. Reads sorting and trimming (Trimmomatic), Reads merging (Pandaseq);
+
+2. ORFs prediction (ORFm);
+
+3. Clustering is made all using simple shell functions and their memory options;
+
+4. Abundance is calculated mainly by awk functions;
+
+5. Descriptors calculations is made by using R scripts that relies on R packages: Peptides, data.table, dplyr, parallel, doParallel;
+
+6. AMPs prediction and Hemolytic activity classification as well as the families identification is basically implemented in R language and uses mostly the following R packages: randomForest, caret, data.table, dplyr;
+
+7. The final formatting of files is performed by shell functions.
+
+![](https://github.com/celiosantosjr/FACS/blob/master/fig12.png)
+
+**Figure 11.** FACS structure.
 
 ## Descriptors system: Distribution
 
@@ -134,14 +154,11 @@ With FACS you can treat a metagenome file of 631.2Mbp as fast as 24 min, using 3
 | Solvent accessibility 	| A, L, F, C, G, I, V, W 	| R, K, Q, E, N, D 	| M, S, P, T, H, Y 	|
 | Free energy to transfer from water to lipophilic phase 	| I,L,V,W,A,M,G,T 	| F,Y,S,Q,C,N 	| P,H,K,E,D,R 	|
 
-
 ## Datasets and training
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig15.png)
 
 **Figure 15.** Dataset for training and validation of antimicrobial peptides prediction model. (Source: []())
-
-## Descriptors system: Distribution
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig18.png)
 
