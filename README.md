@@ -245,7 +245,7 @@ The classifiers of AMP and hemolytic peptides were then assessed and compared to
 
 The AMP prediction model was compared at two levels the first level with it trained with the small training dataset and when trained with the AMPEP complete dataset, presenting a ratio of 1:3 (positives:negatives). The final results (Table 2) shows clearly that R22 models are comparable efficient in retrieving AMPs from the validation dataset reaching accuracies very close to the best system so far (AMPEP). However, R22 trained with the complete dataset (R22_LargeTrainingset) outperforms AMPEP with a better accuracy, specificity and precision. These features also reflects a better global adjustment of this model, since its MCC and F-score were higher than those from AMPEP. Thus, R22_LargeTrainingset seems the best model to be used in the AMPs prediction, besides use less descriptors and memory. Besides, It also is all implemented in R, what gives portability to the process that could be entirely implemented in FACS just by external scripts, composing a bigger workflow.
 
-**Table 2.** Models to predict antimicrobial peptides were tested to benchmark the results obtained with the new set of descriptors adopted in this classifier. All models and systems were tested with the benchmark validation dataset from the AMPEP study available [elsewhere](doi:10.1038/s41598-018-19752-w).
+**Table 2.** Models to predict antimicrobial peptides were tested to benchmark the results obtained with the new set of descriptors adopted in this classifier. All models and systems were tested with the benchmark validation dataset from the AMPEP study available in Bhadra et al. ([2018](doi:10.1038/s41598-018-19752-w)).
 
 | Model/Method 	| Acc. 	| Sp. 	| Sn. 	| Precision 	| F-Score 	| MCC 	| Refererence 	| Descriptors 	|
 |:--------------------:	|:-----:	|:-----:	|:-----:	|:---------:	|:-------:	|:-----:	|:----------------------------------:	|:-----------:	|
@@ -285,7 +285,7 @@ Meanwhile, the hemolytic prediction model was evaluated using its own datasets a
 
 Our classifiers seems to be extremely interesting in the execution of the filtering off non-AMP peptides and classifying them into hemolytic or non-hemolytic peptides. Also, the models were implemented in the same programming language (R) and used the same set of descriptors, what saved time and memory in the process implemented in FACS.
 
-As a future update to FACS classifier systems, some efforts recently have being done, in order to achieve a model to classify the biological activity presented by AMPs: anti-bacterial, anti-fungal, anti-viral, anti-HIV and anti-tumor. A test was carried out using the same set of descriptors and training with the AMPEP training dataset available [here](doi:10.1038/s41598-018-19752-w). This model showed a limited capacity of classification (Figure 18), with a specificity and sensitivity ranging to very low values in some classes and very high values in another.
+As a future update to FACS classifier systems, some efforts recently have being done, in order to achieve a model to classify the biological activity presented by AMPs: anti-bacterial, anti-fungal, anti-viral, anti-HIV and anti-tumor. A test was carried out using the same set of descriptors and training with the AMPEP training dataset available [here](doi:10.1038/s41598-018-19752-w). The training procedures were same adopted before to both models, testing the random forest (rf) and the oblique random forests with support vector machines (orfsvm) algorithms. The model here presented is a result of the 10-cross fold validated random forest training and showed a limited capacity of classification (Figure 18), with a specificity and sensitivity ranging to very low values in some classes.
 
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig23.png)
 
@@ -294,6 +294,8 @@ As a future update to FACS classifier systems, some efforts recently have being 
 While this classifier works well for prediction of anti-bacterial activity with (sensitivity and specificity of ~97%), other activities, such as anti-viral activity is badly classified with a sensitivity of only 23%. This reflects, in a general way, a non-homogeneous performance, also regarding the biochemical diversity of the peptides present in each one of those classes. These results suggest that a bigger training set, well annotated and maybe another conditions of training could improve the prediction performance.
 
 ## Testing
+
+FACS was further tested in two different metagenomes SRR90186022 and SRR9097106 (Table 4). The first is a synthetic metagenome of community mixing of *S. pasteurii* with homogenized fecal material, this metagenome is small containing 631.2 Mbp and took approximately 33m using 3 CPUs and buckets of 10Mb. The second metagenome is also synthethic consisting of a co-culture of *Rhodopseudomonas palustris* CGA009 and *Escherichia coli* MG1655 from Indiana University (Bloomington, USA LT1-A25). This metagenome is interesting because besides bigger (counts with more than 2.9 Gbp), it was also obtained of a smaller number of microorganisms, what could be benefit to understand if deepness of sequencing would interfere in the FACS results. The second metagenome took 30h to conclude, when using 3 CPUs and 10Mb buckets. In both tests it was used the Nextera-PE.fa adapters file as standard option, since the adapter sequences not always are available in the metadata.
 
 **Table 4.** FACS assessment of runs performed with two different metagenomes.
 
@@ -305,13 +307,21 @@ While this classifier works well for prediction of anti-bacterial activity with 
 | **Real time** 	| 1m 17.210s 	| 44m 29.606s 	|
 | **AMP called** 	| 129,398 	| 6,376,290 	|
 
+However, tests with different conditions involving, for example, 3 CPUs and buckets of 100Mbp reduced considerably both times of execution to 24 min and 24h, respectively. This means that customizing FACS accordingly to the system available conditions is extremely important to get the best results in the shortest time. Unfortunally, this customization does not follows a rule, but for 100Mbp buckets it was estimated a usage of 10-14 Gbytes of RAM.
+
+The results of FACS runs using both metagenomes are shown in Figures 18 and 19. In both runs using different bucket sizes, there was no differences among the results obtained. Basically, what is observable is the deepness of sequencing seems to be a key-factor to the number of AMPs found in the end of FACS process. However, there is probably due to the higher number of variants available, since FACS performs a clustering using very stringent conditions.
+
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig19.png)
 
 **Figure 18.** Results of test involving metagenome 631.2Mbp.
 
+An important fact, so far noticed is the low contribution of anionic peptides to the final datasets, what can be a result of the models adopted to filter off the non-AMP sequences. However, it is remarkable the low contribution of this class of peptides even in the previous literature, where most of papers report AMPs as cationic peptides, neglecting the anionic examples. Other interesting point is the low knowledge available about them. So far, the few informations can be contributing to less representative training datasets that possibly could influence the final prediction models.
+
 ![](https://github.com/celiosantosjr/FACS/blob/master/fig20.png)
 
 **Figure 19.** Results of test involving metagenome 2.9Gbp.
+
+In summary, the tests with FACS revealed the potential of this program as a predictor and extractor of sequences. It also was important to show the portability among different studies and the effects of different variables of each study. FACS has shown to be stable and efficient to perform its expected functions in a relative short time in a customizable way.
 
 ## Applications
 
@@ -324,6 +334,8 @@ Prior installation make sure your system settings are as follows:
 1. Linux (preferrably Ubuntu 64 bits, version 18+);
 
 2. You have installed:
+
+- apt
 
 - git
 
@@ -391,7 +403,7 @@ And executing the installation script:
 
 Basically, it can be run using the following command line in bash:
 
-`$ ./FACS.sh "[options]" --fwd <R1.file.gz> --rev <R2.file.gz>`
+`$ ./FACS.sh [options] --fwd <R1.file.gz> --rev <R2.file.gz>`
 
 There are few options to make the running of the program a bit customized and speed up process according to the systems settings available.
 
@@ -411,13 +423,12 @@ There are few options to make the running of the program a bit customized and sp
     
 ## FACS merger
 
-FACS merger was designed to join results of each different metagenome and return a table of abundances of each detected peptide in ppm to each metagenome.
-
-Usage:
+FACS merger was designed to join results of each different metagenome and return a table of abundances of each detected peptide in ppm to each metagenome. Usage:
 
 `$ ./FACS_merger.sh "[options]"`
-	
-	
+
+There are few options to make the running of the program a bit customized and speed up process according to the systems settings available.
+
         Basic options:
 	
 	-h, --help	        Shows help message	
