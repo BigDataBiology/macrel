@@ -22,10 +22,6 @@ sudo apt-get install openjdk-11-jdk-headless git
 wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
 unzip Trimmomatic-0.39.zip
 rm -rf Trimmomatic-0.39.zip
-# Install seqkit
-wget https://github.com/shenwei356/seqkit/releases/download/v0.10.1/seqkit_linux_amd64.tar.gz
-tar -zxvf seqkit_linux_amd64.tar.gz
-rm -rf seqkit_linux_amd64.tar.gz
 # Install ORFM
 wget https://github.com/wwood/OrfM/releases/download/v0.7.1/orfm-0.7.1_Linux_x86_64.tar.gz
 tar -zxf orfm-0.7.1_Linux_x86_64.tar.gz

@@ -22,6 +22,7 @@ RUN apt update && \
         pkg-config \
         python-dev \
         python-pip \
+        r-base \
         software-properties-common \
         unzip \
         wget \
@@ -47,11 +48,6 @@ RUN wget https://zlib.net/pigz/pigz-2.4.tar.gz && \
     cd ../ && \
     rm -rf pigz-2.4/ pigz-2.4.tar.gz
 
-# Install seqkit
-RUN wget https://github.com/shenwei356/seqkit/releases/download/v0.10.1/seqkit_linux_amd64.tar.gz && \
-    tar -zxvf seqkit_linux_amd64.tar.gz && \
-    rm -rf seqkit_linux_amd64.tar.gz
-
 # Install ORFM
 RUN wget https://github.com/wwood/OrfM/releases/download/v0.7.1/orfm-0.7.1_Linux_x86_64.tar.gz && \
     tar -zxf orfm-0.7.1_Linux_x86_64.tar.gz && \
@@ -62,4 +58,13 @@ RUN wget https://github.com/wwood/OrfM/releases/download/v0.7.1/orfm-0.7.1_Linux
 RUN wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip && \
     unzip Trimmomatic-0.39.zip && \
     rm -rf Trimmomatic-0.39.zip
+
+RUN Rscript -e 'install.packages("Peptides", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("data.table", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("dplyr", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("parallel", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("doParallel", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("randomForest", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("caret", repos="https://cran.rstudio.com", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("obliqueRF", repos="https://cran.rstudio.com", dependencies = TRUE)'
 
