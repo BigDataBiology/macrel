@@ -43,13 +43,11 @@ show_help ()
 	Basic options:
 	-h, --help	        Show this help message
 	-m			Mode of operation, type \"c\" to work with contigs, \"r\" to work with paired-end reads, 
-				\"mr\" to map reads against DB and generate abundances table, and \"mc\" to calculate abundances
-				from contigs abundance profile
+				\"mr\" to map reads against AMP output database and generate abundances table
 	--fasta			Contigs Fasta file - compressed (gzipped)
 	--fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full address
 	--rev		        Illumina sequencing file in Fastq format (R2), please leave it compressed and full address
 	--ref                   Reference fasta file with peptides DB compressed (gzipped)
-	--ab			Abundance profile (compressed)
 	--outfolder		Folder where output will be generated [./]
 	--outtag          	Tag used to name outputs [FACS_OUT]
 	-t, --threads [N]	Number of threads [90% of avaiable threads]
@@ -75,9 +73,6 @@ do
 		;;
 		--fasta|--Fasta|--FASTA|-fasta)
 			fasta=${2}
-		;;
-		--ab|--Ab|--AB|-ab)
-			ab=${2}
 		;;
 		--fwd|--Fwd|--FWD|--F|--R1|--l)
 			read_1=${2}
@@ -227,33 +222,6 @@ Log			$outfolder/$log"
 				show_help
 				exit
 			fi
-	elif [[ $mode == "mc" ]]
-	then
-		if [[ -s "$Reference" ]]
-		then
-			if [[ -s "$ab" ]]
-			then
-				echo "[ M ::: FACS has found your reference data set, starting work... ]"
-				echo -e "[ M ::: Here we specify your variables ]
-
-** Mapper with contigs abundance profile
-Mode			$mode
-Threads			$j
-Reference		$Reference
-AB			$ab
-Folder			$outfolder
-Tag			$outtag
-Bucket			$block
-Log			$outfolder/$log"
-			else
-				echo "[ W ::: ERR012 - The user needs to specify a valid abundance profile, please review the command line]"
-				show_help
-				exit
-			fi
-		else
-				echo "[ W ::: ERR013 - The user needs to specify a valid references file, please review the command line]"
-				show_help
-				exit			
 	fi
 else
 	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
@@ -276,8 +244,6 @@ if [[ -n $outfolder ]]
 		show_help
 		exit
 	fi
-fi
-
 }
 
 ############################################################################################################################
@@ -605,28 +571,6 @@ $eXpress --no-bias-correct .ref.fa .m.bam
 rm -rf .m.bam .ref.fa
 }
 
-reformat () # gathers data
-{
-d
-}
-
-ceformat () # gathers data
-{
-d
-}
-
-trformat () # reduces dimensions and create final table
-{
-d
-}
-
-tcformat () # reduces dimensions and create final table
-{
-d
-}
-
-
-
 ############################################################################################################################
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
@@ -671,12 +615,6 @@ then
 	PEreads_trimming
 	mapping
 	ab_profiling
-elif [[ $mode == "mc" ]]
-then
-	rformat # creates list of all peptides
-	testr # selects equal peptides and single occurences
-	reformat # gathers data
-	trformat # reduces dimensions and create final table
 else
 	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
 	show_help
