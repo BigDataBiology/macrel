@@ -15,7 +15,7 @@ pigz="/usr/bin/pigz"
 mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
 plass="/home/celio/plass/build/bin/plass"
 paladin="/home/celio/paladin/paladin"
-sambamba=""
+sambamba="/home/celio/sambamba-0.7.0-linux-static"
 eXpress="/home/celio/express-1.5.1-linux_x86_64/express"
 
 # Default variables
@@ -58,6 +58,7 @@ show_help ()
 	
 "
 }
+
 # Taking flags
 while [[ $# -gt 0 ]]
 do
@@ -248,6 +249,7 @@ Log			$outfolder/$log"
 				echo "[ W ::: ERR012 - The user needs to specify a valid abundance profile, please review the command line]"
 				show_help
 				exit
+			fi
 		else
 				echo "[ W ::: ERR013 - The user needs to specify a valid references file, please review the command line]"
 				show_help
@@ -257,6 +259,7 @@ else
 	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
 	show_help
 	exit
+fi
 fi
 
 if [[ -n $outfolder ]]
@@ -274,6 +277,7 @@ if [[ -n $outfolder ]]
 		exit
 	fi
 fi
+
 }
 
 ############################################################################################################################
@@ -562,30 +566,31 @@ fi
 mapping ()
 {
 echo "[ M ::: Indexing references ]"
-$paladin index -r3 $Reference
+pigz --dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
+$paladin index -r3 .ref.fa
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
-if [[ $m == "mse" ]]
+if [[ $mode == "mse" ]]
 then
 	echo "[ M ::: Fixing names, and let's go map ]"
 	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best read_1.paired.fastq.gz
 	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M "$Reference" .read_1.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped) and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
-elif [[ $m == "mpe" ]]
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped) and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
+elif [[ $mode == "mpe" ]]
 then
 	echo "[ M ::: Fixing names, and let's go map ]"
 	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best read_1.paired.fastq.gz
 	zcat .read_2.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best read_2.paired.fastq.gz
 	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M "$Reference" .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped or mate_is_unmapped) and proper_pair and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped or mate_is_unmapped) and proper_pair and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
 else
 	echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
 fi
 if [[ -s .m.bam ]]
 then
-	rm -rf $Reference.amb $Reference.ann $Reference.bwt $Reference.pac $Reference.pro $Reference.sa
+	rm -rf "$Reference".amb "$Reference".ann "$Reference".bwt "$Reference".pac "$Reference".pro "$Reference".sa .read_1.paired.fastq.gz .read_2.paired.fastq.gz .ref.fa
 else
 	echo "[ W ::: ERR52 - Mapping failed ]"
-	rm -rf $Reference.amb $Reference.ann $Reference.bwt $Reference.pac $Reference.pro $Reference.sa
+	rm -rf "$Reference".amb "$Reference".ann "$Reference".bwt "$Reference".pac "$Reference".pro "$Reference".sa .read_1.paired.fastq.gz .read_2.paired.fastq.gz .ref.fa
 fi
 }
 
@@ -595,8 +600,8 @@ echo "[ M ::: Indexing BAM files ]"
 $sambamba -p -t "$j" index .m.bam
 echo "[ M ::: Expressing results of abundance ]"
 mkdir "$outfolder"/"$outtag"
-$eXpress --no-bias-correct "$Reference" .m.bam
-rm -rf .m.bam
+$eXpress --no-bias-correct .ref.fa .m.bam
+rm -rf .m.bam .ref.fa
 }
 
 reformat () # gathers data
@@ -676,4 +681,3 @@ else
 	show_help
 	exit
 fi
-
