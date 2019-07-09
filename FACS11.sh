@@ -11,13 +11,13 @@
 
 ##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-pigz="/usr/bin/pigz"
-mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
-plass="/home/celio/plass/build/bin/plass"
+pigz="$Lib/pigz"
+mmseqs="$Lib/mmseqs/bin/mmseqs"
+plass="$Lib/plass/bin/plass"
 pandaseq="/usr/local/bin/pandaseq"
-paladin="/home/celio/paladin/paladin"
+paladin="$Lib/paladin/paladin"
 samtools="/usr/bin/samtools"
-eXpress="/home/celio/express-1.5.1-linux_x86_64/express"
+eXpress="$Lib/express-1.5.1-linux_x86_64/express"
 
 # Default variables
 outfolder="./"
