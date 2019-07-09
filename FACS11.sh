@@ -566,10 +566,12 @@ $paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.g
 
 if [[ -s ".m.bam" ]]
 then
-	rm -rf .read_1.paired.fastq.gz
+	echo "[ M ::: Indexing BAM file ]"
+	$samtools index .m.bam
+	rm -rf .read_1.paired.fastq.*
 else
-	echo "[ W ::: ERR52 - Mapping failed ]"
-	.ref.fa.amb .ref.fa.ann .ref.fa.bwt .ref.fa.pac .ref.fa.pro .ref.fa.sa .read_1.paired.fastq.gz .ref.fa
+	echo "[ W ::: ERR052 - Mapping failed ]"
+	.ref.* .read_1.paired.fastq.* .m.bam
 	exit
 fi
 }
@@ -578,12 +580,16 @@ fi
 
 ab_profiling ()
 {
-echo "[ M ::: Indexing BAM files ]"
-$samtools index .m.bam
 echo "[ M ::: Expressing results of abundance ]"
-mkdir "$outfolder"/"$outtag"
-$eXpress --no-bias-correct .ref.fa .m.bam
-rm -rf .ref.fa.amb .ref.fa.ann .ref.fa.bwt .ref.fa.pac .ref.fa.pro .ref.fa.sa .read_1.paired.fastq.gz .ref.fa .m.bam .m.bai
+$eXpress --no-bias-correct -o "$outfolder"/ .ref.fa .m.bam
+if [[ -s "$outfolder"/results.xprs ]] || [[ -s "$outfolder"/params.xprs ]] 
+then
+	mv "$outfolder"/results.xprs "$outfolder"/"$outtag".xprs
+	mv "$outfolder"/params.xprs "$outfolder"/"$outtag".params.xprs
+else
+	echo "[ W ::: ERR054 - Abundance calling failed ]"
+fi
+rm -rf .ref.* .read_1.paired.fastq.* .m.bam .m.bam.bai
 }
 
 ############################################################################################################################
