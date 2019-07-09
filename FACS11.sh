@@ -15,7 +15,7 @@ pigz="/usr/bin/pigz"
 mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
 plass="/home/celio/plass/build/bin/plass"
 paladin="/home/celio/paladin/paladin"
-sambamba="/home/celio/sambamba-0.7.0-linux-static"
+samtools="/usr/bin/samtools"
 eXpress="/home/celio/express-1.5.1-linux_x86_64/express"
 
 # Default variables
@@ -566,22 +566,23 @@ fi
 mapping ()
 {
 echo "[ M ::: Indexing references ]"
-pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
+$pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
 $paladin index -r3 .ref.fa
-echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
 if [[ $mode == "mse" ]]
 then
+	echo "[ M ::: Mapping single reads against references, be aware it can take a while ]"
 	echo "[ M ::: Fixing names, and let's go map ]"
-	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
+	zcat .read_1.paired.fastq.gz | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
 	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $sambamba view --format=bam -F "not (unmapped) and mapping_quality >= 50 and sequence_length >= 80" --valid -o .m.bam
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
 elif [[ $mode == "mpe" ]]
 then
+	echo "[ M ::: Mapping paired reads against references, be aware it can take a while ]"
 	echo "[ M ::: Fixing names, and let's go map ]"
-	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
-	zcat .read_2.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best .read_2.paired.fastq
+	zcat .read_1.paired.fastq.gz | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
+	zcat .read_2.paired.fastq.gz | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best .read_2.paired.fastq
 	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $sambamba view --format=bam -F "not (unmapped or mate_is_unmapped) and proper_pair and mapping_quality >= 50 and sequence_length >= 80" --valid -o .m.bam
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $samtools view -Sb > .m.bam
 else
 	echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
 fi
@@ -597,7 +598,7 @@ fi
 ab_profiling ()
 {
 echo "[ M ::: Indexing BAM files ]"
-$sambamba -p -t "$j" index .m.bam
+$samtools index .m.bam
 echo "[ M ::: Expressing results of abundance ]"
 mkdir "$outfolder"/"$outtag"
 $eXpress --no-bias-correct .ref.fa .m.bam
