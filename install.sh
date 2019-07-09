@@ -35,5 +35,18 @@ rsync -avzP iLearn/descproteins/CTDDClass.py ./
 rsync -avzP iLearn/descproteins/saveCode.py* ./
 rsync -avzP iLearn/descproteins/readFasta.py* ./
 rm -rf iLearn/
+# Install PLASS
+ wget https://mmseqs.com/plass/plass-static_sse41.tar.gz; tar xvfz plass-static_sse41.tar.gz; export PATH=$(pwd)/plass/bin/:$PATH
+# Install PALADIN
+git clone https://github.com/twestbrookunh/paladin.git
+cd paladin/
+make
+# Install samtools
+conda install -c bioconda samtools
+# Install MMSeqs2
+ wget https://mmseqs.com/latest/mmseqs-linux-sse41.tar.gz; tar xvfz mmseqs-linux-sse41.tar.gz; export PATH=$(pwd)/mmseqs2/bin/:$PATH
+# Install eXpress
+wget https://pachterlab.github.io/eXpress/downloads/express-1.5.1/express-1.5.1-linux_x86_64.tgz
+tar -zxf express-1.5.1-linux_x86_64.tgz
 # Making sure executability
 chmod +x *.py *.sh *.R
