@@ -310,7 +310,7 @@ MINLEN:80 >/dev/null 2>/dev/null
 
 if [ -s ".read_2.paired.fastq.gz" ]
 then
-	rm -rf ."read_1.singles.fastq.gz" ."read_2.singles.fastq.gz" .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+	rm -rf ."read_1.singles.fastq.gz" ."read_2.singles.fastq.gz"
 else
 	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
 	rm -rf .read_1.singles.fastq.gz .read_2.singles.fastq.gz .read_1.paired.fastq.gz .read_2.paired.fastq.gz
@@ -566,22 +566,22 @@ fi
 mapping ()
 {
 echo "[ M ::: Indexing references ]"
-pigz --dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
+pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
 $paladin index -r3 .ref.fa
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
 if [[ $mode == "mse" ]]
 then
 	echo "[ M ::: Fixing names, and let's go map ]"
-	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best read_1.paired.fastq.gz
+	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
 	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped) and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $sambamba view --format=bam -F "not (unmapped) and mapping_quality >= 50 and sequence_length >= 80" --valid -o .m.bam
 elif [[ $mode == "mpe" ]]
 then
 	echo "[ M ::: Fixing names, and let's go map ]"
-	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best read_1.paired.fastq.gz
-	zcat .read_2.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best read_2.paired.fastq.gz
+	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
+	zcat .read_2.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best .read_2.paired.fastq
 	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped or mate_is_unmapped) and proper_pair and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $sambamba view --format=bam -F "not (unmapped or mate_is_unmapped) and proper_pair and mapping_quality >= 50 and sequence_length >= 80" --valid -o .m.bam
 else
 	echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
 fi
