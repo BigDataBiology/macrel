@@ -6,31 +6,31 @@ Fast AMP Clustering System pipeline is a system created by Celio Dias Santos Jr.
 
 Since the discovery of penicillin and its use in the 1940's, the antibiotics resistance developed by the microorganisms during medical treatment is a recurrent problem. The fact is to each newly discovered antibiotic an emerging resistance trait arises within six months of their market market. Part of this is due to the huge metabolism diversity present in prokaryotes (see Figure 1). There are two main mechanisms of resistance, one obtained via vertical transference; and the other is action of genes in mobile elements, transmitted both vertically and horizontally to other bacteria. These mobile genetic elements such as plasmids, can carry one or more resistance genes. The prevalence and extremely quick mobility of resistance genes in previously sensitive bacterial populations, has lead to a global crisis.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig1.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig1.png)
 
 **Figure 1.** The antibiotics mechanisms and their overcoming (Source: Wright, [2010](https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-8-123)).
 
 Antibiotic resistant superbugs have arisen faster than the time it takes to develop new antibiotics (Figure 2). Furthermore, many of these new antibiotics are just chemical modifications of the molecular structure of older compounds, which makes them prone resisted by bacteria using slightly modified strategies. But the question is "can anything be done to slow down the emergence of resistance?". Antibiotics represent an evolutionary pressure that eventually is the reason to them become obsolete. So, reducing the exposure of microbes to antibiotics can reduce the opportunity for selection and dissemination of resistance. Initiatives such as those taken by European Union and North American countries focus mainly on surveillance and use restrictions. However, these measures are only able to delay the emergence of antibiotics resistance. Thus, those strategies are welcome, but new drugs will always be needed, since resistance is inevitable.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig2.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig2.png)
 
 **Figure 2.** Superbugs running against the farmaceutical companies in the antibiotics development and overcoming ([Source](http://2014hs.igem.org/Team:Lethbridge_Canada/project)).
 
 The developing world (Figure 3) usually does not regulate the access to antibiotics and their use in widespread since from agriculture to daily life. This makes antibiotic stewardship an important death cause in those countries. Furthermore, the statistics are usually underestimated, since the report in those cases is neglected by many health attendants or the diagnosis is not completed before the patient's death. Rapid intercontinental travels also are efficient to bring pathogens that are no longer geographically contained and can transpose countries easily, like cases involving the spread of the severe acute respiratory syndrome (SARS) virus from Guangdong province in China to Hong Kong and then Canada in 2003.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig21.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig21.png)
 
 **Figure 3.** Deaths attributable to antimicrobial resistance every year by 2050 (Source: O'Neil, [2014](https://amr-review.org/sites/default/files/AMR%20Review%20Paper%20-%20Tackling%20a%20crisis%20for%20the%20health%20and%20wealth%20of%20nations_1.pdf))
 
 In a prevision using the growing trend of some diseases that are known to be highly mortal, the resistance to antimicrobials overcome them in 2050, becoming more mortal than cancer (Figure 4). This shows the global importance of the mater, besides to evidence the main countries (Figure 3) affected by this. China is among of the most affected countries and the number of deaths can be higher than 4 million people per year.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig3.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig3.png)
 
 **Figure 4.** Deaths attributable to antimicrobial resistance every year compared to other major causes of death. (Source: O'Neil, [2014](https://amr-review.org/sites/default/files/AMR%20Review%20Paper%20-%20Tackling%20a%20crisis%20for%20the%20health%20and%20wealth%20of%20nations_1.pdf))
 
 Other important side of this problem is the economy. Antibiotic resistance can substantially reduce gross domestic product - but unlike a financial crisis, the damage will last longer and will be greater in the poorest countries (Figure 5). The question here is about the costly treatments and the hospital expenses during treatments of resistance, that can take several months until resolution or the death of the patient.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig4.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig4.png)
 
 **Figure 5.** The economy of treatments of antimicrobial resistance cases. (Source: World Bank Group)
 
@@ -38,13 +38,13 @@ The growing antimicrobial resistance problem feed a continuous need for new anti
 
 The genomic era was constrasted by the reality of hundreds of available bacterial genomes that have so far failed to deliver the hoped-for new molecular targets for antibiotics. However, so far it always have focused in the active molecules produced by the metabolism, instead searching for active peptides or proteins. The best reason to bet in host defense antimicrobial peptides or AMPs is that they remained potent for millions of years, constituting a useful strategy to develop a new generation of antimicrobials to meet the growing antibiotic resistance problem worldwide. The current informations about AMPs is extended in that regarding eukaryotes' peptides (Figure 6), and their presence in several phyla in that domain. Although well known in eukaryotes, prokaryotes remain under represented and the few information available does not reflect the entire diversity present in that domain. Archaea is another few explored domain, that can contribute to future drugs development.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig5.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig5.png)
 
 **Figure 6.** Number of antimicrobial peptides found in different domains of life. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
 AMPs definition comprises peptides with a huge variety of biological activities (Figure 7), and their sequences are key to that activity. AMP producing microbes can limit the growth of other microorganisms and should be considered another normal source of them. AMPs from microbes are quite distinct from those of vertebrates, since they can be obtained from a nonribosomal peptide synthase. Thus, nonribosomal peptides can adopt different structures, such as cyclic or branched structures, and carry modifications like N-methyl and N-formyl groups, glycosylations, acylations, halogenation, or hydroxylation. Some examples of commercial microbial AMPs include polymyxin B and vancomycin, both FDA-approved antibiotics (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)).
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig6.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig6.png)
 
 **Figure 7.** Antimicrobial peptide biological activities. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
@@ -66,7 +66,7 @@ Families 1-3 are largely found in all domains of life, while families 4 and 5 ar
 
 As previously mentioned, these families can be folded into some structural arrangements (Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3)). The most common are shown in Figure 8. The alpha-helical peptides (Figure 8-a) are usually related to a strong pore-forming activity in bacterial membranes, as well as, the alpha-beta structures (Figure 8-c). The beta-sheet peptides usually change their conformation in apolar environments to an alpha-helical structure that can be refolded into beta-sheet (Figure 8-b) after transposition of the lipophilic phase. The random coiled peptides (Figure 8-d) are usually associated to a mixed function, and usually assume helical structures in the membrane, forming pores and compromising cell functions. Mostly the activities of AMPs are associated to the rupture of cell membrane or promoting the leakage of cell contents, ending in the bacterial cell death. Different biological activities have different mechanisms, however in this review the antibacterial activity will be prioritized.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig8.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig8.png)
 
 **Figure 8.** Antimicrobial peptide folding groups. (Source: Wang, [2014](https://link.springer.com/protocol/10.1007/978-1-4939-2285-7_3))
 
@@ -74,7 +74,7 @@ There is a dynamic interchange in AMPs structure and topologies along the intera
 
 Several models have been proposed to describe the mechanism of action of antimicrobial peptides (Figure 9), and can be categorized into energy dependent and energy independent uptake. In barrel-stave mechanism, there is an aggregation of peptide monomers on the surface of the membrane. This aggregated peptides are inserted into the membrane and get such an orientation that the hydrophilic surfaces of peptides point inward and form a water filled transmembrane pore that kills the cell by leakage. In carpet model, AMPs initially get associated on the surface of the membrane, forming a carpet. Once a concentration reaches a threshold, there is a peptide induced membrane permeation. This leads to the cell membrane disruption. In toroidal pore model, peptides get aggregated prior or after binding with the membrane surface. It induces a membrane depolarization and form a toroidal shaped transmembrane pore. The energy independent uptake involves macropinocytosis. Once uptaken in the form of macropinosomes, the AMPs get released into the cytoplasm exerting their antimicrobial action (Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391)).
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig22.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig22.png)
 
 **Figure 9.** Proposed mechanisms of actions of AMPs: Energy indpendent mechanisms - barrel stave model, carpet model, and toroidal pore model (a); and energy dependent mechanisms (b). (Source: Pushpanathan et al., [2013](http://dx.doi.org/10.1155/2013/675391))
 
@@ -107,7 +107,7 @@ With FACS you can process a metagenome file of 631.2Mbp in 24 min, using 3 CPUs 
 
 FACS works in three main steps (Figure 10). The first step ordering the paired-end reads of the files forward and reverse by name, also performing quality-based trimming and eliminating orphan reads. This step is crucial to ensure the reads will be sorted correctly to be merged into longer quasi-contigs. These sequences then are screened by ORF sequences with minimum of 30 base pairs. This ensures the AMP sequences are being sampled and also eliminates short peptides without possibility to be selected in the next steps for being too short. Then, this ORFs are ordered by sequence and the redundant sequences with 100% of identity and 100% of coverage are collapsed and this number is counted. The abundance of the peptides are then calculated by summing the total of detected peptides and dividing the occurrence counts by this total and after multiplying it by 1 million. This abundance measure is given as "ppm" (peptides per million). During this process of clustering the sequences are divided into sequence buckets of a customizable size that is related to the total amount of RAM memory available in the computer. It can help to speed up the process and allows large datasets being processed without memory errors. These buckets are then used in the downstream operations until the end of the program when the informations are gathered in a final table.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig11.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig11.png)
 
 **Figure 10.** FACS workflow.
 
@@ -115,11 +115,11 @@ The second step is calculation of descriptors. In FACS a two way system of descr
 
 Finally, in the third step FACS uses a decision tree (Figure 11) to classify the detected AMPs into four different families accordingly their nature (Cationic or Anionic) and structure (linear or dissulphide bond forming). These classifications are then made available in a table where the sequence, random identifiers, abundance in ppm and hemolytic nature is also added. The FACS workflow depends on few third party software and some R libraries (Figure 12).
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig17.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig17.png)
 
 **Figure 11.** Decision tree to classification of peptides into different classes accordingly to their composition and capacity in forming dissulphide bonds (Legend: AcidicAA - Acidic amino acids: B + D + E + Z; BasicAA - Alkaline amino acids: H + K + R).
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig12.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig12.png)
 
 **Figure 12.** FACS structure.
 
@@ -151,13 +151,13 @@ A recent prediction method released by Bhadra et al. ([2018](https://www.nature.
 
 The CTD method was firstly described by Dubchak et al. ([1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/),[1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667)) and it is based in the classification of residues into three different classes accordingly to some specific features, such as hydrophobicity, solvent accessibility or secondary structure. The peptide sequence then is encoded into these three classes and the composition, distribution and transition of classes can be calculated. Mostly the composition and transition are important to other applications than AMP prediction, since they have shown small correlation to AMP peptides, besides not being explicative in some tested models performed by us previously.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig13.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig13.png)
 
 **Figure 13.** Method of sequence encoding using CTD (Composition, Distribution and Transition). (Source: Dubchak et al., [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/))
 
 As above mentioned, since distribution of the residues classes seemed to be more effective to explain and classify AMPs, AMPep software (Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)) was mostly based in the distribution of the classes of the five canonical features (hydrophobicity, normalized van der Waals volume, polarity, polarizability, charge,  secondary structure, and solvent accessibility), as shown in Figure 14.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig14.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig14.png)
 
 **Figure 14.** Example of CTD application to AMP discovery in AMPEP software. (Source: Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
 
@@ -216,7 +216,7 @@ These descriptors are used to prediction and are calculated to each sequence tha
 
 In a recent study, Gabere and Noble ([2017](https://www.ncbi.nlm.nih.gov/pubmed/28203715)) have shown that Random Forests models provide a statistically significant improvement in performance of AMPs detection, as measured by the area under the receiver operating characteristic (ROC) curve in comparison to other methods. Following this trend, many classifiers, such as AMPep and others, also make use of random forests models and presented highly accuracy in AMPs detection. Due to this, we opted to use random forests after some tests using alternative algorithms, such as: treebag, rpart, cpart, adaboost and others (results not shown). In order to be able to trace a comparison among the other classifiers and our model, we opted to use the same training and validation datasets used by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)), shown in Figure 15.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig15.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig15.png)
 
 **Figure 15.** Dataset for training and validation of antimicrobial peptides prediction model. (Source: Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
 
@@ -224,7 +224,7 @@ The 22 descriptors were generated by using the customized script written for thi
 
 The hemolytic activity classifiers was obtained by using the datasets previously established by Chaudhary et al. ([2016](https://www.nature.com/articles/srep22843)). The HemoPI-1 datasets were used both to training and validation (Figure 16). Following the same pre-established logic, the descriptors were calculated as the standard method implemented in FACS by using Peptides R package and CTDDclass.py script from ILearn project, already implemented by the installation procedures bellow further discussed.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig18.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig18.png)
 
 **Figure 16.** Dataset for training and validation of hemolytic peptides prediction model. (Source: Chaudhary et al., [2016](https://www.nature.com/articles/srep22843))
 
@@ -241,7 +241,7 @@ The models here mentioned were implemented in a R script to filter off the non-A
 
 The classifiers of AMP and hemolytic peptides were then assessed and compared to the state of art methods of AMP prediction and hemolytic classification. The results were taken using the same databases of the works cited as reference. Calculations of the statistics of accuracy, sensitivity, McNeymar's Correlation Coefficient (MCC), and F-score were shown in Figure 17.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig16.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig16.png)
 
 **Figure 17.** Measures of model accuracy. Legend: FN - False Negatives, TP - True Positives, TN - True Negatives, FP - False Positives. (Source: Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9))
 
@@ -433,7 +433,7 @@ Our classifiers seems to be extremely interesting in the execution of the filter
 
 As a future update to FACS classifier systems, some efforts recently have being done, in order to achieve a model to classify the biological activity presented by AMPs: anti-bacterial, anti-fungal, anti-viral, anti-HIV and anti-tumor. A test was carried out using the same set of descriptors and training with the AMPEP training dataset available [here](doi:10.1038/s41598-018-19752-w). The training procedures were same adopted before to both models, testing the random forest (rf) and the oblique random forests with support vector machines (orfsvm) algorithms. The model here presented is a result of the 10-cross fold validated random forest training and showed a limited capacity of classification (Figure 18), with a specificity and sensitivity ranging to very low values in some classes.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig23.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig23.png)
 
 **Figure 18.** Confusion matrix of model "Mixedmodel_multiclassifier". This model tried to classify the 8 different AMP biological activities. To train it we have used the large training dataset, previously provided by Bhadra et al., [2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9).
 
@@ -457,13 +457,13 @@ However, tests with different conditions involving, for example, 3 CPUs and buck
 
 The results of FACS runs using both metagenomes are shown in Figures 18 and 19. In both runs using different bucket sizes, there were no differences between the results. Basically, what is observable is the depth of sequencing seems to be a key-factor to the number of AMPs found in the end of FACS process. However, there is probably due to the higher number of variants available, since FACS performs a clustering using very stringent conditions.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig19.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig19.png)
 
 **Figure 18.** Results of test involving metagenome 631.2Mbp.
 
 An important fact, so far noticed is the low contribution of anionic peptides to the final datasets, what can be a result of the models adopted to filter off the non-AMP sequences. However, it is remarkable the low contribution of this class of peptides even in the previous literature, where most of papers report AMPs as cationic peptides, neglecting the anionic examples. Other interesting point is the low knowledge available about them. So far, the few informations can be contributing to less representative training datasets that possibly could influence the final prediction models.
 
-![](https://github.com/celiosantosjr/FACS/blob/master/fig20.png)
+![](https://github.com/celiosantosjr/FACS/blob/master/figures//fig20.png)
 
 **Figure 19.** Results of test involving metagenome 2.9Gbp.
 
