@@ -14,6 +14,7 @@ Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pigz="/usr/bin/pigz"
 mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
 plass="/home/celio/plass/build/bin/plass"
+pandaseq="/usr/local/bin/pandaseq"
 paladin="/home/celio/paladin/paladin"
 samtools="/usr/bin/samtools"
 eXpress="/home/celio/express-1.5.1-linux_x86_64/express"
@@ -536,30 +537,44 @@ $pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
 $paladin index -r3 .ref.fa
 if [[ $mode == "mse" ]]
 then
-	echo "[ M ::: Mapping single reads against references, be aware it can take a while ]"
-	echo "[ M ::: Fixing names, and let's go map ]"
-	zcat .read_1.paired.fastq.gz | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
-	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
+	touch .ref.fa
 elif [[ $mode == "mpe" ]]
 then
-	echo "[ M ::: Mapping paired reads against references, be aware it can take a while ]"
-	echo "[ M ::: Fixing names, and let's go map ]"
-	zcat .read_1.paired.fastq.gz | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best .read_1.paired.fastq
-	zcat .read_2.paired.fastq.gz | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best .read_2.paired.fastq
-	echo "[ M ::: Starting the paladin ]"
-	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $samtools view -Sb > .m.bam
+	echo "[ M ::: Merging paired end reads ]"
+	$pigz -d .read_1.paired.fastq.gz
+	$pigz -d .read_2.paired.fastq.gz
+	$pandaseq -A pear -F -f .read_1.paired.fastq -r .read_2.paired.fastq -T "$j" -w .read_.assembled.fastq 2> .test
+	if [ -s ".read_.assembled.fastq" ]
+	then
+		rm -rf .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
+		mv .read_.assembled.fastq .read_1.paired.fastq
+		$pigz --best .read_1.paired.fastq
+	else
+		echo "[ W ::: ERR301 - Your merging did not result into a true value, the pandaseq message follows ]"
+		cat .test
+		rm -rf .read_.assembled.fastq .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
+		exit
+	fi
 else
 	echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
+	exit
 fi
-if [[ -s .m.bam ]]
+
+echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
+echo "[ M ::: Starting the paladin ]"
+$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
+
+if [[ -s ".m.bam" ]]
 then
-	rm -rf "$Reference".amb "$Reference".ann "$Reference".bwt "$Reference".pac "$Reference".pro "$Reference".sa .read_1.paired.fastq.gz .read_2.paired.fastq.gz .ref.fa
+	rm -rf .read_1.paired.fastq.gz
 else
 	echo "[ W ::: ERR52 - Mapping failed ]"
-	rm -rf "$Reference".amb "$Reference".ann "$Reference".bwt "$Reference".pac "$Reference".pro "$Reference".sa .read_1.paired.fastq.gz .read_2.paired.fastq.gz .ref.fa
+	.ref.fa.amb .ref.fa.ann .ref.fa.bwt .ref.fa.pac .ref.fa.pro .ref.fa.sa .read_1.paired.fastq.gz .ref.fa
+	exit
 fi
 }
+
+
 
 ab_profiling ()
 {
@@ -568,7 +583,7 @@ $samtools index .m.bam
 echo "[ M ::: Expressing results of abundance ]"
 mkdir "$outfolder"/"$outtag"
 $eXpress --no-bias-correct .ref.fa .m.bam
-rm -rf .m.bam .ref.fa
+rm -rf .ref.fa.amb .ref.fa.ann .ref.fa.bwt .ref.fa.pac .ref.fa.pro .ref.fa.sa .read_1.paired.fastq.gz .ref.fa .m.bam .m.bai
 }
 
 ############################################################################################################################
