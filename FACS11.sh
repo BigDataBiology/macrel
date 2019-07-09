@@ -1,0 +1,679 @@
+#!/usr/bin/bash
+
+############################################################################################################################
+############################## FACS pipeline - Fast AMP Clustering and Screening        ####################################
+############################################################################################################################
+############################## Authors: Célio Dias Santos Júnior, Luis Pedro Coelho     ####################################
+############################################################################################################################
+############################## Institute > ISTBI - FUDAN University / Shanghai - China  ####################################
+############################################################################################################################
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+##################################################### Variables ############################################################
+Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+pigz="/usr/bin/pigz"
+mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
+plass="/home/celio/plass/build/bin/plass"
+paladin="/home/celio/paladin/paladin"
+sambamba=""
+eXpress="/home/celio/express-1.5.1-linux_x86_64/express"
+
+# Default variables
+outfolder="./"
+block=100000000  #100Mb
+j=$(echo "$(nproc) * 9 / 10" | bc)
+outtag="FACS_OUT"
+
+# Help message
+show_help ()
+{
+	echo "
+	############################################################################################################################
+	############################## FACS pipeline - Fast AMP Clustering System               ####################################
+	############################################################################################################################
+	############################## Authors: Célio Dias Santos Júnior, Luis Pedro Coelho     ####################################
+	############################################################################################################################
+	############################## Institute > ISTBI - FUDAN University / Shanghai - China  ####################################
+	############################################################################################################################
+
+	Usage: FACS.sh --mode c/r [options]
+
+	Here's a guide for avaiable options. Defaults for each option are showed between brackets: [default].
+
+	Basic options:
+	-h, --help	        Show this help message
+	-m			Mode of operation, type \"c\" to work with contigs, \"r\" to work with paired-end reads, 
+				\"mr\" to map reads against DB and generate abundances table, and \"mc\" to calculate abundances
+				from contigs abundance profile
+	--fasta			Contigs Fasta file - compressed (gzipped)
+	--fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full address
+	--rev		        Illumina sequencing file in Fastq format (R2), please leave it compressed and full address
+	--ref                   Reference fasta file with peptides DB compressed (gzipped)
+	--ab			Abundance profile (compressed)
+	--outfolder		Folder where output will be generated [./]
+	--outtag          	Tag used to name outputs [FACS_OUT]
+	-t, --threads [N]	Number of threads [90% of avaiable threads]
+	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
+	--log			Log file name. It allows FACS to save the run results to this log file in output folder.
+	
+"
+}
+# Taking flags
+while [[ $# -gt 0 ]]
+do
+	case $1 in
+		-h|--help|-help|\?|-\?)
+			show_help
+			exit
+		;;
+		-m|-M|--mode|--Mode|--m|--M)
+			mode=${2}
+		;;
+		-t|-T|--threads|--Threads|--THREADS|--t|--T)
+			j=${2}
+		;;
+		--fasta|--Fasta|--FASTA|-fasta)
+			fasta=${2}
+		;;
+		--ab|--Ab|--AB|-ab)
+			ab=${2}
+		;;
+		--fwd|--Fwd|--FWD|--F|--R1|--l)
+			read_1=${2}
+		;;
+		--rev|--Rev|--REV|--R2|--r)
+			read_2=${2}
+		;;
+		--outfolder|--Outfolder|--OutFolder|--OUTFOLDER)
+			outfolder=${2}
+		;;
+		--outtag|--Outtag)
+			outtag=${2}
+		;;
+		--Block|--block|--BLOCK)
+			block=${2}
+		;;
+		--log|--Log|--LOG)
+			log=${2}
+		;;
+		-ref|--ref|--Ref|-Ref)
+			Reference=${2}
+		;;
+	esac
+	shift
+done
+
+sanity_check ()
+# Checking input variables
+{
+if [[ -n $mode ]]
+then
+	if [[ $mode == "r" ]]
+	then
+		if [[ -n $read_1 ]]
+		then
+			if [[ -n $read_2 ]]
+			then
+				if [[ -s $read_1 ]] || [[ -s $read_2 ]]
+				then 
+					echo "[ M ::: FACS mode has been assigned as paired-end reads ]
+[ M ::: FACS has found your reads files, starting work... ]"
+					mode="pe"
+					echo -e "[ M ::: Here we specify your variables ]
+
+Mode		$mode
+Threads		$j
+read_R1		$read_1
+read_R2		$read_2
+Folder		$outfolder
+Tag		$outtag
+Bucket		$block
+Log		$outfolder/$log"
+				else
+					echo "[ M ::: FACS mode has been assigned as Reads ]
+[ W ::: ERR010 - FACS has not found your reads files. ]"
+					show_help
+					exit
+				fi
+			elif [[ -s $read_1 ]]
+			then 
+				echo "[ M ::: FACS mode has been assigned as single-end reads ]
+[ M ::: FACS has found your reads files, starting work... ]"
+				mode="se"
+				echo -e "[ M ::: Here we specify your variables ]
+
+Mode		$mode
+Threads		$j
+read_R1		$read_1
+Folder		$outfolder
+Tag		$outtag
+Bucket		$block
+Log		$outfolder/$log"
+			else
+				echo "[ M ::: FACS mode has been assigned as Reads ]
+[ W ::: ERR010 - FACS has not found your reads files. ]"
+				show_help
+				exit
+			fi
+		else
+			echo "[ M ::: FACS mode has been assigned as Reads ]
+[ W ::: ERR010 - FACS has not found your reads files. ]"
+			show_help
+			exit
+		fi
+	elif	[[ $mode == "c" ]]
+	then
+		if [ -s "$fasta" ]
+		then 
+			echo "[ M ::: FACS mode has been assigned as Contigs ]
+[ M ::: FACS has found your contigs file, starting work... ]"
+			echo -e "[ M ::: Here we specify your variables ]
+
+Mode			$mode
+Threads			$j
+Contigs			$fasta
+Folder			$outfolder
+Tag			$outtag
+Bucket			$block
+Log			$outfolder/$log"
+		else
+			echo "[ M ::: FACS mode has been assigned as Contigs ]
+[ W ::: ERR011 - Your contigs file is not present, please review the command line ]"
+			show_help
+			exit
+		fi
+	elif [[ $mode == "mr" ]]
+	then
+		echo "[ M ::: FACS mode has been assigned as read mapper ]"
+		if [ -s "$Reference" ]
+		then
+			if [[ -s $read_1 ]]
+			then
+				if [[ -s $read_2 ]]
+				then
+					mode="mpe"
+					echo "[ M ::: FACS has found your reference data set, starting work... ]"
+					echo -e "[ M ::: Here we specify your variables ]
+
+** Mapper with paired-end reads
+Mode			$mode
+Threads			$j
+Reference		$Reference
+R1			$read_1
+R2			$read_2
+Folder			$outfolder
+Tag			$outtag
+Bucket			$block
+Log			$outfolder/$log"
+				else
+					mode="mse"
+					echo "[ M ::: FACS has found your reference data set, starting work... ]"
+					echo -e "[ M ::: Here we specify your variables ]
+
+** Mapper with single-end reads
+Mode			$mode
+Threads			$j
+Reference		$Reference
+R1			$read_1
+Folder			$outfolder
+Tag			$outtag
+Bucket			$block
+Log			$outfolder/$log"
+				fi
+			else
+				echo "[ M ::: FACS mode has been assigned as mapper ]
+[ W ::: ERR011 - FACS has not found your reads files ]"
+				show_help
+				exit
+			fi
+	elif [[ $mode == "mc" ]]
+	then
+		if [[ -s "$Reference" ]]
+		then
+			if [[ -s "$ab" ]]
+			then
+				echo "[ M ::: FACS has found your reference data set, starting work... ]"
+				echo -e "[ M ::: Here we specify your variables ]
+
+** Mapper with contigs abundance profile
+Mode			$mode
+Threads			$j
+Reference		$Reference
+AB			$ab
+Folder			$outfolder
+Tag			$outtag
+Bucket			$block
+Log			$outfolder/$log"
+			else
+				echo "[ W ::: ERR012 - The user needs to specify a valid abundance profile, please review the command line]"
+				show_help
+				exit
+		else
+				echo "[ W ::: ERR013 - The user needs to specify a valid references file, please review the command line]"
+				show_help
+				exit			
+	fi
+else
+	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
+	show_help
+	exit
+fi
+
+if [[ -n $outfolder ]]
+	then
+		if [ -d "$outfolder" ] 
+			then
+    				echo "" 
+			else
+				echo "[ W ::: ERR017 - Directory $outfolder does not exist. ]"
+				show_help
+				exit
+		fi
+	else
+		show_help
+		exit
+	fi
+fi
+}
+
+############################################################################################################################
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+################################################       ENV      ############################################################
+
+export PATH=$PATH:$Lib
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+################################################    FUNCTIONS   ############################################################
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+################################# 1. generating two files with matching pairs of reads #####################################
+PEreads_trimming ()
+{
+echo "[ M ::: Trimming low quality bases ]"
+echo "[ M ::: Sorting paired-end reads ]"
+java -jar "$Lib"/Trimmomatic-0.39/trimmomatic-0.39.jar \
+PE -phred33 -threads "$j" \
+"$read_1" \
+"$read_2" \
+.read_1.paired.fastq.gz \
+.read_1.singles.fastq.gz \
+.read_2.paired.fastq.gz \
+.read_2.singles.fastq.gz \
+LEADING:3 \
+TRAILING:3 \
+SLIDINGWINDOW:4:15 \
+MINLEN:80 >/dev/null 2>/dev/null
+
+if [ -s ".read_2.paired.fastq.gz" ]
+then
+	rm -rf ."read_1.singles.fastq.gz" ."read_2.singles.fastq.gz" .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+else
+	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
+	rm -rf .read_1.singles.fastq.gz .read_2.singles.fastq.gz .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+	exit
+fi
+}
+
+SEreads_trimming ()
+{
+echo "[ M ::: Trimming low quality bases ]"
+java -jar "$Lib"/Trimmomatic-0.39/trimmomatic-0.39.jar SE -phred33 -threads "$j" "$read_1" .read_1.paired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:80 >/dev/null 2>/dev/null
+
+if [ -s ."read_1.paired.fastq.gz" ]
+then
+	touch ."read_1.paired.fastq.gz"
+else
+	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
+	rm -rf .read_1.paired.fastq.gz
+	exit
+fi
+}
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+########################################## 2. Generating peptides ##########################################################
+
+ASSEMBLY ()
+{
+echo "[ M ::: Assembly using PLASS ]"
+if [[ $mode == "pe" ]]
+then
+	$plass assemble --min-length 10 --max-length 100 --threads "$j" -v 1 .read_1.paired.fastq.gz .read_2.paired.fastq.gz .pep.faa tmp
+	rm -rf .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+elif [[ $mode == "se" ]]
+then
+	$plass assemble --min-length 10 --max-length 100 --threads "$j" -v 1 .read_1.paired.fastq.gz .pep.faa tmp
+	rm -rf .read_1.paired.fastq.gz
+else 
+	echo "[ W ::: ERR222 - FACS followed by a weird way ]"
+	exit
+fi
+rm -rf tmp/
+if [ -s ".pep.faa" ]
+then
+	sed 's/\*//g' .pep.faa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=150) {printf("%s\n%s\n",L[0],L[1]);}}' > tmp
+	mv tmp .pep.faa
+else
+	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
+	rm -rf .pep.faa
+	exit
+fi
+}
+
+callorf ()
+{
+$pigz -dc "$fasta" > .callorfinput.fa
+echo "[ M ::: Calling ORFs ]"
+"$Lib"/orfm -m 30 .callorfinput.fa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > .pep.faa
+if [ -s ".pep.faa" ]
+then
+	rm -rf .callorfinput.fa
+else
+	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
+	rm -rf .callorfinput.fa .pep.faa
+	exit
+fi
+}
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+########################################## 3. Clustering peptides ##########################################################
+
+clusteRC ()
+{
+echo "[ M ::: Indexing database ]"
+$mmseqs createdb .pep.faa .DB > log.clus
+mv .pep.faa "$outfolder"/"$outtag".pep.faa
+$pigz --best "$outfolder"/"$outtag".pep.faa
+
+echo "[ M ::: Executing clustering ]"
+$mmseqs cluster --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 .DB .clu tmp >> log.clus
+
+echo "[ M ::: Output file from ffindex ]"
+$mmseqs createseqfiledb .DB .clu .clu_seq >> log.clus
+$mmseqs result2flat .DB .DB .clu_seq .clu_seq.fasta >> log.clus
+
+echo "[ M ::: Generating TSV report from ffindex ]"
+$mmseqs createtsv .DB .DB .clu .clu.tsv >> log.clus
+
+echo "[ M ::: Extracting representative sequences ]"
+$mmseqs result2repseq .DB .clu .DB_clu_rep >> log.clus
+$mmseqs result2flat .DB .DB .DB_clu_rep .DB_clu_rep.fasta --use-fasta-header >> log.clus
+
+echo "[ M ::: Cleaning ]"
+if [ -s "$outfolder"/"$outtag".pep.faa.gz ]
+then
+	mv .clu.tsv "$outfolder"/"$outtag".clusters.tsv
+	mv .DB_clu_rep.fasta .pep.faa
+	rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/ log.clus
+	$pigz --best "$outfolder"/"$outtag".clusters.tsv
+else
+	echo "[ W ::: ERR125 - Clustering failed ]"
+	rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/
+	cat log.clus
+	rm -rf log.clus
+	exit
+fi
+}
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+######################################## 5. calculating descriptors ########################################################
+
+descripter ()
+{
+echo "[ M ::: Reducing file sizes ]"
+mkdir splitted/
+parallel --pipe --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa
+rm -rf .pep.faa
+
+for i in splitted/small-chunk*; do
+
+echo "[ M ::: Counting distribution using SA scale -- $i ]"
+python3 "$Lib"/CTDDClass.py "$i" .CTDDC-SA.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
+awk '{print $2"\t"$7"\t"$12}' .CTDDC-SA.tsv > .tmp
+sed -i '1,1d' .tmp
+echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
+cat .header .tmp > .CTDDC-SA.tsv; rm -rf .tmp .header
+
+echo "[ M ::: Counting distribution using HB scale -- $i ]"
+python3 "$Lib"/CTDDClass.py "$i" .CTDDC-hb.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
+awk '{print $2"\t"$7"\t"$12}' .CTDDC-hb.tsv > .tmp
+sed -i '1,1d' .tmp
+echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
+cat .header .tmp > .CTDDC-hb.tsv; rm -rf .tmp .header
+
+echo "[ M ::: Calculating cheminformatics descriptors -- $i ]"
+echo -e "header\tseq\tgroup" > .tmp
+sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
+rm -rf "$i"
+R --vanilla --slave --args .tmp .out.file < "$Lib"/features_04061950.R >/dev/null 2>/dev/null
+rm -rf .tmp
+
+echo "[ M ::: Formatting descriptors -- $i ]"
+paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > .tab.desc.tsv
+rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
+
+echo "[ M ::: Predicting AMPs -- $i ]"
+R --vanilla --slave --args .tab.desc.tsv "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "$i".fin < "$Lib"/AMP_HEMOscreening02.R >/dev/null 2>/dev/null
+rm -rf "$Lib"/__pycache__/
+rm -rf .tab.desc.tsv; done
+}
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+#################################### 6. Generating abundance profiles ######################################################
+
+cleanmessy ()
+{
+echo "[ M ::: Formatting results ]"
+echo -e "access\tsequence\tgroup\themolytic" > .out.file
+cat splitted/* >> .out.file
+rm -rf splitted/
+sed -i 's/\"//g' .out.file
+AMP=$(sed '1,1d' .out.file | wc -l | awk '{print $1}')
+echo "[ M ::: Calculating statistics ]"
+pepval=$(awk '{print $3}' .out.file | sort | uniq -c | awk '{ print $2"\t"$1 }' | grep -v "group")
+echo "[ M ::: Exporting results ]"
+mv .out.file "$outfolder"/"$outtag".tsv
+$pigz --best "$outfolder"/"$outtag".tsv
+}
+
+loggen()
+{
+echo "[ M ::: Generating log ]"
+
+if [[ $mode == "r" ]]
+then
+	## Preparing report
+	echo -e "######################################################## FACS report
+
+[ M ::: Variables ]
+
+Threads		$j
+read_R1		$read_1
+read_R2		$read_2
+Folder		$outfolder
+Tag		$outtag
+Bucket		$block
+
+========================================= Files were treated
+
+*** Deduplicated ORFs were called
+
+These ORFs were then screened for AMPs
+
+*** $AMP peptides were called
+
+These peptides were classified into 4 families which accounts:
+
+-- Distribution of peptides:
+$pepval
+
+** Legend: ADP - Anionic Dissulphide-bond forming peptide
+	   ALP - Anionic Linear peptide
+	   CDP - Cationic Dissulphide-bond forming peptide
+	   CLP - Cationic Linear peptide
+########################################################" > "$outfolder"/.log
+else
+	## Preparing report
+	echo -e "######################################################## FACS report
+
+[ M ::: Variables ]
+
+Threads		$j
+Contigs		$fasta
+Folder		$outfolder
+Tag		$outtag
+Bucket		$block
+
+========================================= Files were treated
+
+*** Deduplicated ORFs were called
+
+These ORFs were then screened for AMPs
+
+*** $AMP peptides were called
+
+These peptides were classified into 4 families which accounts:
+
+-- Distribution of peptides:
+$pepval
+
+** Legend: ADP - Anionic Dissulphide-bond forming peptide
+	   ALP - Anionic Linear peptide
+	   CDP - Cationic Dissulphide-bond forming peptide
+	   CLP - Cationic Linear peptide
+########################################################" > "$outfolder"/.log
+fi
+
+sed -i 's/\"//g' "$outfolder"/.log
+
+if [[ -n $log ]]
+then
+	cat "$outfolder"/.log
+	mv "$outfolder"/.log "$outfolder"/"$log"
+else
+	cat "$outfolder"/.log
+	rm -rf "$outfolder"/.log
+fi
+
+}
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+###########################################      7. Abundances      ########################################################
+
+mapping ()
+{
+echo "[ M ::: Indexing references ]"
+$paladin index -r3 $Reference
+echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
+if [[ $m == "mse" ]]
+then
+	echo "[ M ::: Fixing names, and let's go map ]"
+	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best read_1.paired.fastq.gz
+	echo "[ M ::: Starting the paladin ]"
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M "$Reference" .read_1.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped) and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
+elif [[ $m == "mpe" ]]
+then
+	echo "[ M ::: Fixing names, and let's go map ]"
+	zcat .read_1.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_1.paired.fastq; rm -rf .read_1.paired.fastq.gz; $pigz --best read_1.paired.fastq.gz
+	zcat .read_2.paired.fastq.gz | sed '1~4 s/-[12]$//' > .tmp; mv .tmp .read_2.paired.fastq; rm -rf .read_2.paired.fastq.gz; $pigz --best read_2.paired.fastq.gz
+	echo "[ M ::: Starting the paladin ]"
+	$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M "$Reference" .read_1.paired.fastq.gz .read_2.paired.fastq.gz | $sambamba view --sam-input --format=bam -F "not (unmapped or mate_is_unmapped) and proper_pair and mapping_quality >= 50 and sequence_length >= 80" --valid -t "$j" -o .m.bam
+else
+	echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
+fi
+if [[ -s .m.bam ]]
+then
+	rm -rf $Reference.amb $Reference.ann $Reference.bwt $Reference.pac $Reference.pro $Reference.sa
+else
+	echo "[ W ::: ERR52 - Mapping failed ]"
+	rm -rf $Reference.amb $Reference.ann $Reference.bwt $Reference.pac $Reference.pro $Reference.sa
+fi
+}
+
+ab_profiling ()
+{
+echo "[ M ::: Indexing BAM files ]"
+$sambamba -p -t "$j" index .m.bam
+echo "[ M ::: Expressing results of abundance ]"
+mkdir "$outfolder"/"$outtag"
+$eXpress --no-bias-correct "$Reference" .m.bam
+rm -rf .m.bam
+}
+
+reformat () # gathers data
+{
+d
+}
+
+ceformat () # gathers data
+{
+d
+}
+
+trformat () # reduces dimensions and create final table
+{
+d
+}
+
+tcformat () # reduces dimensions and create final table
+{
+d
+}
+
+
+
+############################################################################################################################
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+################################################    CMDs   #################################################################
+
+export PATH=$PATH:$Lib
+
+sanity_check
+
+if [[ $mode == "pe" ]]
+then
+	PEreads_trimming
+	ASSEMBLY
+	clusteRC
+	descripter
+	cleanmessy
+	mode="r"
+	loggen
+elif [[ $mode == "se" ]]
+then
+	SEreads_trimming
+	ASSEMBLY
+	clusteRC
+	descripter
+	cleanmessy
+	mode="r"
+	loggen
+elif [[ $mode == "c" ]]
+then
+	callorf
+	clusteRC
+	descripter
+	cleanmessy
+	loggen
+elif [[ $mode == "mse" ]]
+then
+	SEreads_trimming
+	mapping
+	ab_profiling
+elif [[ $mode == "mpe" ]]
+then
+	PEreads_trimming
+	mapping
+	ab_profiling
+elif [[ $mode == "mc" ]]
+then
+	rformat # creates list of all peptides
+	testr # selects equal peptides and single occurences
+	reformat # gathers data
+	trformat # reduces dimensions and create final table
+else
+	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
+	show_help
+	exit
+fi
+
