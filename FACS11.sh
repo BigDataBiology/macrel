@@ -11,13 +11,13 @@
 
 ##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-pigz="$Lib/pigz"
-mmseqs="$Lib/mmseqs/bin/mmseqs"
-plass="$Lib/plass/bin/plass"
+pigz="/usr/bin/pigz"
+mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
+plass="/home/celio/plass/build/bin/plass"
 pandaseq="/usr/local/bin/pandaseq"
-paladin="$Lib/paladin/paladin"
+paladin="/home/celio/paladin/paladin"
 samtools="/usr/bin/samtools"
-eXpress="$Lib/express-1.5.1-linux_x86_64/express"
+eXpress="/home/celio/express-1.5.1-linux_x86_64/express"
 
 # Default variables
 outfolder="./"
@@ -332,6 +332,7 @@ fi
 
 callorf ()
 {
+echo "[ M ::: Decompressing contigs ]"
 $pigz -dc "$fasta" > .callorfinput.fa
 echo "[ M ::: Calling ORFs ]"
 "$Lib"/orfm -m 30 .callorfinput.fa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > .pep.faa
@@ -343,6 +344,33 @@ else
 	rm -rf .callorfinput.fa .pep.faa
 	exit
 fi
+}
+
+
+memdev ()
+{
+echo "[ M ::: Sorting peptides list ]"
+mkdir sorting_folder/
+perl -ne '$i++,next if /^>/;print if $i' .pep.faa | parallel --pipe --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
+rm -rf .pep.faa
+for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" < "$X" > "$X".sorted; rm -rf "$X"; done
+sort -S 80% --parallel="$j" -T . -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
+perl -i -n -e "print if /S/" .sorted-huge-file
+if [[ -s .sorted-huge-file ]]
+then
+	echo "[ M ::: Eliminating duplicated sequences ]"
+	LC_ALL=C uniq .sorted-huge-file | awk 'FNR==NR {print ">pep_"FNR"\n"$1}' > .pep.faa
+	if [[ -s .pep.faa ]]
+	then
+		rm -rf .sorted-huge-file
+	else
+		echo "[ W ::: ERR566 - Deduplication has failed ]"
+		exit
+	fi
+else
+	echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
+	exit
+fi	
 }
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
@@ -605,6 +633,7 @@ if [[ $mode == "pe" ]]
 then
 	PEreads_trimming
 	ASSEMBLY
+	memdev
 	clusteRC
 	descripter
 	cleanmessy
@@ -614,6 +643,7 @@ elif [[ $mode == "se" ]]
 then
 	SEreads_trimming
 	ASSEMBLY
+	memdev
 	clusteRC
 	descripter
 	cleanmessy
@@ -622,6 +652,7 @@ then
 elif [[ $mode == "c" ]]
 then
 	callorf
+	memdev
 	clusteRC
 	descripter
 	cleanmessy
