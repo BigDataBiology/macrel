@@ -349,27 +349,32 @@ fi
 
 memdev ()
 {
-echo "[ M ::: Sorting peptides list ]"
-mkdir sorting_folder/
-perl -ne '$i++,next if /^>/;print if $i' .pep.faa | parallel --pipe --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
-rm -rf .pep.faa
-for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" < "$X" > "$X".sorted; rm -rf "$X"; done
-sort -S 80% --parallel="$j" -T . -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
-perl -i -n -e "print if /S/" .sorted-huge-file
-if [[ -s .sorted-huge-file ]]
+if [[ $(find ./.pep.faa -type f -size +1000000000c 2>/dev/null) ]]
 then
-	echo "[ M ::: Eliminating duplicated sequences ]"
-	LC_ALL=C uniq .sorted-huge-file | awk 'FNR==NR {print ">pep_"FNR"\n"$1}' > .pep.faa
-	if [[ -s .pep.faa ]]
+	echo "[ M ::: Sorting peptides list ]"
+	mkdir sorting_folder/
+	perl -ne '$i++,next if /^>/;print if $i' .pep.faa | parallel --pipe --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
+	rm -rf .pep.faa
+	for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" < "$X" > "$X".sorted; rm -rf "$X"; done
+	sort -S 80% --parallel="$j" -T . -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
+	perl -i -n -e "print if /S/" .sorted-huge-file
+	if [[ -s .sorted-huge-file ]]
 	then
-		rm -rf .sorted-huge-file
+		echo "[ M ::: Eliminating duplicated sequences ]"
+		LC_ALL=C uniq .sorted-huge-file | awk 'FNR==NR {print ">pep_"FNR"\n"$1}' > .pep.faa
+		if [[ -s .pep.faa ]]
+		then
+			rm -rf .sorted-huge-file
+		else
+			echo "[ W ::: ERR566 - Deduplication has failed ]"
+			exit
+		fi
 	else
-		echo "[ W ::: ERR566 - Deduplication has failed ]"
+		echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
 		exit
 	fi
 else
-	echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
-	exit
+	touch .pep.faa
 fi	
 }
 
@@ -378,38 +383,103 @@ fi
 
 clusteRC ()
 {
-echo "[ M ::: Indexing database ]"
-$mmseqs createdb .pep.faa .DB > log.clus
-mv .pep.faa "$outfolder"/"$outtag".pep.faa
-$pigz --best "$outfolder"/"$outtag".pep.faa
-
-echo "[ M ::: Executing clustering ]"
-$mmseqs cluster --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 .DB .clu tmp >> log.clus
-
-echo "[ M ::: Output file from ffindex ]"
-$mmseqs createseqfiledb .DB .clu .clu_seq >> log.clus
-$mmseqs result2flat .DB .DB .clu_seq .clu_seq.fasta >> log.clus
-
-echo "[ M ::: Generating TSV report from ffindex ]"
-$mmseqs createtsv .DB .DB .clu .clu.tsv >> log.clus
-
-echo "[ M ::: Extracting representative sequences ]"
-$mmseqs result2repseq .DB .clu .DB_clu_rep >> log.clus
-$mmseqs result2flat .DB .DB .DB_clu_rep .DB_clu_rep.fasta --use-fasta-header >> log.clus
-
-echo "[ M ::: Cleaning ]"
-if [ -s "$outfolder"/"$outtag".pep.faa.gz ]
+if [[ $(find ./.pep.faa -type f -size +1000000000c 2>/dev/null) ]]
 then
-	mv .clu.tsv "$outfolder"/"$outtag".clusters.tsv
-	mv .DB_clu_rep.fasta .pep.faa
-	rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/ log.clus
-	$pigz --best "$outfolder"/"$outtag".clusters.tsv
+	echo "[ M ::: File size of smORFs too large, slicing to conquire! ]"
+	mkdir split.pep/
+	cat .pep.faa | parallel --pipe --block "$block" --recstart ">" "cat > split.pep/small-chunk{#}"
+
+	echo "[ M ::: Indexing databases... ]"
+	for X in $(ls split.pep/small-chunk*)
+	do
+		echo "[ M ::: DB Building -- $X ]"
+		$mmseqs createdb "$X" "$X".db >> log.clus
+		rm -rf "$X"
+	done
+	
+	echo "[ M ::: Storing original database... ]"
+	mv .pep.faa "$outfolder"/"$outtag".pep.faa
+	$pigz --best "$outfolder"/"$outtag".pep.faa
+
+	echo "[ M ::: Executing clustering ]"
+	mv $(ls split.pep/small-chunk* | head -1) oldDB
+	$mmseqs cluster --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 oldDB cluDB_old tmp >> log.clus
+	rm -rf tmp/
+
+	for X in $(ls split.pep/small-chunk*)
+	do
+		echo "[ M ::: Updating clusters -- File >> $X ]"
+		$mmseqs clusterupdate --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 oldDB "$X" cluDB_old newDB_updated cluDB_updated tmp >> log.clus
+		rm -rf "$X" tmp/
+		mv newDB_updated* oldDB*
+		mv cluDB_updated* cluDB_old*
+	done
+	rm -rf split.pep/
+
+	echo "[ M ::: Outputting SEQ file from ffindex ]"
+	$mmseqs createseqfiledb oldDB cluDB_old .clu_seq >> log.clus
+
+	echo "[ M ::: Outputting FASTA file from ffindex ]"
+	$mmseqs result2flat oldDB oldDB .clu_seq .clu_seq.fasta >> log.clus
+
+	echo "[ M ::: Generating TSV report from ffindex ]"
+	$mmseqs createtsv oldDB oldDB cluDB_old .clu.tsv >> log.clus
+
+	echo "[ M ::: Extracting representative sequences ]"
+	$mmseqs result2repseq oldDB cluDB_old .DB_clu_rep >> log.clus
+	$mmseqs result2flat oldDB oldDB .DB_clu_rep .DB_clu_rep.fasta --use-fasta-header >> log.clus
+
+	echo "[ M ::: Cleaning ]"
+	if [ -s "$outfolder"/"$outtag".pep.faa.gz ]
+	then
+		mv .clu.tsv "$outfolder"/"$outtag".clusters.tsv
+		$pigz "$outfolder"/"$outtag".clusters.tsv
+		mv .DB_clu_rep.fasta .pep.faa
+		rm -rf .clu* .clu_seq.* oldDB.* *.dbtype *.index *_h *.lookup .DB_clu_rep* oldDB* tmp/ log.clus
+		
+	else
+		echo "[ W ::: ERR125 - Clustering failed ]"
+		rm -rf .clu* .clu_seq.* oldDB.* *.dbtype *.index *_h *.lookup .DB_clu_rep* oldDB* tmp/ log.clus
+		cat log.clus
+		rm -rf log.clus
+		exit
+	fi
+
 else
-	echo "[ W ::: ERR125 - Clustering failed ]"
-	rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/
-	cat log.clus
-	rm -rf log.clus
-	exit
+
+	$mmseqs createdb .pep.faa .DB > log.clus
+	echo "[ M ::: Storing original database ]"
+	mv .pep.faa "$outfolder"/"$outtag".pep.faa
+	$pigz --best "$outfolder"/"$outtag".pep.faa
+
+	echo "[ M ::: Executing clustering ]"
+	$mmseqs cluster --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 .DB .clu tmp >> log.clus
+
+	echo "[ M ::: Output file from ffindex ]"
+	$mmseqs createseqfiledb .DB .clu .clu_seq >> log.clus
+	$mmseqs result2flat .DB .DB .clu_seq .clu_seq.fasta >> log.clus
+
+	echo "[ M ::: Generating TSV report from ffindex ]"
+	$mmseqs createtsv .DB .DB .clu .clu.tsv >> log.clus
+
+	echo "[ M ::: Extracting representative sequences ]"
+	$mmseqs result2repseq .DB .clu .DB_clu_rep >> log.clus
+	$mmseqs result2flat .DB .DB .DB_clu_rep .DB_clu_rep.fasta --use-fasta-header >> log.clus
+
+	echo "[ M ::: Cleaning ]"
+	if [ -s "$outfolder"/"$outtag".pep.faa.gz ]
+	then
+		mv .clu.tsv "$outfolder"/"$outtag".clusters.tsv
+		mv .DB_clu_rep.fasta .pep.faa
+		rm -rf .clu.* .clu_seq.* oldDB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/ log.clus
+		
+	else
+		echo "[ W ::: ERR125 - Clustering failed ]"
+		rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/
+		cat log.clus
+		rm -rf log.clus
+		exit
+	fi
 fi
 }
 
