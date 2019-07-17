@@ -24,6 +24,7 @@ outfolder="./"
 block=100000000  #100Mb
 j=$(echo "$(nproc) * 9 / 10" | bc)
 outtag="FACS_OUT"
+clust="0"
 
 # Help message
 show_help ()
@@ -54,6 +55,8 @@ show_help ()
 	-t, --threads [N]	Number of threads [90% of avaiable threads]
 	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
 	--log			Log file name. It allows FACS to save the run results to this log file in output folder.
+	--clust			Insert this flag with 1 if you want to pre-cluster peptides with MMSeqs2 at
+				95% of id and cov. (Defult: 0)
 	
 "
 }
@@ -95,6 +98,9 @@ do
 		;;
 		-ref|--ref|--Ref|-Ref)
 			Reference=${2}
+		;;
+		-clust|--Clust|--clust|-Clust)
+			clust=${2}
 		;;
 	esac
 	shift
@@ -335,7 +341,7 @@ callorf ()
 echo "[ M ::: Decompressing contigs ]"
 $pigz -dc "$fasta" > .callorfinput.fa
 echo "[ M ::: Calling ORFs ]"
-"$Lib"/orfm -m 30 .callorfinput.fa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > .pep.faa
+"$Lib"/orfm -s -m 30 .callorfinput.fa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk -F "\t" '$2 ~ /^ *M/ || $2 ~ /^ *V/ || $2 ~ /^ *L/' | awk '{print $1"\n"$2}' > .pep.faa
 if [ -s ".pep.faa" ]
 then
 	rm -rf .callorfinput.fa
@@ -378,37 +384,49 @@ fi
 
 clusteRC ()
 {
-echo "[ M ::: Indexing database ]"
-$mmseqs createdb .pep.faa .DB > log.clus
-mv .pep.faa "$outfolder"/"$outtag".pep.faa
-$pigz --best "$outfolder"/"$outtag".pep.faa
-
-echo "[ M ::: Executing clustering ]"
-$mmseqs cluster --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 .DB .clu tmp >> log.clus
-
-echo "[ M ::: Output file from ffindex ]"
-$mmseqs createseqfiledb .DB .clu .clu_seq >> log.clus
-$mmseqs result2flat .DB .DB .clu_seq .clu_seq.fasta >> log.clus
-
-echo "[ M ::: Generating TSV report from ffindex ]"
-$mmseqs createtsv .DB .DB .clu .clu.tsv >> log.clus
-
-echo "[ M ::: Extracting representative sequences ]"
-$mmseqs result2repseq .DB .clu .DB_clu_rep >> log.clus
-$mmseqs result2flat .DB .DB .DB_clu_rep .DB_clu_rep.fasta --use-fasta-header >> log.clus
-
-echo "[ M ::: Cleaning ]"
-if [ -s "$outfolder"/"$outtag".pep.faa.gz ]
+if [ $clust == "0" ]
 then
-	mv .clu.tsv "$outfolder"/"$outtag".clusters.tsv
-	mv .DB_clu_rep.fasta .pep.faa
-	rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/ log.clus
-	$pigz --best "$outfolder"/"$outtag".clusters.tsv
+	echo "[ M ::: Skipping clustering using MMSeqs2 ]"
+
+elif [ $clust == "1" ]
+then 
+
+	echo "[ M ::: Indexing database ]"
+	$mmseqs createdb .pep.faa .DB > log.clus
+	mv .pep.faa "$outfolder"/"$outtag".pep.faa
+	$pigz --best "$outfolder"/"$outtag".pep.faa
+
+	echo "[ M ::: Executing clustering ]"
+	$mmseqs cluster --cov-mode 0 -c 0.95 --alignment-mode 3 --min-seq-id 0.95 .DB .clu tmp >> log.clus
+
+	echo "[ M ::: Output file from ffindex ]"
+	$mmseqs createseqfiledb .DB .clu .clu_seq >> log.clus
+	$mmseqs result2flat .DB .DB .clu_seq .clu_seq.fasta >> log.clus
+
+	echo "[ M ::: Generating TSV report from ffindex ]"
+	$mmseqs createtsv .DB .DB .clu .clu.tsv >> log.clus
+
+	echo "[ M ::: Extracting representative sequences ]"
+	$mmseqs result2repseq .DB .clu .DB_clu_rep >> log.clus
+	$mmseqs result2flat .DB .DB .DB_clu_rep .DB_clu_rep.fasta --use-fasta-header >> log.clus
+
+	echo "[ M ::: Cleaning ]"
+
+	if [ -s "$outfolder"/"$outtag".pep.faa.gz ]
+	then
+		mv .clu.tsv "$outfolder"/"$outtag".clusters.tsv
+		mv .DB_clu_rep.fasta .pep.faa
+		rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/ log.clus
+		$pigz --best "$outfolder"/"$outtag".clusters.tsv
+	else
+		echo "[ W ::: ERR125 - Clustering failed ]"
+		rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/
+		cat log.clus
+		rm -rf log.clus
+		exit
+	fi
 else
-	echo "[ W ::: ERR125 - Clustering failed ]"
-	rm -rf .clu.* .clu_seq.* .DB.* .DB_clu_rep.dbtype .DB_clu_rep .DB_clu_rep.index .*.dbtype .*.index .*_h .*.lookup .DB_clu_rep .DB tmp/
-	cat log.clus
-	rm -rf log.clus
+	echo "[ W ::: ERR621 - Failed in interpret variable ]"
 	exit
 fi
 }
