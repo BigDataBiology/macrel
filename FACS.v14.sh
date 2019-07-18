@@ -12,8 +12,10 @@
 ##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pigz="/usr/bin/pigz"
+model="/home/celio/MetaGeneMark_linux_64/mgm/MetaGeneMark_v1.mod"
+mgm="/home/celio/MetaGeneMark_linux_64/mgm/gmhmmp"
 mmseqs="/home/celio/MMseqs2/build/bin/mmseqs"
-plass="/home/celio/plass/build/bin/plass"
+megahit="/home/celio/MEGAHIT-1.2.3-beta-Linux-static/bin/megahit"
 pandaseq="/usr/local/bin/pandaseq"
 paladin="/home/celio/paladin/paladin"
 samtools="/usr/bin/samtools"
@@ -25,6 +27,7 @@ block=100000000  #100Mb
 j=$(echo "$(nproc) * 9 / 10" | bc)
 outtag="FACS_OUT"
 clust="0"
+mem="0.75"
 
 # Help message
 show_help ()
@@ -43,21 +46,25 @@ show_help ()
 	Here's a guide for avaiable options. Defaults for each option are showed between brackets: [default].
 
 	Basic options:
+
 	-h, --help	        Show this help message
-	-m			Mode of operation, type \"c\" to work with contigs, \"r\" to work with paired-end reads, 
+
+	-m			Mode of operation, type:
+				\"c\" to work with contigs,
+				\"r\" to work with paired-end reads, 
 				\"mr\" to map reads against AMP output database and generate abundances table
-	--fasta			Contigs Fasta file - compressed (gzipped)
+	--fasta			Compressed (gzipped) contigs Fasta file
 	--fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full address
 	--rev		        Illumina sequencing file in Fastq format (R2), please leave it compressed and full address
-	--ref                   Reference fasta file with peptides DB compressed (gzipped)
-	--outfolder		Folder where output will be generated [./]
-	--outtag          	Tag used to name outputs [FACS_OUT]
-	-t, --threads [N]	Number of threads [90% of avaiable threads]
+	--ref                   Compressed (gzipped) reference fasta file with peptides to be mapped to
+	--outfolder		Folder where output will be generated [Default: ./]
+	--outtag          	Tag used to name outputs [Default: FACS_OUT]
+	-t, --threads [N]	Number of threads [Default: 90% of avaiable threads]
 	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
 	--log			Log file name. It allows FACS to save the run results to this log file in output folder.
 	--clust			Insert this flag with 1 if you want to pre-cluster peptides with MMSeqs2 at
-				95% of id and cov. (Defult: 0)
-	
+				95% of id and cov. [Defult: 0]
+	--mem			Memory available to FACS ranging from 0 - 1. [Defult: 0.75]	
 "
 }
 
@@ -101,6 +108,9 @@ do
 		;;
 		-clust|--Clust|--clust|-Clust)
 			clust=${2}
+		;;
+		-mem|--Mem|--mem|-Mem)
+			mem=${2}
 		;;
 	esac
 	shift
@@ -311,47 +321,46 @@ fi
 
 ASSEMBLY ()
 {
-echo "[ M ::: Assembly using PLASS ]"
+echo "[ M ::: Assembly using MEGAHIT ]"
 if [[ $mode == "pe" ]]
 then
-	$plass assemble --min-length 10 --max-length 100 --threads "$j" -v 1 .read_1.paired.fastq.gz .read_2.paired.fastq.gz .pep.faa tmp
-	rm -rf .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+	$megahit --presets meta-large -1 .read_1.paired.fastq.gz -2 .read_2.paired.fastq.gz --min-contig-len 1000 -o out -t "$j" -m "$mem"
 elif [[ $mode == "se" ]]
 then
-	$plass assemble --min-length 10 --max-length 100 --threads "$j" -v 1 .read_1.paired.fastq.gz .pep.faa tmp
-	rm -rf .read_1.paired.fastq.gz
+	$megahit --presets meta-large -r .read_1.paired.fastq.gz --min-contig-len 1000 -o out -t "$j" -m "$mem"
 else 
 	echo "[ W ::: ERR222 - FACS followed by a weird way ]"
 	exit
 fi
-rm -rf tmp/
-if [ -s ".pep.faa" ]
+
+if [[ -s out/final.contigs.fa ]]
 then
-	sed 's/\*//g' .pep.faa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=150) {printf("%s\n%s\n",L[0],L[1]);}}' > tmp
-	mv tmp .pep.faa
+	mv out/final.contigs.fa .callorfinput.fa
+	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz 
 else
-	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
-	rm -rf .pep.faa
+	echo "[ W ::: ERR128 - Assembly returned ECC0 ]"
+	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz 
 	exit
 fi
 }
 
 callorf ()
 {
-echo "[ M ::: Decompressing contigs ]"
-$pigz -dc "$fasta" > .callorfinput.fa
 echo "[ M ::: Calling ORFs ]"
-"$Lib"/orfm -s -m 30 .callorfinput.fa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk -F "\t" '$2 ~ /^ *M/ || $2 ~ /^ *V/ || $2 ~ /^ *L/' | awk '{print $1"\n"$2}' > .pep.faa
+$mgm -A .out.faa -m "$model" -n -i 0 .callorfinput.fa
+rm -rf .callorfinput.fa .callorfinput.fa.lst
+sed -i 's/\t>.*//g' .out.faa
+awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' .out.faa | awk -F "\t" '$2 ~ /^ *M/ || $2 ~ /^ *V/ || $2 ~ /^ *L/ || $2 ~ /^ *S/' | awk '{print $1"\n"$2}' | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > .pep.faa
+
 if [ -s ".pep.faa" ]
 then
-	rm -rf .callorfinput.fa
+	rm -rf .out.faa
 else
 	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
-	rm -rf .callorfinput.fa .pep.faa
+	rm -rf .pep.faa .out.faa
 	exit
 fi
 }
-
 
 memdev ()
 {
@@ -384,11 +393,11 @@ fi
 
 clusteRC ()
 {
-if [ $clust == "0" ]
+if [ "$clust" == "0" ]
 then
 	echo "[ M ::: Skipping clustering using MMSeqs2 ]"
 
-elif [ $clust == "1" ]
+elif [ "$clust" == "1" ]
 then 
 
 	echo "[ M ::: Indexing database ]"
@@ -651,6 +660,7 @@ if [[ $mode == "pe" ]]
 then
 	PEreads_trimming
 	ASSEMBLY
+	callorf
 	memdev
 	clusteRC
 	descripter
@@ -661,6 +671,7 @@ elif [[ $mode == "se" ]]
 then
 	SEreads_trimming
 	ASSEMBLY
+	callorf
 	memdev
 	clusteRC
 	descripter
@@ -669,6 +680,8 @@ then
 	loggen
 elif [[ $mode == "c" ]]
 then
+	echo "[ M ::: Decompressing contigs ]"
+	$pigz -dc "$fasta" > .callorfinput.fa
 	callorf
 	memdev
 	clusteRC
