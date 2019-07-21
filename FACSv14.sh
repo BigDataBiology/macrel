@@ -368,7 +368,7 @@ echo "[ M ::: Sorting peptides list ]"
 mkdir sorting_folder/
 perl -ne '$i++,next if /^>/;print if $i' .pep.faa | parallel --pipe --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
 rm -rf .pep.faa
-for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" < "$X" > "$X".sorted; rm -rf "$X"; done
+for X in $(ls sorting_folder/small-chunk*); do sed -i '/x/d' "$X"; sort -S 80% --parallel="$j" < "$X" > "$X".sorted; rm -rf "$X"; done
 sort -S 80% --parallel="$j" -T . -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
 perl -i -n -e "print if /S/" .sorted-huge-file
 if [[ -s .sorted-huge-file ]]
@@ -588,36 +588,44 @@ fi
 mapping ()
 {
 echo "[ M ::: Indexing references ]"
-$pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
-$paladin index -r3 .ref.fa
-if [[ $mode == "mse" ]]
+$pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' | $pigz --best > .ref.fa.gz
+$paladin index -r3 .ref.fa.gz
+if [ -s .ref.fa.gz.amb ]
 then
-	touch .ref.fa
-elif [[ $mode == "mpe" ]]
-then
-	echo "[ M ::: Merging paired end reads ]"
-	$pigz -d .read_1.paired.fastq.gz
-	$pigz -d .read_2.paired.fastq.gz
-	$pandaseq -A pear -F -f .read_1.paired.fastq -r .read_2.paired.fastq -T "$j" -w .read_.assembled.fastq 2> .test
-	if [ -s ".read_.assembled.fastq" ]
+	if [[ $mode == "mse" ]]
 	then
-		rm -rf .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
-		mv .read_.assembled.fastq .read_1.paired.fastq
-		$pigz --best .read_1.paired.fastq
+		touch .ref.fa.gz
+	elif [[ $mode == "mpe" ]]
+	then
+		echo "[ M ::: Merging paired end reads ]"
+		$pigz -d .read_1.paired.fastq.gz
+		$pigz -d .read_2.paired.fastq.gz
+		$pandaseq -A pear -F -f .read_1.paired.fastq -r .read_2.paired.fastq -T "$j" -w .read_.assembled.fastq 2> .test
+		if [ -s ".read_.assembled.fastq" ]
+		then
+			rm -rf .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
+			mv .read_.assembled.fastq .read_1.paired.fastq
+			$pigz --best .read_1.paired.fastq
+		else
+			echo "[ W ::: ERR301 - Your merging did not result into a true value, the pandaseq message follows ]"
+			cat .test
+			rm -rf .read_.assembled.fastq .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
+			exit
+		fi
 	else
-		echo "[ W ::: ERR301 - Your merging did not result into a true value, the pandaseq message follows ]"
-		cat .test
-		rm -rf .read_.assembled.fastq .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
+		echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
 		exit
 	fi
 else
-	echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
+	rm -rf .ref.fa.gz
+	echo "[ W ::: ERR303 - Error in indexing ]"	
 	exit
 fi
 
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
+
 echo "[ M ::: Starting the paladin ]"
-$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
+$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa.gz .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
 
 if [[ -s ".m.bam" ]]
 then
