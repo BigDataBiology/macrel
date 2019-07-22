@@ -588,13 +588,13 @@ fi
 mapping ()
 {
 echo "[ M ::: Indexing references ]"
-$pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' | $pigz --best > .ref.fa.gz
-$paladin index -r3 .ref.fa.gz
-if [ -s .ref.fa.gz.amb ]
+$pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
+$paladin index -r 3 .ref.fa
+if [ -s .ref.fa.amb ]
 then
 	if [[ $mode == "mse" ]]
 	then
-		touch .ref.fa.gz
+		touch .ref.fa
 	elif [[ $mode == "mpe" ]]
 	then
 		echo "[ M ::: Merging paired end reads ]"
@@ -617,7 +617,7 @@ then
 		exit
 	fi
 else
-	rm -rf .ref.fa.gz
+	rm -rf .ref.fa
 	echo "[ W ::: ERR303 - Error in indexing ]"	
 	exit
 fi
@@ -625,20 +625,17 @@ fi
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
 
 echo "[ M ::: Starting the paladin ]"
-$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa.gz .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
+$paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | $samtools view -Sb > .m.bam
 
-if [[ -s ".m.bam" ]]
+if [[ -s .m.bam ]]
 then
-	echo "[ M ::: Indexing BAM file ]"
-	$samtools index .m.bam
-	rm -rf .read_1.paired.fastq.*
+	touch .m.bam
 else
 	echo "[ W ::: ERR052 - Mapping failed ]"
-	.ref.* .read_1.paired.fastq.* .m.bam
+	.re* .m.bam
 	exit
 fi
 }
-
 
 
 ab_profiling ()
@@ -652,7 +649,7 @@ then
 else
 	echo "[ W ::: ERR054 - Abundance calling failed ]"
 fi
-rm -rf .ref.* .read_1.paired.fastq.* .m.bam .m.bam.bai
+rm -rf .ref.* .read_1.paired.fastq.* .m*
 }
 
 ############################################################################################################################
