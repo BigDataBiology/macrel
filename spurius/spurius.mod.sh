@@ -183,7 +183,6 @@ python3 $pred $model >/dev/null 2>/dev/null
 mv predictions_newer_spuriomod spurious_out.txt
 rm -rf npdir/
 sed -i 's/UniProt //g' spurious_out.txt
-sed -i 's/ /_/g' spurious_out.txt
 }
 
 ############################################################################################################################
