@@ -369,7 +369,9 @@ do
 	rm -rf $i
 done
 
-cat callorfs/* > .pep.faa.tmp; rm -rf callorfs/* .callorfinput.fa
+cat callorfs/* > .pep.faa.tmp
+rm -rf callorfs/
+rm -rf .callorfinput.fa
 
 # cat callorfs/* | awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' | sed 's/ /_/g' | sed 's/;/|/g' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{print $2"\t"$1}' |  sort -S 80% -T . -k2,2 | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' | sed 's/;;/\t/g' | sed 's/>//g' > tmp2
 
@@ -383,7 +385,7 @@ then
 	echo "[ M ::: Sorting peptides list ]"
 	mkdir sorting_folder/
 	
-	cat .tmp | parallel --pipe --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
+	cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
 	rm -rf .tmp
 
 	for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
@@ -482,40 +484,42 @@ descripter ()
 {
 echo "[ M ::: Reducing file sizes ]"
 mkdir splitted/
-parallel --pipe --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa
+parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa
 rm -rf .pep.faa
 
 for i in splitted/small-chunk*; do
 
-echo "[ M ::: Counting distribution using SA scale -- $i ]"
-python3 "$Lib"/CTDDClass.py "$i" .CTDDC-SA.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
-awk '{print $2"\t"$7"\t"$12}' .CTDDC-SA.tsv > .tmp
-sed -i '1,1d' .tmp
-echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
-cat .header .tmp > .CTDDC-SA.tsv; rm -rf .tmp .header
+	echo "[ M ::: Counting distribution using SA scale -- $i ]"
+	python3 "$Lib"/CTDDClass.py "$i" .CTDDC-SA.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
+	awk '{print $2"\t"$7"\t"$12}' .CTDDC-SA.tsv > .tmp
+	sed -i '1,1d' .tmp
+	echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
+	cat .header .tmp > .CTDDC-SA.tsv; rm -rf .tmp .header
 
-echo "[ M ::: Counting distribution using HB scale -- $i ]"
-python3 "$Lib"/CTDDClass.py "$i" .CTDDC-hb.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
-awk '{print $2"\t"$7"\t"$12}' .CTDDC-hb.tsv > .tmp
-sed -i '1,1d' .tmp
-echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
-cat .header .tmp > .CTDDC-hb.tsv; rm -rf .tmp .header
+	echo "[ M ::: Counting distribution using HB scale -- $i ]"
+	python3 "$Lib"/CTDDClass.py "$i" .CTDDC-hb.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
+	awk '{print $2"\t"$7"\t"$12}' .CTDDC-hb.tsv > .tmp
+	sed -i '1,1d' .tmp
+	echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
+	cat .header .tmp > .CTDDC-hb.tsv; rm -rf .tmp .header
 
-echo "[ M ::: Calculating cheminformatics descriptors -- $i ]"
-echo -e "header\tseq\tgroup" > .tmp
-sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
-rm -rf "$i"
-R --vanilla --slave --args .tmp .out.file < "$Lib"/features_04061950.R >/dev/null 2>/dev/null
-rm -rf .tmp
+	echo "[ M ::: Calculating cheminformatics descriptors -- $i ]"
+	echo -e "header\tseq\tgroup" > .tmp
+	sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
+	rm -rf "$i"
+	R --vanilla --slave --args .tmp .out.file < "$Lib"/features_04061950.R >/dev/null 2>/dev/null
+	rm -rf .tmp
 
-echo "[ M ::: Formatting descriptors -- $i ]"
-paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > .tab.desc.tsv
-rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
+	echo "[ M ::: Formatting descriptors -- $i ]"
+	paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > .tab.desc.tsv
+	rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
 
-echo "[ M ::: Predicting AMPs -- $i ]"
-R --vanilla --slave --args .tab.desc.tsv "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "$i".fin < "$Lib"/AMP_HEMOscreening02.R >/dev/null 2>/dev/null
-rm -rf "$Lib"/__pycache__/
-rm -rf .tab.desc.tsv; done
+	echo "[ M ::: Predicting AMPs -- $i ]"
+	R --vanilla --slave --args .tab.desc.tsv "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "$i".fin < "$Lib"/Predict.R >/dev/null 2>/dev/null
+	rm -rf "$Lib"/__pycache__/
+	#rm -rf .tab.desc.tsv
+
+done
 }
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
@@ -524,13 +528,13 @@ rm -rf .tab.desc.tsv; done
 cleanmessy ()
 {
 echo "[ M ::: Formatting results ]"
-echo -e "access\tsequence\tgroup\themolytic" > .out.file
+echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability" > .out.file
 cat splitted/* >> .out.file
-rm -rf splitted/
+#rm -rf splitted/
 sed -i 's/\"//g' .out.file
 AMP=$(sed '1,1d' .out.file | wc -l | awk '{print $1}')
 echo "[ M ::: Calculating statistics ]"
-pepval=$(awk '{print $3"_"$4}' .out.file | sort | uniq -c | awk '{ print $2"\t"$1 }' | grep -v "group")
+pepval=$(awk '{print $3"_"$5}' .out.file | sort | uniq -c | awk '{ print $2"\t"$1 }' | grep -v "AMP_family")
 echo "[ M ::: Exporting results ]"
 mv .out.file "$outfolder"/"$outtag".tsv
 $pigz --best "$outfolder"/"$outtag".tsv
@@ -757,4 +761,3 @@ else
 	show_help
 	exit
 fi
-
