@@ -33,17 +33,16 @@ echo "# Creating environment of execution of routine softwares"
 mkdir envs
 conda create -p ./envs/FACS_env python=3.7
 conda activate ./envs/FACS_env
-conda config --add channels r	
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
 
 echo "# Installing routine linux softwares"
 conda install -c conda-forge sqlite
 conda install -c conda-forge trimmomatic megahit pandaseq paladin samtools eXpress pigz parallel
 
 echo "# Installing routine python packages"
-conda install -c conda-forge matplotlib scikit-learn pandas argparse
+conda install -c conda-forge matplotlib
+conda install -c conda-forge scikit-learn
+conda install -c conda-forge pandas
+conda install -c conda-forge argparse
 
 echo "# Installing routine R packages"
 conda install -c conda-forge r-essentials r-base r-caret r-randomforest r-dplyr r-data.table
