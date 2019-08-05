@@ -42,7 +42,6 @@ echo "# Installing routine python packages"
 conda install -c conda-forge matplotlib
 conda install -c conda-forge scikit-learn
 conda install -c conda-forge pandas
-conda install -c conda-forge argparse
 
 echo "# Installing routine R packages"
 conda install -c conda-forge r-essentials r-base r-caret r-randomforest r-dplyr r-data.table
