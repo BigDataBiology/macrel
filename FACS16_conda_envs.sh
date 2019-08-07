@@ -655,8 +655,8 @@ export PATH=$PATH:$Lib
 
 sanity_check
 
-conda activate ./envs/FACS_env
-conda init bash
+eval "$(conda shell.bash hook)"
+conda activate $Lib/envs/FACS_env
 
 if [[ $mode == "pe" ]]
 then
@@ -669,7 +669,6 @@ then
 	loggen
 elif [[ $mode == "se" ]]
 then
-	conda activate FACS_env
 	SEreads_trimming
 	ASSEMBLY
 	callorf
@@ -682,7 +681,7 @@ then
 	if [[ "$fasta" =~ \.gz$ ]];
 	then
 		echo "[ M ::: Decompressing contigs ]"
-		conda pigz -dc "$fasta" > .callorfinput.fa
+		pigz -dc "$fasta" > .callorfinput.fa
 	else
 		ln -s $fasta .callorfinput.fa
 	fi
@@ -707,4 +706,3 @@ else
 fi
 
 conda deactivate
-
