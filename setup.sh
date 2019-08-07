@@ -1,13 +1,17 @@
 #!/bin/bash
 
 echo "
-	############################################################################################################################
-	############################## FACS pipeline - Fast AMP Clustering System               ####################################
-	############################################################################################################################
-	############################## Authors: Célio Dias Santos Júnior, Luis Pedro Coelho     ####################################
-	############################################################################################################################
-	############################## Institute > ISTBI - FUDAN University / Shanghai - China  ####################################
-	############################################################################################################################"
+#########################################################################
+######## FACS pipeline - Fast AMP Clustering System   ###################
+#########################################################################
+########                    Authors:                  ###################
+########                                              ###################
+######## Célio Dias Santos Júnior, Luis Pedro Coelho  ###################
+#########################################################################
+######## ISTBI - FUDAN University / Shanghai - China  ###################
+#########################################################################
+
+"
 
 read -p "[ Installing message ] :: Do you have already installed in your path conda? (1 - yes; 0 - no)
 >>>>>> " conda_if
@@ -35,16 +39,28 @@ conda create -p ./envs/FACS_env python=3.7
 conda activate ./envs/FACS_env
 
 echo "# Installing routine linux softwares"
-conda install -c conda-forge sqlite
-conda install -c conda-forge trimmomatic megahit pandaseq paladin samtools eXpress pigz parallel
+conda install -y sqlite
+conda install -y trimmomatic
+conda install -y megahit
+conda install -y pandaseq
+conda install -y paladin
+conda install -y samtools
+conda install -y eXpress
+conda install -y pigz
+conda install -y parallel
 
 echo "# Installing routine python packages"
-conda install -c conda-forge matplotlib
-conda install -c conda-forge scikit-learn
-conda install -c conda-forge pandas
+conda install -y matplotlib
+conda install -y scikit-learn
+conda install -y pandas
 
 echo "# Installing routine R packages"
-conda install -c conda-forge r-essentials r-base r-caret r-randomforest r-dplyr r-data.table
+conda install -y r-essentials
+conda install -y r-base
+conda install -y r-caret
+conda install -y r-randomforest
+conda install -y r-dplyr
+conda install -y r-data.table
 
 echo "# Closing environment"
 conda deactivate
@@ -64,5 +80,9 @@ curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/
 curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/saveCode.py
 echo "# Modifying"
 chmod +x *.py
+echo "############ Installation procedures finished
+****** Thank you for installing FACS ********
+--- If any bug appears report to:
+celio.diasjunior@gmail.com
 
-echo "############ Installation procedures finished"
+"
