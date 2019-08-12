@@ -65,6 +65,15 @@ Testingset <- cbind(Testingset, predictionsProb)
 Testingset <- Testingset %>% filter(group == "AMP")
 Testingset$group <- ifelse (Testingset$acidicAA > Testingset$basicAA, ifelse(grepl("C", Testingset$sequence), "ADP", "ALP") , ifelse(grepl("C", Testingset$sequence), "CDP", "CLP"))
 
+######## Testing keep or go
+
+if(dim(Testingset)[1] == 0){
+  print("No AMPs could be retrieved, can't keep...")
+  quit("no")
+}else{
+  print("Keeping")
+}
+
 ######## Screening with model2
 
 model <- readRDS(args[3])
