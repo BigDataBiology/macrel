@@ -71,6 +71,16 @@ conda install -y r-randomforest
 conda install -y r-dplyr
 conda install -y r-data.table
 
+echo "#!/usr/bin env
+
+##########################################################################
+install.packages("Peptides", dependencies=TRUE)
+##########################################################################
+" > inst.R 
+chmod +x inst.R
+R --vanilla --slave < inst.R
+rm -rf inst.R
+
 echo "# Closing environment"
 conda deactivate
 
