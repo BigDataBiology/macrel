@@ -654,6 +654,7 @@ export PATH=$PATH:$Lib
 
 sanity_check
 
+export PATH=$PATH:~/miniconda3/bin/
 eval "$(conda shell.bash hook)"
 conda activate $Lib/envs/FACS_env
 
