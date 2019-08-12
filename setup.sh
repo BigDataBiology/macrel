@@ -33,13 +33,14 @@ then
 	conda config --add channels defaults
 	conda config --add channels bioconda
 	conda config --add channels conda-forge
+
+	conda config --set auto_activate_base false
 else
 	echo "[ User ignored the question, sorry. Closing! ]"
 fi
 
 export PATH=$PATH:~/miniconda3/bin/
-eval "$(conda shell.bash hook)" 
-conda config --set auto_activate_base false
+eval "$(conda shell.bash hook)"
 echo "[ ## 1.] Installing routine linux softwares"
 echo "# Creating environment of execution of routine softwares"
 mkdir envs
