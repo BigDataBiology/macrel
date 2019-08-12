@@ -30,7 +30,6 @@ else
 	conda config --add channels defaults
 	conda config --add channels bioconda
 	conda config --add channels conda-forge
-	conda config --set auto_activate_base false
 fi
 
 echo "[ ## 1.] Installing routine linux softwares"
