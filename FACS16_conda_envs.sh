@@ -269,8 +269,7 @@ PEreads_trimming ()
 {
 echo "[ M ::: Trimming low quality bases ]"
 echo "[ M ::: Sorting paired-end reads ]"
-trimmomatic
-PE -phred33 -threads "$j" \
+trimmomatic PE -phred33 -threads "$j" \
 "$read_1" \
 "$read_2" \
 .read_1.paired.fastq.gz \
@@ -280,11 +279,11 @@ PE -phred33 -threads "$j" \
 LEADING:3 \
 TRAILING:3 \
 SLIDINGWINDOW:4:15 \
-MINLEN:80 >/dev/null 2>/dev/null
+MINLEN:75 >/dev/null 2>/dev/null
 
 if [ -s ".read_2.paired.fastq.gz" ]
 then
-	rm -rf ."read_1.singles.fastq.gz" ."read_2.singles.fastq.gz"
+	rm -rf ".read_1.singles.fastq.gz" ".read_2.singles.fastq.gz"
 else
 	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
 	rm -rf .read_1.singles.fastq.gz .read_2.singles.fastq.gz .read_1.paired.fastq.gz .read_2.paired.fastq.gz
@@ -295,9 +294,9 @@ fi
 SEreads_trimming ()
 {
 echo "[ M ::: Trimming low quality bases ]"
-trimmomatic SE -phred33 -threads "$j" "$read_1" .read_1.paired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:80 >/dev/null 2>/dev/null
+trimmomatic SE -phred33 -threads "$j" "$read_1" .read_1.paired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75 >/dev/null 2>/dev/null
 
-if [ -s ."read_1.paired.fastq.gz" ]
+if [ -s ".read_1.paired.fastq.gz" ]
 then
 	touch ."read_1.paired.fastq.gz"
 else
@@ -379,7 +378,7 @@ then
 	echo "[ M ::: Sorting peptides list ]"
 	mkdir sorting_folder/
 	
-	cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}"
+	cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null 2>/dev/null
 	rm -rf .tmp
 
 	for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
@@ -426,7 +425,7 @@ descripter ()
 {
 echo "[ M ::: Reducing file sizes ]"
 mkdir splitted/
-parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa
+parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
 rm -rf .pep.faa
 
 for i in splitted/small-chunk*; do
