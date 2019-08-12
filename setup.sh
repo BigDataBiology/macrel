@@ -23,9 +23,12 @@ elif [[ -n $conda_if ]]
 then
 	echo "[ Getting Bioconda -- It can take a while... ]"
 	curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+	
 	sh Miniconda3-latest-Linux-x86_64.sh
+	
 	export PATH=$PATH:~/miniconda3/bin/
 	eval "$(conda shell.bash hook)"
+	
 	conda config --add channels r	
 	conda config --add channels defaults
 	conda config --add channels bioconda
