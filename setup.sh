@@ -74,9 +74,9 @@ conda install -y r-data.table
 echo "#!/usr/bin env
 
 ##########################################################################
-install.packages(\"Peptides\", repos = "http://cran.us.r-project.org", dependencies=TRUE)
-install.packages(\"doParallel\", repos = "http://cran.us.r-project.org", dependencies=TRUE)
-install.packages(\"obliqueRF\", repos = "http://cran.us.r-project.org", dependencies=TRUE)
+install.packages(\"Peptides\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
+install.packages(\"doParallel\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
+install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
 ##########################################################################
 " > inst.R 
 chmod +x inst.R
