@@ -21,16 +21,21 @@ then
 	echo "[ ... Skipping initial procedures ]"
 elif [[ -n $conda_if ]]
 then
-	echo "[ User ignored the question, sorry. Closing! ]"
-else
 	echo "[ Getting Bioconda -- It can take a while... ]"
 	curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 	sh Miniconda3-latest-Linux-x86_64.sh
+	export PATH=$PATH:~/miniconda3/bin/
+	eval "$(conda shell.bash hook)"
 	conda config --add channels r	
 	conda config --add channels defaults
 	conda config --add channels bioconda
 	conda config --add channels conda-forge
+else
+	echo "[ User ignored the question, sorry. Closing! ]"
 fi
+
+export PATH=$PATH:~/miniconda3/bin/
+eval "$(conda shell.bash hook)" 
 
 echo "[ ## 1.] Installing routine linux softwares"
 echo "# Creating environment of execution of routine softwares"
