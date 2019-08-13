@@ -1,0 +1,15 @@
+~/Desktop/Lib/orfm -m 30 -s test.contigs.fna | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk -F "\t" '$2 ~ /^ *M/ || $2 ~ /^ *V/ || $2 ~ /^ *L/ || $2 ~ /^ *S/' | awk '{print $1"\n"$2}' | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > test.prots
+
+../../Prodigal/prodigal -a prodigal_pred.smORFs.faa -f gff -c -i test.contigs.fna -m -n -o prodigal_pred.smORFs -p meta -s prodigal_pre.smORFs.scores
+
+http://seqanswers.com/forums/showthread.php?t=17666
+
+https://github.com/4ureliek/Fasta
+
+https://www.biostars.org/p/84605/
+
+https://stackoverflow.com/questions/38661509/modifying-perl-script-to-not-print-duplicates-and-extract-sequences-of-a-certain
+
+https://www.google.com/search?client=ubuntu&channel=fs&q=eliminate+replicated+sequences+that+overlap+bigger+ones+protein+sequences+linux&ie=utf-8&oe=utf-8
+
+https://www.google.com/search?client=ubuntu&hs=Rfc&channel=fs&ei=4Tc4XefjD4L_-gTIsKOADg&q=collapse+overlapping+protein+sequences+linux+command+line&oq=collapse+overlapping+protein+sequences+linux+command+line&gs_l=psy-ab.3..0i71l8.8214.8933..9309...0.0..0.351.1747.2-4j2......0....1..gws-wiz.mwFIidGwl2E&ved=0ahUKEwin2KOVsc3jAhWCv54KHUjYCOAQ4dUDCAo&uact=5
