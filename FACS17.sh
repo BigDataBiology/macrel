@@ -313,10 +313,11 @@ ASSEMBLY ()
 echo "[ M ::: Assembly using MEGAHIT ]"
 if [[ $mode == "pe" ]]
 then
-	megahit --presets meta-large -1 .read_1.paired.fastq.gz -2 .read_2.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
+	megahit --presets meta-large -1 .read_1.paired.fastq.gz -2 .read_2.paired.fastq.gz --cleaning-rounds 1 --disconnect-ratio 0 -o out -t "$j" -m "$mem" --min-contig-len 1000
+	
 elif [[ $mode == "se" ]]
 then
-	megahit --presets meta-large -r .read_1.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
+	megahit --presets meta-large -r .read_1.paired.fastq.gz --cleaning-rounds 1 --disconnect-ratio 0 -o out -t "$j" -m "$mem" --min-contig-len 1000
 else 
 	echo "[ W ::: ERR222 - FACS followed by a weird way ]"
 	exit
