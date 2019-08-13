@@ -53,8 +53,6 @@ show_help ()
 	-t, --threads [N]	Number of threads [Default: 90% of avaiable threads]
 	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
 	--log			Log file name. It allows FACS to save the run results to this log file in output folder.
-	--clust			Insert this flag with 1 if you want to pre-cluster peptides with MMSeqs2 at
-				95% of id and cov. [Defult: 0]
 	--mem			Memory available to FACS ranging from 0 - 1. [Defult: 0.75]	
 "
 }
@@ -73,32 +71,29 @@ do
 		-t|-T|--threads|--Threads|--THREADS|--t|--T)
 			j=${2}
 		;;
-		--fasta|--Fasta|--FASTA|-fasta)
+		--fasta|-fasta|-fa)
 			fasta=${2}
 		;;
-		--fwd|--Fwd|--FWD|--F|--R1|--l)
+		--fwd|-fwd|--FWD|-r1|-R1|-l)
 			read_1=${2}
 		;;
-		--rev|--Rev|--REV|--R2|--r)
+		--rev|--Rev|-rev|-R2|-r2)
 			read_2=${2}
 		;;
-		--outfolder|--Outfolder|--OutFolder|--OUTFOLDER)
+		--outfolder|-outfolder|-of)
 			outfolder=${2}
 		;;
-		--outtag|--Outtag)
+		--outtag|-tag)
 			outtag=${2}
 		;;
-		--Block|--block|--BLOCK)
+		--block|-b|-block)
 			block=${2}
 		;;
-		--log|--Log|--LOG)
+		--log|-log)
 			log=${2}
 		;;
 		-ref|--ref|--Ref|-Ref)
 			Reference=${2}
-		;;
-		-clust|--Clust|--clust|-Clust)
-			clust=${2}
 		;;
 		-mem|--Mem|--mem|-Mem)
 			mem=${2}
