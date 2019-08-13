@@ -14,11 +14,21 @@
 #####################################################
 
 #####################################################
+# Being feisty
+.libPaths("PEPPERIDY")
+#####################################################
+
+#####################################################
 # Required libraries
 #####################################################
 if(!require(randomForest)){
   install.packages("randomForest")
   library(randomForest)
+}
+
+if(!require(obliqueRF)){
+  install.packages("obliqueRF")
+  library(obliqueRF)
 }
 
 if(!require(caret)){
@@ -65,13 +75,13 @@ Testingset <- cbind(Testingset, predictionsProb)
 Testingset <- Testingset %>% filter(group == "AMP")
 Testingset$group <- ifelse (Testingset$acidicAA > Testingset$basicAA, ifelse(grepl("C", Testingset$sequence), "ADP", "ALP") , ifelse(grepl("C", Testingset$sequence), "CDP", "CLP"))
 
-######## Testing keep or go
+######## Test section
 
 if(dim(Testingset)[1] == 0){
-  print("No AMPs could be retrieved, can't keep...")
-  quit("no")
+	print("No AMPs were found, cannot keep")
+	quit("no")
 }else{
-  print("Keeping")
+	print("Keeping")
 }
 
 ######## Screening with model2
@@ -93,4 +103,3 @@ final <- cbind(access, sequence, group, prob_AMP, predictionsFit, prob_HEMO)
 
 ## Exporting
 write.table(final, args[4], sep="\t", col.names=FALSE, row.names=FALSE)
-
