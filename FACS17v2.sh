@@ -1,17 +1,15 @@
 #!/usr/bin/bash
 
-#########################################################################
-######## FACS pipeline - Fast AMP Clustering System   ###################
-#########################################################################
-########                    Authors:                  ###################
-########                                              ###################
-######## Célio Dias Santos Júnior, Luis Pedro Coelho  ###################
-#########################################################################
-######## ISTBI - FUDAN University / Shanghai - China  ###################
-#########################################################################
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+############################################################################################################################
+############################## FACS pipeline - Fast AMP Clustering and Screening        ####################################
+############################################################################################################################
+############################## Authors: Célio Dias Santos Júnior, Luis Pedro Coelho     ####################################
+############################################################################################################################
+############################## Institute > ISTBI - FUDAN University / Shanghai - China  ####################################
+############################################################################################################################
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 
-############################ Variables ##################################
+##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Default variables
@@ -26,15 +24,13 @@ mem="0.75"
 show_help ()
 {
 	echo "
-	#########################################################################
-	######## FACS pipeline - Fast AMP Clustering System   ###################
-	#########################################################################
-	########                    Authors:                  ###################
-	########                                              ###################
-	######## Célio Dias Santos Júnior, Luis Pedro Coelho  ###################
-	#########################################################################
-	######## ISTBI - FUDAN University / Shanghai - China  ###################
-	#########################################################################
+	############################################################################################################################
+	############################## FACS pipeline - Fast AMP Clustering System               ####################################
+	############################################################################################################################
+	############################## Authors: Célio Dias Santos Júnior, Luis Pedro Coelho     ####################################
+	############################################################################################################################
+	############################## Institute > ISTBI - FUDAN University / Shanghai - China  ####################################
+	############################################################################################################################
 
 	Usage: FACS.sh --mode c/r [options]
 
@@ -57,6 +53,8 @@ show_help ()
 	-t, --threads [N]	Number of threads [Default: 90% of avaiable threads]
 	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
 	--log			Log file name. It allows FACS to save the run results to this log file in output folder.
+	--clust			Insert this flag with 1 if you want to pre-cluster peptides with MMSeqs2 at
+				95% of id and cov. [Defult: 0]
 	--mem			Memory available to FACS ranging from 0 - 1. [Defult: 0.75]	
 "
 }
@@ -78,26 +76,29 @@ do
 		--fasta|--Fasta|--FASTA|-fasta)
 			fasta=${2}
 		;;
-		--fwd|--Fwd|--FWD|-f|-R1|-l)
+		--fwd|--Fwd|--FWD|--F|--R1|--l)
 			read_1=${2}
 		;;
-		--rev|-rev|--Rev|-R2|-r)
+		--rev|--Rev|--REV|--R2|--r)
 			read_2=${2}
 		;;
-		--outfolder|-outf|--OutFolder|--OUTFOLDER)
+		--outfolder|--Outfolder|--OutFolder|--OUTFOLDER)
 			outfolder=${2}
 		;;
-		--outtag|--Outtag|-outt)
+		--outtag|--Outtag)
 			outtag=${2}
 		;;
-		--block|-block)
+		--Block|--block|--BLOCK)
 			block=${2}
 		;;
-		--log|-log|--Log)
+		--log|--Log|--LOG)
 			log=${2}
 		;;
 		-ref|--ref|--Ref|-Ref)
 			Reference=${2}
+		;;
+		-clust|--Clust|--clust|-Clust)
+			clust=${2}
 		;;
 		-mem|--Mem|--mem|-Mem)
 			mem=${2}
@@ -285,7 +286,7 @@ then
 	rm -rf ".read_1.singles.fastq.gz" ".read_2.singles.fastq.gz"
 else
 	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
-	rm -rf .read_1.singles.fastq.gz .read_2.singles.fastq.gz .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+	rm -rf .read_1.singles.fastq.gz .read_2.singles.fastq.gz .read_1.paired.fastq.gz .read_2.paired.fastq.gz feat.R pred.R
 	exit
 fi
 }
@@ -300,7 +301,7 @@ then
 	touch ."read_1.paired.fastq.gz"
 else
 	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
-	rm -rf .read_1.paired.fastq.gz
+	rm -rf .read_1.paired.fastq.gz feat.R pred.R
 	exit
 fi
 }
@@ -313,13 +314,13 @@ ASSEMBLY ()
 echo "[ M ::: Assembly using MEGAHIT ]"
 if [[ $mode == "pe" ]]
 then
-	megahit --presets meta-large -1 .read_1.paired.fastq.gz -2 .read_2.paired.fastq.gz --cleaning-rounds 1 --disconnect-ratio 0 -o out -t "$j" -m "$mem" --min-contig-len 1000
-	
+	megahit --presets meta-large -1 .read_1.paired.fastq.gz -2 .read_2.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 elif [[ $mode == "se" ]]
 then
-	megahit --presets meta-large -r .read_1.paired.fastq.gz --cleaning-rounds 1 --disconnect-ratio 0 -o out -t "$j" -m "$mem" --min-contig-len 1000
+	megahit --presets meta-large -r .read_1.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 else 
 	echo "[ W ::: ERR222 - FACS followed by a weird way ]"
+	rm -rf feat.R pred.R out/
 	exit
 fi
 
@@ -329,7 +330,7 @@ then
 	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz 
 else
 	echo "[ W ::: ERR128 - Assembly returned ECC0 ]"
-	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz 
+	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz feat.R pred.R
 	exit
 fi
 }
@@ -352,7 +353,7 @@ then
 	rm -rf t
 else
 	echo "[ W ::: ERR910 - Error in producing predictions ]"
-	rm -rf t callorfs/ .callorfinput.fa
+	rm -rf t callorfs/ .callorfinput.fa feat.R pred.R
 	exit
 fi
 
@@ -375,8 +376,6 @@ done
 cat callorfs/* > .pep.faa.tmp
 rm -rf callorfs/
 rm -rf .callorfinput.fa
-
-# cat callorfs/* | awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' | sed 's/ /_/g' | sed 's/;/|/g' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{print $2"\t"$1}' |  sort -S 80% -T . -k2,2 | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' | sed 's/;;/\t/g' | sed 's/>//g' > tmp2
 
 if [ -s ".pep.faa.tmp" ]
 then
@@ -403,7 +402,7 @@ then
 		rm -rf .sorted-huge-file
 	else
 		echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
-		rm -rf .sorted-huge-file
+		rm -rf .sorted-huge-file feat.R pred.R
 		exit
 	fi	
 
@@ -421,7 +420,7 @@ then
 	tail -2 .pep.faa | head -1 | sed 's/|/\t/g' | cut -f2 | sed 's/>smORF_//g' > .all.nmb
 else
 	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
-	rm -rf .pep.faa.tmp
+	rm -rf .pep.faa.tmp feat.R pred.R
 	exit
 fi
 
@@ -454,22 +453,46 @@ for i in splitted/small-chunk*; do
 	echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
 	cat .header .tmp > .CTDDC-hb.tsv; rm -rf .tmp .header
 
-	echo "[ M ::: Calculating cheminformatics descriptors -- $i ]"
-	echo -e "header\tseq\tgroup" > .tmp
-	sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
-	rm -rf "$i"
-	R --vanilla --slave --args .tmp .out.file < "$Lib"/features_04061950.R >/dev/null 2>/dev/null
-	rm -rf .tmp
+	if [ -s .CTDDC-SA.tsv ]
+	then
+		if [ -s .CTDDC-hb.tsv ]
+		then
 
-	echo "[ M ::: Formatting descriptors -- $i ]"
-	paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > .tab.desc.tsv
-	rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
+			echo "[ M ::: Calculating cheminformatics descriptors -- $i ]"
+			echo -e "header\tseq\tgroup" > .tmp
+			sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
+			rm -rf "$i"
+			$Lib/envs/FACS_env/bin/R --vanilla --slave --args .tmp .out.file < feat.R #>/dev/null 2>/dev/null
+			rm -rf .tmp
+		
+			echo "[ M ::: Formatting descriptors -- $i ]"
+			if [ -s .out.file ]
+			then
+				paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > .tab.desc.tsv
+				rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
+		
+			        echo "[ M ::: Predicting AMPs -- $i ]"
+		        	$Lib/envs/FACS_env/bin/R --vanilla --slave --args .tab.desc.tsv "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "$i".fin < pred.R #>/dev/null 2>/dev/null
+		        	rm -rf "$Lib"/__pycache__/
+				rm -rf .tab.desc.tsv
+			else
+				rm -rf .CTDDC-SA.tsv .CTDDC-hb.tsv $i
+				echo "[ W ::: Skipping AMPs prediction for $i -- ERR 229 ]"
+			fi
 
-	echo "[ M ::: Predicting AMPs -- $i ]"
-	R --vanilla --slave --args .tab.desc.tsv "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "$i".fin < "$Lib"/Predict.R >/dev/null 2>/dev/null
-	rm -rf "$Lib"/__pycache__/
-	rm -rf .tab.desc.tsv
+		else
 
+	                rm -rf $i
+        	        echo "[ W ::: Skipping AMPs prediction for $i -- ERR 230 ]"
+
+		fi	
+
+	else
+
+		rm -rf $i
+		echo "[ W ::: Skipping AMPs prediction for $i -- ERR 230 ]"
+
+	fi
 done
 }
 
@@ -495,8 +518,8 @@ if [ "$(ls -A splitted/)" ]; then
 	pigz --best "$outfolder"/"$outtag".tsv
 else
     	echo "[ W ::: ERR585 - We are sorry to inform. Your procedure did not return any AMP sequence. We are closing now ]"
-        echo "[ W ::: We really tried. None of $tot called smORFs were assigned to a probability higher than 0.5 ]"
-	rm -rf splitted/
+        echo "[ W ::: We really tried. None of $tot called smORFs were assigned to a probability higher than 0.5 or survived until here ]"
+	rm -rf splitted/ feat.R pred.R
 	exit
 fi
 }
@@ -620,16 +643,18 @@ then
 		else
 			echo "[ W ::: ERR301 - Your merging did not result into a true value, the pandaseq message follows ]"
 			cat .test
-			rm -rf .read_.assembled.fastq .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
+			rm -rf .read_.assembled.fastq .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test feat.R pred.R
 			exit
 		fi
 	else
 		echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
+		rm -rf feat.R pred.R
 		exit
 	fi
 else
 	rm -rf .ref.fa*
 	echo "[ W ::: ERR303 - Error in indexing ]"	
+	rm -rf feat.R pred.R
 	exit
 fi
 
@@ -643,7 +668,7 @@ then
 	touch .m.bam
 else
 	echo "[ W ::: ERR052 - Mapping failed ]"
-	.re* .m.bam
+	rm -rf .re* .m.bam feat.R pred.R
 	exit
 fi
 }
@@ -660,7 +685,7 @@ then
 else
 	echo "[ W ::: ERR054 - Abundance calling failed ]"
 fi
-rm -rf .ref.* .read_1.paired.fastq.* .m*
+rm -rf .ref.* .read_1.paired.fastq.* .m* feat.R pred.R
 }
 
 ############################################################################################################################
@@ -668,12 +693,16 @@ rm -rf .ref.* .read_1.paired.fastq.* .m*
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ################################################    CMDs   #################################################################
 
-export PATH=$PATH:$Lib
-
-eval "$(conda shell.bash hook)"
-conda activate $Lib/envs/FACS_env
+export PATH=$PATH:$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_env/etc:$Lib/envs/FACS_env/jmods:$Lib/envs/FACS_env/lib:$Lib/envs/FACS_env/libexec:$Lib/envs/FACS_env/mkspecs:$Lib/envs/FACS_env/plugins:$Lib/envs/FACS_env/resources:$Lib/envs/FACS_env/share:$Lib/envs/FACS_env/translations:$Lib/envs/FACS_env/x86_64-conda_cos6-linux-gnu:$Lib/envs/FACS_env/compiler_compat:$Lib/envs/FACS_env/conf:$Lib/envs/FACS_env/doc:$Lib/envs/FACS_env/include:$Lib/envs/FACS_env/legal:$Lib/envs/FACS_env/lib64:$Lib/envs/FACS_env/man:$Lib/envs/FACS_env/phrasebooks:$Lib/envs/FACS_env/qml:$Lib/envs/FACS_env/sbin:$Lib/envs/FACS_env/ssl:$Lib/envs/FACS_env/var:$Lib:~/miniconda3/pkgs/:$Lib/envs/FACS_env/lib/R/library/
 
 sanity_check
+
+sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/features_130819.R > feat.R
+sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/Predict_130819.R > pred.R
+chmod +x feat.R
+chmod +x pred.R
+
+date
 
 if [[ $mode == "pe" ]]
 then
@@ -719,8 +748,10 @@ then
 else
 	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
 	show_help
+	rm -rf feat.R pred.R
 	exit
 fi
 
-conda deactivate
+rm -rf feat.R pred.R
 
+date
