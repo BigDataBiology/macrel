@@ -604,13 +604,14 @@ then
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
 		$Lib/envs/FACS_env/bin/R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
-		if [[ -s $i.fin ]]
+		if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
 		then
-			touch $i.fin
+			touch "${i/.tabdesc.tsv/.fin}"
+			rm -rf "$i" "$Lib"/__pycache__/
 		else
 			echo "[ W ::: Sample ${i/.tabdesc.tsv/} did not return any AMP sequences ]"
+			rm -rf "$Lib"/__pycache__/ "$i"
 		fi
-		rm -rf "$Lib"/__pycache__/ $i.tabdesc.tsv
 	done
 else
 	cd ../
