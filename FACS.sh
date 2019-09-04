@@ -521,7 +521,7 @@ echo "[ M ::: Reducing file sizes ]"
 mkdir splitted/
 parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
 rm -rf .pep.faa
-mkdir count/
+
 for i in splitted/small-chunk*
 do
 	count=`grep -c ">" $i`
