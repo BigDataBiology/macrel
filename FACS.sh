@@ -578,6 +578,7 @@ do
 	then
 		ce=`grep "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}'`
 		coe=$(($ce+1))
+		rown=`awk '{print NR}' temp.fasta | tail -1`
 		if [[ "$rown" == "$coe" ]]
 		then
 			touch $i	
@@ -586,13 +587,12 @@ do
 			echo "[ W ::: Error in table of descriptors // Wrong row formatting -- ERR 89 ]
 [ ======> Erractic sample $i ]"
 		fi
-		unset ce coe
 	else
 		echo "[ W ::: Error in table of descriptors // Wrong column formatting -- ERR 29 ]
 [ ======> Erractic sample $i ]"
 		rm -rf $i
 	fi
-	unset colv colu
+	unset colv colu rown coe ce
 done
 }
 
@@ -835,14 +835,14 @@ rm -rf .ref.* .read_1.paired.fastq.* .m* feat.R pred.R
 
 export PATH=$PATH:$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_env/etc:$Lib/envs/FACS_env/jmods:$Lib/envs/FACS_env/lib:$Lib/envs/FACS_env/libexec:$Lib/envs/FACS_env/mkspecs:$Lib/envs/FACS_env/plugins:$Lib/envs/FACS_env/resources:$Lib/envs/FACS_env/share:$Lib/envs/FACS_env/translations:$Lib/envs/FACS_env/x86_64-conda_cos6-linux-gnu:$Lib/envs/FACS_env/compiler_compat:$Lib/envs/FACS_env/conf:$Lib/envs/FACS_env/doc:$Lib/envs/FACS_env/include:$Lib/envs/FACS_env/legal:$Lib/envs/FACS_env/lib64:$Lib/envs/FACS_env/man:$Lib/envs/FACS_env/phrasebooks:$Lib/envs/FACS_env/qml:$Lib/envs/FACS_env/sbin:$Lib/envs/FACS_env/ssl:$Lib/envs/FACS_env/var:$Lib:~/miniconda3/pkgs/:$Lib/envs/FACS_env/lib/R/library/
 
+date
+
 sanity_check
 
 sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/features_130819.R > feat.R
 sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/Predict_130819.R > pred.R
 chmod +x feat.R
 chmod +x pred.R
-
-date
 
 if [[ $mode == "pe" ]]
 then
