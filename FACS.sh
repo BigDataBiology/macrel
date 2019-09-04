@@ -307,6 +307,8 @@ fi
 
 if [[ -n $outfolder ]]
 then
+if [[ -n $outfolder ]]
+then
 	if [ -d "$outfolder" ] 
 		then
 			echo "" 
@@ -319,22 +321,17 @@ else
 	exit
 fi
 
-if [[ -s "$tp" ]]
+if [[ ! -e $tp ]];
 then
-	if [ -d "$tp" ] 
-	then
-		cd $tp/ 
-	else
-		echo "[ W ::: Temporary folder did not supply or does not exist. Creating TEMP/ folder... ]"
-		mkdir ./"$tp"/
-		cd $tp/
-	fi
+	echo "[ W ::: Temporary folder did not supply or does not exist. Creating TEMP/ folder... ]"
+	mkdir $tp
+	cd $tp
+elif [[ ! -d $tp ]];
+then
+	echo "$tp already exists but is not a directory" 1>&2
 else
-	echo "[ W ::: Temporary folder error ]"
-	show_help
-	exit
+	cd $tp
 fi
-
 }
 
 ############################################################################################################################
