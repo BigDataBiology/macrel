@@ -185,7 +185,6 @@ Log			$outfolder/$log"
 			show_help
 			exit
 		fi
-
 	elif	[[ $mode == "c" ]]
 	then
 		if [ -s "$fasta" ]
@@ -310,9 +309,10 @@ then
 			echo "" 
 		else
 			echo "[ W ::: Directory $outfolder does not exist // Creating... ]"
-			mkdir $outfolder
+			mkdir ./$outfolder/
 	fi
 else
+	echo "[ W ::: Output folder error ]"
 	show_help
 	exit
 fi
@@ -324,9 +324,11 @@ then
 		cd $tmp 
 	else
 		echo "[ W ::: Temporary folder did not supply or does not exist. Creating TEMP/ folder... ]"
-		mkdir $tmp
+		mkdir ./"$tmp"/
+		cd $tmp/
 	fi
 else
+	echo "[ W ::: Temporary folder error ]"
 	show_help
 	exit
 fi
