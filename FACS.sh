@@ -578,7 +578,7 @@ do
 	then
 		ce=`grep "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}'`
 		coe=$(($ce+1))
-		rown=`awk '{print NR}' temp.fasta | tail -1`
+		rown=`awk '{print NR}' $i | tail -1`
 		if [[ "$rown" == "$coe" ]]
 		then
 			touch $i	
