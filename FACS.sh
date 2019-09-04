@@ -366,7 +366,7 @@ then
 	rm -rf ".read_1.singles.fastq.gz" ".read_2.singles.fastq.gz"
 else
 	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
-	rm -rf .read_1.singles.fastq.gz .read_2.singles.fastq.gz .read_1.paired.fastq.gz .read_2.paired.fastq.gz feat.R pred.R
+	cd ../; rm -rf $tp
 	exit
 fi
 }
@@ -381,7 +381,7 @@ then
 	touch ."read_1.paired.fastq.gz"
 else
 	echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
-	rm -rf .read_1.paired.fastq.gz feat.R pred.R
+	cd ../; rm -rf $tp
 	exit
 fi
 }
@@ -400,7 +400,7 @@ then
 	megahit --presets meta-large -r .read_1.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 else 
 	echo "[ W ::: ERR222 - FACS followed by a weird way ]"
-	rm -rf feat.R pred.R out/
+	cd ../; rm -rf $tp
 	exit
 fi
 
@@ -410,7 +410,7 @@ then
 	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz 
 else
 	echo "[ W ::: ERR128 - Assembly returned ECC0 ]"
-	rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz feat.R pred.R
+	cd ../; rm -rf $tp/
 	exit
 fi
 }
@@ -436,7 +436,7 @@ then
 		rm -rf t
 	else
 		echo "[ W ::: ERR910 - Error in producing predictions ]"
-		rm -rf t callorfs/ .callorfinput.fa feat.R pred.R
+		cd ../; rm -rf $tp
 		exit
 	fi
 
@@ -489,7 +489,7 @@ then
 		rm -rf .sorted-huge-file
 	else
 		echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
-		rm -rf .sorted-huge-file feat.R pred.R
+		cd ../; rm -rf $tp
 		exit
 	fi	
 
@@ -507,7 +507,7 @@ then
 	tail -2 .pep.faa | head -1 | sed 's/|/\t/g' | cut -f2 | sed 's/>smORF_//g' > .all.nmb
 else
 	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
-	rm -rf .pep.faa.tmp feat.R pred.R
+	cd ../; rm -rf $tp
 	exit
 fi
 
@@ -574,8 +574,9 @@ checkout()
 {
 for i in splitted/small-chunk*
 do
-	colv=`awk -F'\t' '{print NF}' $i | sort -nu | wc -l`
-	if [[ "$colv" == "1" ]] && [[ "$colv" == "25"  ]]
+	colu=`awk -F'\t' '{print NF}' $i | sort -nu | wc -l`
+	colv=`awk -F'\t' '{print NF}' $i | sort -nu`
+	if [[ "$colu" == "1" ]] && [[ "$colv" == "25"  ]]
 	then
 		ce=`grep "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}'`
 		coe=$(($ce+1))
@@ -591,25 +592,34 @@ do
 	else
 		echo "[ W ::: Error in table of descriptors // Wrong column formatting -- ERR 29 ]
 [ ======> Erractic sample $i ]"
+		rm -rf $i
 	fi
-	unset colv
+	unset colv colu
 done
 }
 
 predicter()
 {
-for i in splitted/small-chunk*
-do
-	echo "[ M ::: Predicting AMPs -- $i ]"
-	$Lib/envs/FACS_env/bin/R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
-	if [[ -s $i.fin ]]
-	then
-		touch $i.fin
-	else
-		echo "[ W ::: Sample ${i/.tabdesc.tsv/} did not return any AMP sequences ]"
-	fi
-	rm -rf "$Lib"/__pycache__/ $i.tabdesc.tsv
-done
+if [ "$(ls -A splitted/)" ]
+then
+	for i in splitted/small-chunk*
+	do
+		echo "[ M ::: Predicting AMPs -- $i ]"
+		$Lib/envs/FACS_env/bin/R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
+		if [[ -s $i.fin ]]
+		then
+			touch $i.fin
+		else
+			echo "[ W ::: Sample ${i/.tabdesc.tsv/} did not return any AMP sequences ]"
+		fi
+		rm -rf "$Lib"/__pycache__/ $i.tabdesc.tsv
+	done
+else
+	cd ../
+	rm -rf $tp
+	echo "[ W ::: There is not valid samples to be processed over pipeline, we are sorry -- ERR675 ]"
+	exit
+fi
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 #################################### 6. Generating abundance profiles ######################################################
@@ -635,7 +645,7 @@ then
 else
     	echo "[ W ::: ERR585 - We are sorry to inform. Your procedure did not return any AMP sequence. We are closing now ]"
         echo "[ W ::: We really tried. None of $tot called smORFs were assigned to a probability higher than 0.5 or survived until here ]"
-	rm -rf splitted/ feat.R pred.R
+	cd ../; rm -rf $tp
 	exit
 fi
 }
@@ -774,18 +784,19 @@ then
 		else
 			echo "[ W ::: ERR301 - Your merging did not result into a true value, the pandaseq message follows ]"
 			cat .test
-			rm -rf .read_.assembled.fastq .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test feat.R pred.R
+			cd ../
+			rm -rf $tp/
 			exit
 		fi
 	else
 		echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
-		rm -rf feat.R pred.R
+		cd ../; rm -rf $tp/
 		exit
 	fi
 else
 	rm -rf .ref.fa*
 	echo "[ W ::: ERR303 - Error in indexing ]"	
-	rm -rf feat.R pred.R
+	cd ../; rm -rf $tp/
 	exit
 fi
 
@@ -799,7 +810,7 @@ then
 	touch .m.bam
 else
 	echo "[ W ::: ERR052 - Mapping failed ]"
-	rm -rf .re* .m.bam feat.R pred.R
+	cd ../; rm -rf $tp
 	exit
 fi
 }
@@ -900,7 +911,7 @@ then
 else
 	echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
 	show_help
-	rm -rf feat.R pred.R
+	cd ../; rm -rf $tp/
 	exit
 fi
 cd ../
