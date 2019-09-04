@@ -46,7 +46,7 @@ show_help ()
 				\"p\" to predict AMPs directly from a peptides fasta file,
 				\"r\" to work with paired-end reads, 
 				\"a\" to map reads against AMP output database and generate abundances table
-	--fasta			Compressed (or not gzipped) contigs Fasta file
+	--fasta			Compressed (or not gzipped) contigs or peptides fasta file
 	--fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full address
 	--rev		        Illumina sequencing file in Fastq format (R2), please leave it compressed and full address
 	--ref                   Output of module \"c\" in its raw format [file type tsv and compressed ]
