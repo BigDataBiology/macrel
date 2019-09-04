@@ -19,7 +19,7 @@ j=$(echo "$(nproc) * 9 / 10" | bc)
 outtag="FACS_OUT"
 clust="0"
 mem="0.75"
-tmp=TEMP
+tp="TEMP"
 
 # Help message
 show_help ()
@@ -70,6 +70,9 @@ do
 		;;
 		-m|-M|--mode|--Mode|--m|--M)
 			mode=${2}
+		;;
+		-tmp|-TMP|--tmp|--TMP|--tp)
+			tp=${2}
 		;;
 		-t|-T|--threads|--Threads|--THREADS|--t|--T)
 			j=${2}
@@ -308,8 +311,7 @@ then
 		then
 			echo "" 
 		else
-			echo "[ W ::: Directory $outfolder does not exist // Creating... ]"
-			mkdir ./$outfolder/
+			echo "[ W ::: Directory $outfolder does not exist // Outputting in the current folder ]"
 	fi
 else
 	echo "[ W ::: Output folder error ]"
@@ -317,15 +319,15 @@ else
 	exit
 fi
 
-if [[ -s "$tmp" ]]
+if [[ -s "$tp" ]]
 then
-	if [ -d "$tmp" ] 
+	if [ -d "$tp" ] 
 	then
-		cd $tmp 
+		cd $tp/ 
 	else
 		echo "[ W ::: Temporary folder did not supply or does not exist. Creating TEMP/ folder... ]"
-		mkdir ./"$tmp"/
-		cd $tmp/
+		mkdir ./"$tp"/
+		cd $tp/
 	fi
 else
 	echo "[ W ::: Temporary folder error ]"
@@ -904,7 +906,6 @@ else
 	rm -rf feat.R pred.R
 	exit
 fi
-
-rm -rf feat.R pred.R
-
+cd ../
+rm -rf $tp/
 date
