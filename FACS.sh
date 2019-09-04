@@ -251,6 +251,7 @@ Log			$outfolder/$log"
 				exit
 			fi				
 		elif [ -s "$fasta" ]
+        then
 			RF="1"
 			if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
 			then
