@@ -307,8 +307,6 @@ fi
 
 if [[ -n $outfolder ]]
 then
-if [[ -n $outfolder ]]
-then
 	if [ -d "$outfolder" ] 
 		then
 			echo "" 
