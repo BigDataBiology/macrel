@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "
 #########################################################################
@@ -13,15 +13,8 @@ echo "
 
 "
 
-read -p "[ Installing message ] :: Do you have already installed in your path conda? (1 - yes; 0 - no)
->>>>>> " conda_if
-
-if [[ $conda_if == "1" ]]
-then
-	echo "[ ... Skipping initial procedures ]"
-elif [[ -n $conda_if ]]
-then
-	echo "[ Getting Bioconda -- It can take a while... ]"
+if ! which conda > /dev/null; then
+	echo "[ Conda not found. Getting Bioconda -- It can take a while... ]"
 	curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 	
 	sh Miniconda3-latest-Linux-x86_64.sh
@@ -36,7 +29,7 @@ then
 
 	conda config --set auto_activate_base false
 else
-	echo "[ User ignored the question, sorry. Closing! ]"
+	echo "[ Conda found. ]"
 fi
 
 export PATH=$PATH:~/miniconda3/bin/
