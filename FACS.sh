@@ -19,7 +19,7 @@ j=$(echo "$(nproc) * 9 / 10" | bc)
 outtag="FACS_OUT"
 clust="0"
 mem="0.75"
-tp="TEMP"
+tp=$(mktemp --tmpdir --directory FACS.XXXXXXX)
 
 # Help message
 show_help ()
@@ -72,6 +72,7 @@ do
 			mode=${2}
 		;;
 		-tmp|-TMP|--tmp|--TMP|--tp)
+			rmdir $tp
 			tp=${2}
 		;;
 		-t|-T|--threads|--Threads|--THREADS|--t|--T)
