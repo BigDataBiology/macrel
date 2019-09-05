@@ -248,7 +248,7 @@ The classifiers of AMP and hemolytic peptides were then assessed and compared to
 The AMP prediction model was compared at two levels the first level with it trained with the small training dataset and when trained with the AMPEP complete dataset, presenting a ratio of 1:3 (positives:negatives). Models training was performed using the code available right bellow:
 
 ```
-#!/usr/bin env
+#!/usr/bin/env R
 
 ##########################################################################
 # Features extractor and table generator
@@ -289,13 +289,13 @@ set.seed(95014)
 args <- commandArgs(TRUE)
 
 # reading descriptors file
-testset <- fread(file = args[1], sep="\t")
-testset <- testset[,3:25]
-testset$group <- as.factor(testset$group)
-levels(testset$group) <- c("AMP", "NAMP")
+training <- fread(file = args[1], sep="\t")
+training <- training[,3:25]
+training$group <- as.factor(training$group)
+levels(training$group) <- c("AMP", "NAMP")
 
 # building model
-model <- randomForest(x = testset[,-1], y = testset$group, ntree = 100, cv.fold = 10) # Testing
+model <- randomForest(x = training[,-1], y = training$group, ntree = 100, cv.fold = 10) # Testing
 
 # testing model
 testing <- fread(file = args[2], sep="\t")
@@ -339,7 +339,7 @@ The specific results of the confusion matrix are presented now (Table 3) to the 
 Meanwhile, the hemolytic prediction model was evaluated using its own datasets and trained as previously informed. The results of this model and the comparisons to the standard system currently available are shown in the Table 4. The model obtained with oblique random forests supported by vector machines was a bit less accurate, however the sensitivity and specificity were higher than that obtained previously. The code used to train this model is available bellow:
 
 ```
-#!/usr/bin env
+#!/usr/bin/env R
 
 ##########################################################################
 # Features extractor and table generator
