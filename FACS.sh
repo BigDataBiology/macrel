@@ -427,7 +427,7 @@ then
 	rm -rf callorfs/
 	mkdir callorfs
 
-	cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null 2>/dev/null
+	cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null 2>/dev/null
 
 	ls callorfs/*pred.smORFs.fa > t
 	if [ -s t ]
