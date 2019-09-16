@@ -19,7 +19,7 @@ j=$(echo "$(nproc) * 9 / 10" | bc)
 outtag="FACS_OUT"
 clust="0"
 mem="0.75"
-tp="TEMP"
+tp=$(mktemp --tmpdir --directory FACS.XXXXXXX)
 
 # Help message
 show_help ()
@@ -43,18 +43,18 @@ show_help ()
 
 	-m			Mode of operation, type:
 				\"c\" to work with contigs,
-				\"p\" to predict AMPs directly from a peptides fasta file,
+				\"p\" to predict AMPs directly from a peptides FASTA file,
 				\"r\" to work with paired-end reads, 
 				\"a\" to map reads against AMP output database and generate abundances table
 	--fasta			Compressed (or not gzipped) contigs or peptides fasta file
-	--fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full address
-	--rev		        Illumina sequencing file in Fastq format (R2), please leave it compressed and full address
+	--fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full path
+	--rev		        Illumina sequencing file in Fastq format (R2), please leave it compressed and pass the full path
 	--ref                   Output of module \"c\" in its raw format [file type tsv and compressed ]
 	--outfolder		Folder where output will be generated [Default: ./]
 	--outtag          	Tag used to name outputs [Default: FACS_OUT]
-	-t, --threads [N]	Number of threads [Default: 90% of avaiable threads]
+	-t, --threads [N]	Number of threads [Default: 90% of available threads]
 	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
-	--log			Log file name. It allows FACS to save the run results to this log file in output folder.
+	--log			Log file name. FACS will save the run results to this log file in output folder.
 	--mem			Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
 	--tmp			Temporary folder address	
 "
@@ -72,6 +72,7 @@ do
 			mode=${2}
 		;;
 		-tmp|-TMP|--tmp|--TMP|--tp)
+			rmdir $tp
 			tp=${2}
 		;;
 		-t|-T|--threads|--Threads|--THREADS|--t|--T)
@@ -426,7 +427,7 @@ then
 	rm -rf callorfs/
 	mkdir callorfs
 
-	cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null 2>/dev/null
+	cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null 2>/dev/null
 
 	ls callorfs/*pred.smORFs.fa > t
 	if [ -s t ]
