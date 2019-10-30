@@ -20,6 +20,8 @@ outtag="FACS_OUT"
 clust="0"
 mem="0.75"
 tp=$(mktemp --tmpdir --directory FACS.XXXXXXX)
+cls="1"
+ep="0"
 
 # Help message
 show_help ()
@@ -56,7 +58,10 @@ show_help ()
 	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
 	--log			Log file name. FACS will save the run results to this log file in output folder.
 	--mem			Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
-	--tmp			Temporary folder address	
+	--tmp			Temporary folder address
+	--cls			Performing of clustering: yes (1) or no (o). [Default: 1 - yes]
+	--ep			Extra profilling (solubility, proteases susceptibility and antigenicity): yes (1) or no (0).
+				[Default: 0 - no ]
 "
 }
 
@@ -104,6 +109,15 @@ do
 		;;
 		-mem|--Mem|--mem|-Mem)
 			mem=${2}
+		;;
+		-cls|--cls)
+			cls=${2}
+		;;
+		-cls|--cls)
+			cls=${2}
+		;;
+		-ep|--ep)
+			ep=${2}
 		;;
 	esac
 	shift
@@ -327,9 +341,10 @@ then
 	cd $tp
 elif [[ ! -d $tp ]];
 then
-	echo "$tp already exists but is not a directory" 1>&2
+	echo "[ W ::: $tp already exists but is not a directory ]" 1>&2
 else
-	cd $tp
+	echo "[ W ::: Folder $tp already exists, please choose other address ]"
+	exit
 fi
 }
 
@@ -466,44 +481,56 @@ fi
 if [ -s ".pep.faa.tmp" ]
 then
 
-	echo "[ M ::: Performing reduction in sampling space ]"
-
-	sed 's/ /_/g' .pep.faa.tmp | sed 's/;/|/g' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{print $2"\t"$1}' > .tmp; rm -rf .pep.faa.tmp
-	
-	echo "[ M ::: Sorting peptides list ]"
-	mkdir sorting_folder/
-	
-	cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null 2>/dev/null
-	rm -rf .tmp
-
-	for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
-
-	sort -S 80% --parallel="$j" -T . -k1,1 -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
-
-	perl -n -e "print unless /^$/" .sorted-huge-file | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' | sed 's/;;/\t/g' | sed 's/>//g' | sed 's/\*//g' > .tmp2
-
-	if [[ -s .tmp2 ]]
+	if [[ $cls == 1 ]]
 	then
-		echo "[ M ::: Eliminated all duplicated sequences ]"
-		rm -rf .sorted-huge-file
+
+		echo "[ M ::: Performing reduction in sampling space ]"
+
+		sed 's/ /_/g' .pep.faa.tmp | sed 's/;/|/g' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{print $2"\t"$1}' > .tmp; rm -rf .pep.faa.tmp
+		
+		echo "[ M ::: Sorting peptides list ]"
+		mkdir sorting_folder/
+		
+		cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null 2>/dev/null
+		rm -rf .tmp
+
+		for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
+
+		sort -S 80% --parallel="$j" -T . -k1,1 -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
+
+		perl -n -e "print unless /^$/" .sorted-huge-file | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' | sed 's/;;/\t/g' | sed 's/>//g' | sed 's/\*//g' > .tmp2
+
+		if [[ -s .tmp2 ]]
+		then
+			echo "[ M ::: Eliminated all duplicated sequences ]"
+			rm -rf .sorted-huge-file
+		else
+			echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
+			cd ../; rm -rf $tp
+			exit
+		fi	
+
+		echo "[ M ::: Outputting genes lists ]"
+
+		awk '{print ">smORF_"NR"\t"$1"\t"$2}' .tmp2 | pigz --best > $outfolder/$outtag.ids.tsv.gz
+
+		echo "[ M ::: Outputting fastas ]"
+
+		awk '{print ">smORF_"NR"\n"$1}' .tmp2 > .pep.faa 
+		rm -rf .tmp2
+		
+		echo "[ M ::: Collecting statistics ]"
+
+		tail -2 .pep.faa | head -1 | sed 's/|/\t/g' | cut -f2 | sed 's/>smORF_//g' > .all.nmb
+
 	else
-		echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
-		cd ../; rm -rf $tp
-		exit
-	fi	
 
-	echo "[ M ::: Outputting genes lists ]"
+		echo "[ M ::: Skipping clustering ]"
+		mv .pep.faa.tmp .pep.faa
+		grep -c ">" .pep.faa > .all.nmb
 
-	awk '{print ">smORF_"NR"\t"$1"\t"$2}' .tmp2 | pigz --best > $outfolder/$outtag.ids.tsv.gz
+	fi
 
-	echo "[ M ::: Outputting fastas ]"
-
-	awk '{print ">smORF_"NR"\n"$1}' .tmp2 > .pep.faa 
-	rm -rf .tmp2
-	
-	echo "[ M ::: Collecting statistics ]"
-
-	tail -2 .pep.faa | head -1 | sed 's/|/\t/g' | cut -f2 | sed 's/>smORF_//g' > .all.nmb
 else
 	echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
 	cd ../; rm -rf $tp
@@ -518,7 +545,7 @@ fi
 
 descripter ()
 {
-echo "[ M ::: Reducing file sizes ]"
+echo "[ M ::: Divide to conquer ]"
 mkdir splitted/
 parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
 rm -rf .pep.faa
@@ -548,7 +575,7 @@ do
 		echo -e "header\tseq\tgroup" > .tmp
 		sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
 		rm -rf "$i"
-		$Lib/envs/FACS_env/bin/R --vanilla --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
+		R --vanilla --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
 		rm -rf .tmp
 	
 		echo "[ M ::: Formatting descriptors -- $i ]"
@@ -604,7 +631,7 @@ then
 	for i in splitted/small-chunk*
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
-		$Lib/envs/FACS_env/bin/R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
+		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
 		if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
 		then
 			touch "${i/.tabdesc.tsv/.fin}"
@@ -621,6 +648,133 @@ else
 	exit
 fi
 }
+
+EXTRADATA()
+{
+awk '{print ">"$1"\n"$2}' .out2.file > .tmp.fasta
+cut -f1 .out2.file | sort | uniq  > listall
+
+# To install protein solubility software 
+# wget --header 'Host: protein-sol.manchester.ac.uk' --referer 'https://protein-sol.manchester.ac.uk/software' --header 'Upgrade-Insecure-Requests: 1' 'https://protein-sol.manchester.ac.uk/cgi-bin/utilities/download_sequence_code.php' --output-document 'protein-sol-sequence-prediction-software.zip'
+# unzip protein-sol-sequence-prediction-software.zip
+# mv protein-sol-sequence-prediction-software/ $Lib/envs/FACS_env/bin/
+
+# To install emboss:
+# wget -m 'ftp://emboss.open-bio.org/pub/EMBOSS/'
+# cp emboss.open-bio.org/pub/EMBOSS/EMBOSS-6.6.0.tar.gz ./
+# tar -zxf EMBOSS-6.6.0.tar.gz
+# cd EMBOSS-6.6.0/
+# ./configure
+# make
+# cd emboss/
+# rm -rf *.c *.h
+# mv * $Lib/envs/FACS_env/bin/
+
+echo "[ W ::: Just extra moments to assess the predicted AMPs ]"
+echo "[ W ::: Predicting solubility ]"
+cp $Lib/envs/FACS_env/bin/protein-sol-sequence-prediction-software/* ./
+sh multiple_prediction_wrapper_export.sh .tmp.fasta
+grep "SEQUENCE PREDICTIONS,>" seq_prediction.txt | sed 's/SEQUENCE PREDICTIONS,>//g' | sed 's/,/\t/g' > protein-sol.res.tsv
+rm -rf .tmp* seq_prediction.txt
+awk '{print ">"$1"\n"$2}' .out2.file > .tmp.fasta
+cat protein-sol.res.tsv | cut -f1,2,3 | sort -k1,1 > sol
+rm -rf protein-sol.res.tsv
+
+echo "[ W ::: Predicting antigenicity ]"
+$Lib/envs/FACS_env/bin/antigenic -sequence .tmp.fasta -sprotein1 Y -sformat1 FASTA -minlen 9 -outfile antigenic -rformat excel -rmaxseq2 1 -raccshow2 1 >/dev/null 2>/dev/null
+sed -i '/SeqName/d' antigenic
+echo -e "SeqName\tStart\tEnd\tScore\tStrand\tMax_score_pos" > header
+cat antigenic | cut -f1 | sort | uniq | awk '{print $1"\t""+"}' > antigen
+cat antigenic | cut -f1 | sort | uniq > list0
+cat header antigenic | pigz --best > "$outfolder"/"$outtag".antigenic.tsv.gz
+rm -rf header antigenic
+
+echo "[ W ::: Creating lists ]"
+grep -v -w -f list0 listall > non_antigenic_AMP; rm -rf list0
+awk '{print $1"\t""-"}' non_antigenic_AMP > list1
+cat antigen list1 | sort -k1,1 > tmp; mv tmp antigen
+rm -rf list1 list2 non_antigenic_AMP
+
+echo "[ W ::: Predicting protease sensitivity ]"
+echo "[ W ::: This can take a while, since analysis proceed in single sequences ]"
+awk '/^>/ {OUT=substr($0,2) ".seq";print " ">OUT}; OUT{print >OUT}' .tmp.fasta
+
+for i in *.seq;
+do
+	$Lib/envs/FACS_env/bin/epestfind -sequence $i  -window 9 -order score -outfile ${i/.seq/.epest} -graph none -nopoor -nomap >/dev/null 2>/dev/null
+	cat ${i/.seq/.epest} >> final
+	rm -rf ${i/.seq/.epest} $i
+done
+
+cat final | sed '/PEST-find/d' | grep "No PEST motif was identified in " | sed 's/No PEST motif was identified in //g' | sed 's/^.   //g' | sed 's/ .*//g' | awk '{print $1"\t""-"}' > nonprotea.list
+cat final | sed '/PEST-find/d' | grep -v "No PEST motif was identified in " | sed '/^[[:space:]]*$/d' | pigz --best > "$outfolder"/"$outtag".protealytic_assessment.txt.gz
+cat final | grep -v "No PEST motif was identified in " | grep "PEST motif was identified in " | sed 's/^.* PEST motif was identified in //g' | sed 's/ .*//g' | awk '{print $1"\t""+"}' > protea.list
+cat protea.list nonprotea.list | sort -k1,1 > protea
+rm -rf final *.list
+
+pl=`zcat "$outfolder"/"$outtag".protealytic_assessment.txt.gz | awk '{print NR}' | tail -1`
+if [[ $pl -gt 1 ]]
+then
+	echo ""
+else
+	rm -rf zcat "$outfolder"/"$outtag".protealytic_assessment.tsv.gz
+	echo "[ W ::: No AMPs returned EPEST motifs ]"
+fi
+
+echo "[ W ::: Checking structures ]"
+echo -e "antigen\nprotea\nsol" > quicktest.list
+fin=`awk '{print NR}' .out2.file | tail -1`
+for i in $(cat quicktest.list);
+do
+	rown=`awk '{print NR}' $i | tail -1`
+	if [[ "$fin" == "$rown" ]]
+	then
+		touch $i	
+	else
+		echo "[ W ::: Ending loop ]"
+		echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability" > header
+		cat header .out2.file > tmp; mv tmp "$outfolder"/"$outtag".tsv
+		rm -rf header .out2.file protea antigen sol quicktest.list
+		echo "[ W ::: Error // Wrong row formatting -- ERR 989 ]"
+	fi
+	unset rown
+done
+unset fin
+
+if [ -s .out2.file ]
+then
+	echo "[ W ::: Formatting lists ]"
+	sort -k1,1 .out2.file > tmp1
+	sort -k1,1 protea | awk '{$1=""}1' | sed 's/^.* //g'  > tmp4
+	sort -k1,1 antigen | awk '{$1=""}1' | sed 's/^.* //g'  > tmp3
+	sort -k1,1 sol | awk '{$1=""}1' | sed 's/^ //g' | sed 's/ /\t/g' > tmp2
+	rm -rf .out2.file protea antigen sol quicktest.list
+
+	paste -d'\t' tmp1 tmp2 tmp3 tmp4 > .out.file
+	rm -rf .out2.file protea antigen sol
+
+	echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability\tPercent_soluble\tScaled_Solubility\tAntigenicity\tSusceptible_to_proteases" > header
+	cat header .out.file > tmp; mv tmp "$outfolder"/"$outtag".tsv
+	rm -rf header .out.file
+
+	echo "[ W ::: Deciding promising peptides ]"
+	awk '$5 == "NonHEMO" && $8 >= 0.45 && $9 == "-" && $10 == "-"' "$outfolder"/"$outtag".tsv > "$outfolder"/"$outtag".promising_subset.tsv
+	if [ -s "$outfolder"/"$outtag".promising_subset.tsv ]
+	then 
+		echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability\tPercent_soluble\tScaled_Solubility\tAntigenicity\tSusceptible_to_proteases" > header
+		cat header "$outfolder"/"$outtag".promising_subset.tsv > tmp; mv tmp "$outfolder"/"$outtag".promising_subset.tsv
+		pigz --best "$outfolder"/"$outtag".promising_subset.tsv
+		rm -rf tmp header
+		nr=`zcat "$outfolder"/"$outtag".promising_subset.tsv | sed '1,1d' | awk '{print NR}' | tail -1`
+		echo "[ W ::: Exists $nr promising AMP candidates saved as "$outfolder"/"$outtag".promising_subset.tsv.gz ]"
+	else
+		rm -rf "$outfolder"/"$outtag".promising_subset.tsv
+		echo "[ W ::: No promising AMP candidates found ]"
+	fi
+else
+	echo "[ W ::: Ending subloop ]"
+fi
+}
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 #################################### 6. Generating abundance profiles ######################################################
 
@@ -632,15 +786,24 @@ rm -rf .all.nmb
 
 if [ "$(ls -A splitted/)" ]
 then
-	echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability" > .out.file
-	cat splitted/* >> .out.file
+	cat splitted/* > .out2.file
 	rm -rf splitted/ 
-	sed -i 's/\"//g' .out.file
-	AMP=$(sed '1,1d' .out.file | wc -l | awk '{print $1}')
+	sed -i 's/\"//g' .out2.file
+	AMP=$(cat .out2.file | wc -l | awk '{print $1}')
 	echo "[ M ::: Calculating statistics ]"
-	pepval=$(awk '{print $3"_"$5}' .out.file | sort | uniq -c | awk '{ print $2"\t"$1 }' | grep -v "AMP_family")
+	pepval=$(awk '{print $3"_"$5}' .out2.file | sort | uniq -c | awk '{ print $2"\t"$1 }')
 	echo "[ M ::: Exporting results ]"
-	mv .out.file "$outfolder"/"$outtag".tsv
+	if [[ $ep == "0" ]]
+	then
+		echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability" > header
+		cat header .out2.file > "$outfolder"/"$outtag".tsv
+		rm -rf header .out2.file
+	elif [[ $ep == "1" ]]
+	then
+		EXTRADATA
+	else
+		echo ""
+	fi
 	pigz --best "$outfolder"/"$outtag".tsv
 else
     	echo "[ W ::: ERR585 - We are sorry to inform. Your procedure did not return any AMP sequence. We are closing now ]"
@@ -749,12 +912,12 @@ mapping ()
 echo "[ M ::: Indexing references ]"
 if [[ "$RF" == "0" ]]
 then
-	pigz -dc "$Reference" | awk '{ print ">"$1"\n"$2 }' | sed '1,2d' > .ref.fa
+	pigz -dc "$Reference" | sed '1,1d' | awk '{ print ">"$1"\n"$2 }' > .ref.fa
 elif [[ "$RF" == "1" ]]
 then
 	if [[ "$fasta" =~ \.gz$ ]];
 	then
-		echo "[ M ::: Decompressing contigs ]"
+		echo "[ M ::: Decompressing files ]"
 		pigz -dc "$fasta" > .ref.fa
 	else
 		ln -s $fasta .ref.fa
@@ -772,22 +935,7 @@ then
 		touch .ref.fa
 	elif [[ $mode == "mpe" ]]
 	then
-		echo "[ M ::: Merging paired end reads ]"
-		pigz -d .read_1.paired.fastq.gz
-		pigz -d .read_2.paired.fastq.gz
-		pandaseq -A pear -F -f .read_1.paired.fastq -r .read_2.paired.fastq -T "$j" -w .read_.assembled.fastq 2> .test
-		if [ -s ".read_.assembled.fastq" ]
-		then
-			rm -rf .read_.unassembled.forward.fastq .read_.unassembled.reverse.fastq .read_.discarded.fastq .read_1.paired.fastq .read_2.paired.fastq .test
-			mv .read_.assembled.fastq .read_1.paired.fastq
-			pigz --best .read_1.paired.fastq
-		else
-			echo "[ W ::: ERR301 - Your merging did not result into a true value, the pandaseq message follows ]"
-			cat .test
-			cd ../
-			rm -rf $tp/
-			exit
-		fi
+		touch .read_1.paired.fastq.gz
 	else
 		echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
 		cd ../; rm -rf $tp/
@@ -819,7 +967,7 @@ fi
 ab_profiling ()
 {
 echo "[ M ::: Expressing results of abundance ]"
-eXpress --no-bias-correct -o "$outfolder"/ .ref.fa .m.bam
+express --no-bias-correct -o "$outfolder"/ .ref.fa .m.bam
 if [[ -s "$outfolder"/results.xprs ]] || [[ -s "$outfolder"/params.xprs ]] 
 then
 	mv "$outfolder"/results.xprs "$outfolder"/"$outtag".xprs
@@ -834,6 +982,7 @@ rm -rf .ref.* .read_1.paired.fastq.* .m* feat.R pred.R
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ################################################    CMDs   #################################################################
+
 
 export PATH=$PATH:$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_env/etc:$Lib/envs/FACS_env/jmods:$Lib/envs/FACS_env/lib:$Lib/envs/FACS_env/libexec:$Lib/envs/FACS_env/mkspecs:$Lib/envs/FACS_env/plugins:$Lib/envs/FACS_env/resources:$Lib/envs/FACS_env/share:$Lib/envs/FACS_env/translations:$Lib/envs/FACS_env/x86_64-conda_cos6-linux-gnu:$Lib/envs/FACS_env/compiler_compat:$Lib/envs/FACS_env/conf:$Lib/envs/FACS_env/doc:$Lib/envs/FACS_env/include:$Lib/envs/FACS_env/legal:$Lib/envs/FACS_env/lib64:$Lib/envs/FACS_env/man:$Lib/envs/FACS_env/phrasebooks:$Lib/envs/FACS_env/qml:$Lib/envs/FACS_env/sbin:$Lib/envs/FACS_env/ssl:$Lib/envs/FACS_env/var:$Lib:~/miniconda3/pkgs/:$Lib/envs/FACS_env/lib/R/library/
 
@@ -905,6 +1054,8 @@ then
 	ab_profiling
 elif [[ $mode == "mpe" ]]
 then
+	echo "[ W ::: NOTE _ IMPORTANT ]"
+	echo "[ W ::: Abundance data is just inferred from R1 file ]"
 	PEreads_trimming
 	mapping
 	ab_profiling
