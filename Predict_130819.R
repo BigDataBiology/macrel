@@ -26,11 +26,6 @@ if(!require(randomForest)){
   library(randomForest)
 }
 
-if(!require(obliqueRF)){
-  install.packages("obliqueRF")
-  library(obliqueRF)
-}
-
 if(!require(caret)){
   install.packages("caret")
   library(caret)
