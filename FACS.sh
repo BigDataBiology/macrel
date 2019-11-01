@@ -631,7 +631,7 @@ then
 	for i in splitted/small-chunk*
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
-		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/orfsvm_19desc.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
+		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
 		if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
 		then
 			touch "${i/.tabdesc.tsv/.fin}"
@@ -951,7 +951,7 @@ fi
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
 
 echo "[ M ::: Starting the paladin ]"
-paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | samtools view -Sb > .m.bam
+paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | samtools view -Sb | samtools sort > .m.bam
 
 if [[ -s .m.bam ]]
 then
