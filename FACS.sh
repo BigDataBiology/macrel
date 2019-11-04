@@ -336,15 +336,12 @@ fi
 
 if [[ ! -e $tp ]];
 then
-	echo "[ W ::: Temporary folder did not supply or does not exist. Creating TEMP/ folder... ]"
+	echo "[ W ::: Temporary folder ($tp) does not exist. Creating folder... ]"
 	mkdir $tp
 	cd $tp
 elif [[ ! -d $tp ]];
 then
 	echo "[ W ::: $tp already exists but is not a directory ]" 1>&2
-else
-	echo "[ W ::: Folder $tp already exists, please choose other address ]"
-	exit
 fi
 }
 
