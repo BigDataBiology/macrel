@@ -35,7 +35,7 @@ show_help ()
 	############################## Institute > ISTBI - FUDAN University / Shanghai - China  ####################################
 	############################################################################################################################
 
-	Usage: FACS.sh --mode c/r [options]
+	Usage: FACS.sh --mode c/r/p/a [options]
 
 	Here's a guide for avaiable options. Defaults for each option are showed between brackets: [default].
 
@@ -55,11 +55,11 @@ show_help ()
 	--outfolder		Folder where output will be generated [Default: ./]
 	--outtag          	Tag used to name outputs [Default: FACS_OUT]
 	-t, --threads [N]	Number of threads [Default: 90% of available threads]
-	--block			Bucket size (take in mind it is measured in bits and also it determines the memory usage). [100MB]
+	--block			Bucket size (take in mind it is measured in Bytes and also it influences memory usage). [100MB]
 	--log			Log file name. FACS will save the run results to this log file in output folder.
 	--mem			Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
-	--tmp			Temporary folder address
-	--cls			Performing of clustering: yes (1) or no (o). [Default: 1 - yes]
+	--tmp			Temporary folder
+	--cls			Cluster peptides: yes (1) or no (o). [Default: 1 - yes]
 	--ep			Extra profilling (solubility, proteases susceptibility and antigenicity): yes (1) or no (0).
 				[Default: 0 - no ]
 "
@@ -359,7 +359,6 @@ export PATH=$PATH:$Lib
 PEreads_trimming ()
 {
 echo "[ M ::: Trimming low quality bases ]"
-echo "[ M ::: Sorting paired-end reads ]"
 trimmomatic PE -phred33 -threads "$j" \
 "$read_1" \
 "$read_2" \
@@ -410,7 +409,7 @@ elif [[ $mode == "se" ]]
 then
 	megahit --presets meta-large -r .read_1.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 else 
-	echo "[ W ::: ERR222 - FACS followed by a weird way ]"
+	echo "[ E ::: ERR222 - Internal Error: should never happen ]"
 	cd ../; rm -rf $tp
 	exit
 fi
@@ -538,16 +537,16 @@ fi
 }
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-######################################## 5. calculating descriptors ########################################################
+######################################## 5. computing descriptors ########################################################
 
-descripter ()
+descriptors ()
 {
-echo "[ M ::: Divide to conquer ]"
-mkdir splitted/
-parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splitted/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
+echo "[ M ::: Split input into chunks ]"
+mkdir splits/
+parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
 rm -rf .pep.faa
 
-for i in splitted/small-chunk*
+for i in splits/small-chunk*
 do
 	count=`grep -c ">" $i`
 	echo -e "$i\t$count" >> counte.tsv
@@ -568,7 +567,7 @@ do
 
 	if [[ -s .CTDDC-SA.tsv ]] && [[ -s .CTDDC-hb.tsv ]]
 	then
-		echo "[ M ::: Calculating cheminformatics descriptors -- $i ]"
+		echo "[ M ::: Computing cheminformatics descriptors -- $i ]"
 		echo -e "header\tseq\tgroup" > .tmp
 		sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
 		rm -rf "$i"
@@ -595,7 +594,7 @@ done
 
 checkout()
 {
-for i in splitted/small-chunk*
+for i in splits/small-chunk*
 do
 	colu=`awk -F'\t' '{print NF}' $i | sort -nu | wc -l`
 	colv=`awk -F'\t' '{print NF}' $i | sort -nu`
@@ -623,9 +622,9 @@ done
 
 predicter()
 {
-if [ "$(ls -A splitted/)" ]
+if [ "$(ls -A splits/)" ]
 then
-	for i in splitted/small-chunk*
+	for i in splits/small-chunk*
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
 		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
@@ -781,10 +780,10 @@ echo "[ M ::: Formatting results ]"
 tot=$(cat .all.nmb)
 rm -rf .all.nmb
 
-if [ "$(ls -A splitted/)" ]
+if [ "$(ls -A splits/)" ]
 then
-	cat splitted/* > .out2.file
-	rm -rf splitted/ 
+	cat splits/* > .out2.file
+	rm -rf splits/
 	sed -i 's/\"//g' .out2.file
 	AMP=$(cat .out2.file | wc -l | awk '{print $1}')
 	echo "[ M ::: Calculating statistics ]"
@@ -997,7 +996,7 @@ then
 	PEreads_trimming
 	ASSEMBLY
 	callorf
-	descripter
+	descriptors
 	checkout
 	predicter
 	cleanmessy
@@ -1008,7 +1007,7 @@ then
 	SEreads_trimming
 	ASSEMBLY
 	callorf
-	descripter
+	descriptors
 	checkout
 	predicter
 	cleanmessy
@@ -1024,7 +1023,7 @@ then
 		ln -s $fasta .callorfinput.fa
 	fi
 	callorf
-	descripter
+	descriptors
 	checkout
 	predicter
 	cleanmessy
@@ -1039,7 +1038,7 @@ then
 		ln -s $fasta .callorfinput.fa
 	fi
 	callorf
-	descripter
+	descriptors
 	checkout
 	predicter
 	cleanmessy
