@@ -24,7 +24,10 @@ Before installation, make sure your system settings are as follows:
 
 		- Python Version 3.0 or above
 
-		- The following packages should be already installed in Python environment: sys, os, shutil, scipy, argparse, collections, platform, math, re, numpy (1.13.1), sklearn (0.19.1), matplotlib (2.1.0), pandas (0.20.1).
+		- The following packages should be already installed in Python environment:
+		  sys, os, shutil, scipy, argparse, collections, platform,
+		  math, re, numpy (1.13.1), sklearn (0.19.1), matplotlib (2.1.0),
+		  pandas (0.20.1).
 
 		- R Version 3.5.2 or above
 		
@@ -41,17 +44,17 @@ Also, before start installation, make sure you know the needed third party softw
    
 2. To assembly reads, we use [MEGAHIT v.1](https://www.ncbi.nlm.nih.gov/pubmed/25609793)
 
-3. To predict smORFs, we use a modified version of the Prodigal program.
+3. To predict smORFs, we use a modified version of the [Prodigal](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2848648/) program.
 
 4. To produce descriptors and use the randomforest models, we use the following R packages:
 
- - randomForest
- - caret
- - Peptides
- - data.table
- - dplyr
- - parallel
- - doParallel
+     - randomForest
+     - caret
+     - Peptides
+     - data.table
+     - dplyr
+     - parallel
+     - doParallel
 
     4.1. To calculate distribution parameters we used scripts from the project [iLearn](https://github.com/Superzchen/iLearn):
 
@@ -70,8 +73,8 @@ Also, before start installation, make sure you know the needed third party softw
 
 ### Install process
 
->>>>                                  WARNING:                                 <<<<
->>>> To install FACS you will need CONDA or miniCONDA installed in your system <<<<
+>                                  WARNING:                                 
+> To install FACS you will need CONDA or miniCONDA installed in your system 
 
 Proceed with the installation by first cloning this repository:
 
@@ -92,33 +95,52 @@ And execute the installation script:
 There are few options to make the running of the program a bit customized and speed up process according to the settings of the system available.
 
     Usage: FACS.sh --mode c/r/p/a [options]
-    Here's a guide for avaiable options. Defaults for each option are showed between brackets: [default].
+    
+    Here's a guide for avaiable options. Defaults for each option are showed inside the
+    brackets: [default].
+    
     Basic options:
+    
     -h, --help            Show this help message
-    -m            Mode of operation, type:
+    
+    -m          Mode of operation, type:
                 "c" to work with contigs,
                 "p" to predict AMPs directly from a peptides FASTA file,
                 "r" to work with reads, 
                 "a" to map reads against AMP output database and generate abundances table
-    --fasta            Compressed (or not gzipped) contigs or peptides fasta file
-    --fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full path
-    --rev                Illumina sequencing file in Fastq format (R2), please leave it compressed and pass the full path
-    --ref                   Output of module "c" in its raw format [file type tsv and compressed ]
-    --outfolder        Folder where output will be generated [Default: .]
+		
+    --fasta               Compressed (or not gzipped) contigs or peptides fasta file
+    
+    --fwd                 Illumina sequencing file in Fastq format (R1), please leave it
+                          compressed and full path
+    
+    --rev                 Illumina sequencing file in Fastq format (R2), please leave it
+                          compressed and pass the full path
+    
+    --ref                 Output of module "c" in its raw format [file type tsv and compressed]
+    
+    --outfolder           Folder where output will be generated [Default: .]
+    
     --outtag              Tag used to name outputs [Default: FACS_OUT]
-    -t, --threads [N]    Number of threads [Default: 90% of available threads]
-    --block            Bucket size (take in mind it is measured in Bytes and also it influences memory usage).              
-                            [Defeault: 100MB]
-    --log            Log file name. FACS will save the run results to this log file in output folder.
-    --mem            Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
-    --tmp            Temporary folder
-    --cls            Cluster peptides: yes (1) or no (o). [Default: 1 - yes]
-    --ep            Extra profilling (solubility, proteases susceptibility and antigenicity): yes (1) or no (0).
-                [Default: 0 - no ] -- Not fully implemented, experimental! 
+    
+    -t, --threads [N]     Number of threads [Default: 90% of available threads]
+    
+    --block               Bucket size (take in mind it is measured in Bytes and also it 
+                          influences memory usage). [Defeault: 100MB]
+    
+    --log                 Log file name. FACS will save the run results to this log file
+                          in output folder.
+    
+    --mem                 Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
+    
+    --tmp                 Temporary folder (address)
+    
+    --cls                 Cluster peptides: yes (1) or no (0). [Default: 1 - yes]
+
 
 ### Quick running commands:
 
->>> FACS supports gzipped inputs <<<
+> FACS supports gzipped inputs
 
 To run FACS on peptides, type directly:
 
@@ -147,14 +169,16 @@ To run FACS to get abundance profiles, you only need the forward reads file and 
 ```bash FACS.sh -m a --fwd /path/to/R1_file.fq.gz --ref /path/to/FACS_output.tsv.gz --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
 
 We have provided to you example files that can help you to test your installed pipeline:
-
-- R1.fq.gz, R2.fq.gz to reads mode
-- excontigs.fa.gz to contigs mode
-- expep.fa.gz to peptides mode
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-+++++ NOTE: You also can use expep.fa.gz and R1.fq.gz files to test the abundance mode.++++
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     
+     - R1.fq.gz, R2.fq.gz to reads mode
+     - excontigs.fa.gz to contigs mode
+     - expep.fa.gz to peptides mode
+     
+     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     +++++                    NOTE:                        ++++
+     +++++ You also can use expep.fa.gz and R1.fq.gz files ++++
+     +++++ to test the abundance mode.                     ++++
+     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ## Pipeline overview
 
@@ -217,18 +241,18 @@ Benchmark procedures showed that R22 models are efficient in retrieving AMPs wit
 
 **Table 2.** Comparison of FACS and other state-of-art AMP prediction systems. All systems were tested with the benchmark data set from the AMPEP study available in Bhadra et al. ([2018](doi:10.1038/s41598-018-19752-w)).
 
-| Model/Method     | Acc.     | Sp.     | Sn.     | Precision     | F-Score     | MCC     | Refererence     | Descriptors     |
-|:--------------------:    |:-----:    |:-----:    |:-----:    |:---------:    |:-------:    |:-----:    |:----------------------------------:    |:-----------:    |
-| AMPep     | 0.962     | 0.965     | 0.95     | 0.913     | -     | 0.9     | doi:10.1038/s41598-018-19752-w     | 23     |
-| Peptide Scanner v2     | 0.755     | 0.686     | 0.943     | 0.523     | 0.673     | 0.557     | doi: 10.1093/bioinformatics/bty179     | -     |
-| CAMPr3-NN     | 0.728     | 0.704     | 0.794     | 0.494     | 0.609     | 0.445     | doi:  10.1093/nar/gkv1051     | -     |
-| CAMPr3-RF     | 0.584     | 0.461     | 0.923     | 0.384     | 0.543     | 0.354     | doi:  10.1093/nar/gkv1051     | -     |
-| CAMPr3-SVM     | 0.6     | 0.506     | 0.858     | 0.388     | 0.534     | 0.328     | doi:  10.1093/nar/gkv1051     | -     |
-| CAMPr3-DCA     | 0.617     | 0.542     | 0.821     | 0.396     | 0.534     | 0.324     | doi:  10.1093/nar/gkv1051     | -     |
-| iAMP     | 0.548     | 0.413     | 0.918     | 0.363     | 0.521     | 0.313     | doi: 10.1038/srep42362     | -     |
-| AMPA     | 0.779     | 0.941     | 0.336     | 0.675     | 0.449     | 0.361     | doi: 10.1093/bioinformatics/btr604     | -     |
-| R22_Ctrained     | 0.952     | 0.972     | 0.932     | 0.971     | 0.951     | 0.904     | This study     | 22     |
-| R22_LargeTrainingset     | 0.967     | 1     | 0.934     | 1     | 0.966     | 0.936     | This study     | 22     |
+| Model/Method     | Acc.     | Sp.     | Sn.     | Precision     | MCC     | Refererence     |
+|:--------------------:    |:-----:    |:-----:    |:-----:    |:---------:    |:-------:    |:-----:    |:----------------------------------:    |
+| AMPep     | 0.962     | 0.965     | 0.95     | 0.913     | 0.9     | doi:10.1038/s41598-018-19752-w     |
+| Peptide Scanner v2     | 0.755     | 0.686     | 0.943     | 0.523     | 0.557     | doi: 10.1093/bioinformatics/bty179     |
+| CAMPr3-NN     | 0.728     | 0.704     | 0.794     | 0.494     | 0.445     | doi:  10.1093/nar/gkv1051     |
+| CAMPr3-RF     | 0.584     | 0.461     | 0.923     | 0.384     | 0.354     | doi:  10.1093/nar/gkv1051     |
+| CAMPr3-SVM     | 0.6     | 0.506     | 0.858     | 0.388     | 0.328     | doi:  10.1093/nar/gkv1051     |
+| CAMPr3-DCA     | 0.617     | 0.542     | 0.821     | 0.396     | 0.324     | doi:  10.1093/nar/gkv1051     |
+| iAMP     | 0.548     | 0.413     | 0.918     | 0.363     | 0.313     | doi: 10.1038/srep42362     |
+| AMPA     | 0.779     | 0.941     | 0.336     | 0.675     | 0.361     | doi: 10.1093/bioinformatics/btr604     |
+| R22_Ctrained     | 0.952     | 0.972     | 0.932     | 0.971     | 0.904     | This study     |
+| R22_LargeTrainingset     | 0.967     | 1     | 0.934     | 1     | 0.936     | This study     |
 
 Meanwhile, the hemolytic prediction model implemented in FACS has a comparable performance of the state-of-art methods previously tested by Chaudhary et al., [2016](https://www.nature.com/articles/srep22843) as shown in Table 3.
 
