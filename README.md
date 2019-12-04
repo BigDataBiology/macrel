@@ -182,27 +182,9 @@ We have provided to you example files that can help you to test your installed p
 
 ## Pipeline overview
 
-In general, FACS uses the pigz software to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. To make it clear, the processes are explained into small single steps:
+In general, FACS uses the pigz software to compress and decompress files quickly, as well as GNUParallel to make the shell processes faster and parallelized. The 22 descriptors adopted by FACS are hybrid comprising local and global contexts to do the sequence encoding. FACS performs firstly a distribution analysis of three classes of residues in two different features (Solvent accessibility and *Free energy to transfer from water to lipophilic phase*) as shown in Table 1. The novelty in this method is using the *Free energy to transfer from water to lipophilic phase* (FT) firstly described by Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x) to capture the spontaneity of the conformational change that AMPs suffer while their transference from water to the membrane. For more info about the other descriptors used in FACS and the algorithms used to train the classifiers, please refer to the FACS reference.
 
-1. Reads sorting and trimming (Trimmomatic);
-
-2. ORFs prediction (Prodigal_m);
-
-3. Sorting of sequences using sort with memory options;
-
-4. Clustering using uniq -c and memory options;
-
-5. Abundance is calculated after PALADIN mapping with the eXpress program;
-
-6. Descriptors calculations use R scripts that rely on R packages: Peptides, data.table, dplyr, parallel, doParallel;
-
-7. AMPs prediction and Hemolytic activity classification as well as the family identification is implemented in the R language and uses mostly the following R packages: randomForest, caret, data.table, dplyr;
-
-8. The final formatting of files is performed by shell functions.
-
-The 22 descriptors adopted by FACS are hybrid comprising local and global contexts to do the sequence encoding. FACS performs firstly a distribution analysis of three classes of residues in two different features (Solvent accessibility and *Free energy to transfer from water to lipophilic phase*) as shown in Table 1. The novelty in this method is using the *Free energy to transfer from water to lipophilic phase* (FT) firstly described by Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x) to capture the spontaneity of the conformational change that AMPs suffer while their transference from water to the membrane. For more info about the other descriptors used in FACS and the algorithms used to train the classifiers, please refer to the FACS reference.
-
-**Table 1.** Classes adopted to the sequence encoding of the distribution at the first residue of each class. The Solvent Accessibility was adopted as in previous studies (Dubchak et al. [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/), [1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667)), however, the new feature "Free energy to transfer to lipophilic phase" was adapted from Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x).
+**Table 1.** Classes adopted to the sequence encoding of the distribution at the first residue of each class. The Solvent Accessibility was adopted as in previous studies (Dubchak et al. [1995](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC41034/), [1999](https://www.ncbi.nlm.nih.gov/pubmed/10382667)), however, the new feature FT was adapted from Von Heijne and Blomberg, [1979](https://febs.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1432-1033.1979.tb13100.x).
 
 | Properties     | Class I     | Class II     | Class III     |
 |:--------------------------------------------------------:    |:------------------------:    |:------------------    |------------------:    |
@@ -242,7 +224,7 @@ Benchmark procedures showed that R22 models are efficient in retrieving AMPs wit
 **Table 2.** Comparison of FACS and other state-of-art AMP prediction systems. All systems were tested with the benchmark data set from the AMPEP study available in Bhadra et al. ([2018](doi:10.1038/s41598-018-19752-w)).
 
 | Model/Method     | Acc.     | Sp.     | Sn.     | Precision     | MCC     | Refererence     |
-|:--------------------:    |:-----:    |:-----:    |:-----:    |:---------:    |:-------:    |:-----:    |:----------------------------------:    |
+|:--------------------:    |:-----:    |:-----:    |:-----:    |:---------:    |:-------:    |:-----:   |
 | AMPep     | 0.962     | 0.965     | 0.95     | 0.913     | 0.9     | doi:10.1038/s41598-018-19752-w     |
 | Peptide Scanner v2     | 0.755     | 0.686     | 0.943     | 0.523     | 0.557     | doi: 10.1093/bioinformatics/bty179     |
 | CAMPr3-NN     | 0.728     | 0.704     | 0.794     | 0.494     | 0.445     | doi:  10.1093/nar/gkv1051     |
