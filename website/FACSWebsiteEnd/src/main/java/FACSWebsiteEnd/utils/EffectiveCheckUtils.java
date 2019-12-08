@@ -30,4 +30,8 @@ public class EffectiveCheckUtils {
             return false;
         }
     }
+
+    public static boolean arrayEffectiveCheck(Object[] objects){
+        return objects != null && objects.length > 0;
+    }
 }

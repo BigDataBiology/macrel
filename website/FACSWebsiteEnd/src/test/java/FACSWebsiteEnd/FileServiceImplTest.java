@@ -1,11 +1,15 @@
 package FACSWebsiteEnd;
 
+import FACSWebsiteEnd.Entity.FacsOutIdsTsv;
+import FACSWebsiteEnd.Entity.FacsOutTsv;
 import FACSWebsiteEnd.service.FileService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 /**
  * @Author: HiramHe
@@ -27,5 +31,18 @@ public class FileServiceImplTest {
         String extension = "fastq";
 
         fileService.saveTextToFile(text,extension);
+    }
+
+    @Test
+    public void testReadTsvGzToObject(){
+
+        String fullFilePath = "FACS_OUT.tsv.gz";
+        Object objectType = new FacsOutTsv();
+
+        List<Object> objects = fileService.readTsvGzToObject(fullFilePath, objectType);
+
+        for (Object object : objects) {
+            System.out.println(object);
+        }
     }
 }

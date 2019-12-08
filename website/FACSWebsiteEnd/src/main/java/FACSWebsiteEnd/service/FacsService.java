@@ -1,8 +1,9 @@
 package FACSWebsiteEnd.service;
 
-import FACSWebsiteEnd.Entity.DataUploaded;
 import FACSWebsiteEnd.Entity.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @Author: HiramHe
@@ -11,7 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface FacsService {
 
-    FileInfo saveSequenceToFile(String sequence);
+    FileInfo saveSequenceToFile(String sequence, String dataType);
     FileInfo saveFile(MultipartFile multipartFile);
-    Boolean callShell(String sequenceType, String mode, String read_1);
+    List<Object> callShell(FileInfo fileInfo, String dataType);
+
 }

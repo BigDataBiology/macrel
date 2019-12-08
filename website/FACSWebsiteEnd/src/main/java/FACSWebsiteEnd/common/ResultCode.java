@@ -11,13 +11,17 @@ public enum ResultCode {
     /* 成功状态码 */
     SUCCESS(1,"成功"),
 
-    /* 文件相关：10001-19999 */
+    /* prediction相关：10001-19999 */
     FILE_SAVE_SUCCESS(10001, "文件上传成功."),
     FILE_IS_NULL(10002, "没有选择文件或文件内容为空."),
     FILE_SAVE_FAIL(10003, "内部错误,文件保存失败."),
     DATA_IS_EMPTY(10004, "至少输入序列文本或者上传文件"),
     FILETYPE_NOT_FASTQ_ERROR(10005, "非fastq文件."),
     FILETYPE_UNKNOWN_ERROR(10006, "未知文件."),
+    DATATYPE_UNSPECIFIED(10007, "未指定数据类型."),
+    FILETYPE_NOT_FASTA_OR_FA_ERROR(10008, "上传的文件格式需为fasta或者fa."),
+    FILETYPE__ERROR(10009, "文件类型错误."),
+    DATATYPE__EMPTY(10010, "请选择数据类型."),
 
     /* 反馈相关： 20001-29999*/
     FEEDBACK_SUCCESS(20001,"反馈成功"),

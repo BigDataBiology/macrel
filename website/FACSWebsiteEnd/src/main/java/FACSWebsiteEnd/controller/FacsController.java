@@ -1,6 +1,6 @@
 package FACSWebsiteEnd.controller;
 
-import FACSWebsiteEnd.Entity.DataUploaded;
+import FACSWebsiteEnd.Entity.PredictionForm;
 import FACSWebsiteEnd.Entity.FileInfo;
 import FACSWebsiteEnd.common.Constant;
 import FACSWebsiteEnd.common.ResultCode;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,46 +33,67 @@ public class FacsController {
     private FacsService facsService;
 
     @PostMapping("/prediction")
-    public ResultObject analysis(DataUploaded dataUploaded){
+    public ResultObject analysis(PredictionForm predictionForm){
 
-        FileInfo fileInfo;
+        FileInfo fileInfo = null;
+        String dataType = predictionForm.getDataType();
+
+        if (!EffectiveCheckUtils.strEffectiveCheck(dataType)){
+            return ResultObject.failure(ResultCode.DATATYPE__EMPTY);
+        }
 
         // 校验上传的文本和文件
-        if (!EffectiveCheckUtils.strEffectiveCheck(dataUploaded.getSequence())
-                && !EffectiveCheckUtils.fileEffectiveCheck(dataUploaded.getFile())){
+        if (!EffectiveCheckUtils.strEffectiveCheck(predictionForm.getTextData())
+                && !EffectiveCheckUtils.fileEffectiveCheck(predictionForm.getFile())){
             return ResultObject.failure(ResultCode.DATA_IS_EMPTY);
         }
 
         // 上传的是文本
-        if (EffectiveCheckUtils.strEffectiveCheck(dataUploaded.getSequence())){
-            fileInfo = facsService.saveSequenceToFile(dataUploaded.getSequence());
+        if (EffectiveCheckUtils.strEffectiveCheck(predictionForm.getTextData())){
+            fileInfo = facsService.saveSequenceToFile(predictionForm.getTextData(),predictionForm.getDataType());
         } else {
             // 上传的是文件
-            MultipartFile file = dataUploaded.getFile();
+            MultipartFile file = predictionForm.getFile();
             Map fileInformation = FileUtils.getFileInformation(file);
 
-            String type = fileInformation.get("type").toString();
+            String extension = fileInformation.get("extension").toString();
 
-            if (type != null){
+            if (extension != null){
                 // 判断是否是指定类型的文件
-                if (Constant.EXTENSION.equals(type)){
-                    fileInfo = facsService.saveFile(file);
-                }else {
-                    return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTQ_ERROR);
+
+                // PEPTIDES，上传文件的格式需为 fasta、fa
+                if (Constant.PEPTIDES.equals(dataType)){
+                    if (Constant.FASTA.equals(extension) || Constant.FA.equals(extension)){
+                        fileInfo = facsService.saveFile(file);
+                    }else {
+                        return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTA_OR_FA_ERROR);
+                    }
+                } else if (Constant.NUCLEOTIDE.equals(dataType)){
+                    // NUCLEOTIDE，上传的文件格式需为 fastaq
+                    if (Constant.FASTTQ.equals(extension)){
+                        fileInfo = facsService.saveFile(file);
+                    }else {
+                        return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTQ_ERROR);
+                    }
+                } else {
+                    return ResultObject.failure(ResultCode.FILETYPE__ERROR);
                 }
+
+
             } else {
                 return ResultObject.failure(ResultCode.FILETYPE_UNKNOWN_ERROR);
             }
 
         }
 
-        //todo 调用脚本
-        String sequenceType = "protein";
-        String mode = "r";
-        String read_1 = "pathOfRead_1";
-        facsService.callShell(sequenceType,mode,read_1);
+        // 校验数据类型是否为空
+        if (!EffectiveCheckUtils.strEffectiveCheck(predictionForm.getDataType())){
+            return ResultObject.failure(ResultCode.DATATYPE_UNSPECIFIED);
+        }
 
-        return ResultObject.success(fileInfo);
+        List<Object> objects = facsService.callShell(fileInfo, dataType);
+
+        return ResultObject.success(objects);
     }
 
 }

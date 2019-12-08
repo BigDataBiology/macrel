@@ -1,11 +1,17 @@
 package FACSWebsiteEnd;
 
+import FACSWebsiteEnd.utils.CommandUtils;
 import FACSWebsiteEnd.utils.RemoteUtils;
+import com.jcraft.jsch.JSch;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @Author: HiramHe
@@ -81,6 +87,32 @@ public class RemoteUtilsTest {
                 +space+"--mode"+space+"r"
                 +space+"--fwd"+space+"./FACS-master/.read_1.paired.fastq.gz";
 
+
+
         RemoteUtils.remoteInvokeShell(ip,port,username,password,command4);
     }
+
+    @Test
+    public void testRemoteInvokeFACS01(){
+
+        String command1 = "";
+
+        Map<String,Object> commandParams1 = new HashMap<String, Object>();
+        commandParams1.put("--mode","p");
+        commandParams1.put("--fasta","./FACS-master/expep.fa");
+        commandParams1.put("-t",1);
+        commandParams1.put("--block",1000000);
+        commandParams1.put("--outfolder","facsOut");
+
+        String bash = "bash";
+        String shellPath = "./FACS-master/FACS.sh";
+        command1 = CommandUtils.buildShellCommand(bash,shellPath,commandParams1);
+
+        RemoteUtils.remoteInvokeShell(ip,port,username,password,command1);
+    }
+
+    public void testjsch(){
+        JSch jSch = new JSch();
+    }
+
 }
