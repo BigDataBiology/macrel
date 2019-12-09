@@ -107,11 +107,11 @@ There are few options to make the running of the program a bit customized and sp
     
     -h, --help            Show this help message
     
-    -m          Mode of operation, type:
-                "c" to work with contigs,
-                "p" to predict AMPs directly from a peptides FASTA file,
-                "r" to work with reads, 
-                "a" to map reads against AMP output database and generate abundances table
+    -m                     Mode of operation, type:
+                           "c" to work with contigs,
+                           "p" to predict AMPs directly from a peptides FASTA file,
+                           "r" to work with reads, 
+                           "a" to map reads against AMP output database and generate abundances table
 		
     --fasta               Compressed (or not gzipped) contigs or peptides fasta file
     
