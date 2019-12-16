@@ -30,13 +30,15 @@ public class FacsServiceImpl implements FacsService {
     FileService fileService;
 
     @Override
-    public void callShell(FileInfo fileInfo, String currentOutDir, String dataType) {
+    public void callShellScript(FileInfo fileInfo, String currentOutDir, String dataType, Boolean isRemote) {
 
         String command = "";
 
         Map<String,Object> commandParams = new HashMap<String, Object>();
         String bash = Constant.BASH;
         String shellPath = Constant.FACS_HOME + Constant.FACS_SHELL;
+
+        String tempFolderName = Constant.FACS_TEMP_FOLDER_PREFIX + fileInfo.getFilenameWithOutExtension();
 
         if (Constant.PEPTIDES.equals(dataType)){
             // run FACS on peptides
@@ -46,18 +48,20 @@ public class FacsServiceImpl implements FacsService {
             commandParams.put("-t",1);
             commandParams.put("--block",1000000);
             commandParams.put("--outfolder",currentOutDir);
+            commandParams.put("--tmp",tempFolderName);
 
             command = CommandUtils.buildShellCommand(bash,shellPath,commandParams);
 //            System.out.println(command);
 
-            // 远程执行
-//            RemoteUtils.remoteInvokeShell(command);
-
-            // 本地执行
-            CommandUtils.executeLocalCommand(command);
+            if (!isRemote){
+                // 本地执行
+                CommandUtils.executeLocalCommand(command);
+            }else {
+                // todo：远程执行
+                RemoteUtils.remoteInvokeShell(command);
+            }
 
         } else if(Constant.CONTIGS.equals(dataType)){
-            // todo
             // run FACS on contigs
 
             commandParams.put("--mode","c");
@@ -65,15 +69,18 @@ public class FacsServiceImpl implements FacsService {
             commandParams.put("-t",1);
             commandParams.put("--block",100000);
             commandParams.put("--outfolder",currentOutDir);
+            commandParams.put("--tmp",tempFolderName);
 
             command = CommandUtils.buildShellCommand(bash,shellPath,commandParams);
 //            System.out.println(command);
 
-            // 远程执行
-//            RemoteUtils.remoteInvokeShell(command);
-
-            // 本地执行
-            CommandUtils.executeLocalCommand(command);
+            if (!isRemote){
+                // 本地执行
+                CommandUtils.executeLocalCommand(command);
+            } else {
+                // todo：远程执行
+                RemoteUtils.remoteInvokeShell(command);
+            }
 
         }
     }

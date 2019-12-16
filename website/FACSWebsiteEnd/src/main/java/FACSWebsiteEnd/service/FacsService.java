@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface FacsService {
 
-    void callShell(FileInfo fileInfo, String currentOutDir, String dataType);
+    void callShellScript(FileInfo fileInfo, String currentOutDir, String dataType, Boolean isRemote);
     List<Object> readLocalResults(String filePath);
     List<Object> readRemoteResults(String outfolderPath,String filename);
 

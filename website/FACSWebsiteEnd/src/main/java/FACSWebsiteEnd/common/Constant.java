@@ -18,7 +18,8 @@ public class Constant {
     public static final String FILESAVED_PEPTIDES_DIR_PREFIX = "peptides-";
     public static final String FILESAVED_REMOTE_DIR = FILESAVED_LINUX_DIR;
     public static final String FACS_HOME = "/home/HiramHe/FACS-master/";
-    public static final String FACS_OUT_PARENT = "/home/HiramHe/facsOut";
+    public static final String FACS_OUT_PARENT = "/home/HiramHe/facs_out";
+    public static final String FACS_TEMP_FOLDER_PREFIX = "temp-";
     public static final String FACS_ALLOUT_FOLDER_NAME = "facs_out";
     public static final String FACS_OUT_FILENAME = "FACS_OUT.tsv.gz";
     public static final String FACS_OUT_IDS_FILENAME = "FACS_OUT.ids.tsv.gz";

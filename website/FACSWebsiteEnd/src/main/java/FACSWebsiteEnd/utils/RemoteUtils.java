@@ -14,7 +14,7 @@ public class RemoteUtils {
 
     private static Connection conn;
 
-    public static Boolean login(String ip,Integer port,String username,String password){
+    private static Boolean login(String ip,Integer port,String username,String password){
         conn = new Connection(ip,port);
 
         try {

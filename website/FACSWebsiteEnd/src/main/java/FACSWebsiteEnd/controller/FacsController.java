@@ -46,6 +46,8 @@ public class FacsController {
 
         String savedDir = FacsUtils.makeSavedFolderOnLinux(jarPath);
         String allOutDir = FacsUtils.makeAllOutFolderOnLinux(jarPath);
+        // todo:just for test
+//        String savedDir = Constant.FILESAVED_WIN_DIR;
 
         FileInfo fileInfo = null;
         String dataType = predictionForm.getDataType();
@@ -96,16 +98,21 @@ public class FacsController {
         String currentOutDir = FacsUtils.makeCurrentOutFolderOnLinux(allOutDir,outfolderName);
 
         // 调用pipeline，对数据进行处理
-        facsService.callShell(fileInfo, currentOutDir, dataType);
+        // todo: just for test
+//        String inputFilePath = "/home/HiramHe/facs_data_uploadByUser/sequence-7ead845137a64d08b0092b8224766e25.fa";
+//        fileInfo.setPath(inputFilePath);
+//        String currentOutDir = "/home/HiramHe/facs_out/sequence-7ead845137a64d08b0092b8224766e25";
 
-        String filePath = currentOutDir + Constant.FACS_OUT_FILENAME;
+        facsService.callShellScript(fileInfo, currentOutDir, dataType,false);
+
+        String outputFilePath = currentOutDir + Constant.FACS_OUT_FILENAME;
         // 读取结果
-        List<Object> objects = facsService.readLocalResults(filePath);
+        List<Object> objects = facsService.readLocalResults(outputFilePath);
 
         // 封装数据
         PredictionOut predictionOut = new PredictionOut();
         predictionOut.setObjects(objects);
-        predictionOut.setFilePath(filePath);
+        predictionOut.setFilePath(outputFilePath);
 
         // 返回数据
         return ResultObject.success(predictionOut);
