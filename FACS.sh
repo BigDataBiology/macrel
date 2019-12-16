@@ -600,7 +600,7 @@ do
 	colv=`awk -F'\t' '{print NF}' $i | sort -nu`
 	if [[ "$colu" == "1" ]] && [[ "$colv" == "25"  ]]
 	then
-		ce=`grep "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}'`
+		ce=`grep -w "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}'`
 		coe=$(($ce+1))
 		rown=`awk '{print NR}' $i | tail -1`
 		if [[ "$rown" == "$coe" ]]
