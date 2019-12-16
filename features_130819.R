@@ -44,7 +44,7 @@ if(!require(doParallel)){
 ##########################################################################
 print("[ M :::: Setting speeding up configs ]")
 intervalStart <- Sys.time()
-cluster <- makeCluster(detectCores() - 1, # number of cores to use
+cluster <- makeCluster(detectCores(), # number of cores to use
                          type = "FORK") # type of cluster
 registerDoParallel(cluster)
 set.seed(95014)
