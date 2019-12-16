@@ -30,7 +30,7 @@ public class FileServiceImplTest {
                 "who are you";
         String extension = "fastq";
 
-        fileService.saveTextToFile(text,extension);
+        fileService.saveTextToFile(text,"",extension);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class FileServiceImplTest {
         String fullFilePath = "FACS_OUT.tsv.gz";
         Object objectType = new FacsOutTsv();
 
-        List<Object> objects = fileService.readTsvGzToObject(fullFilePath, objectType);
+        List<Object> objects = fileService.readLocalTsvGzToObject(fullFilePath, objectType);
 
         for (Object object : objects) {
             System.out.println(object);

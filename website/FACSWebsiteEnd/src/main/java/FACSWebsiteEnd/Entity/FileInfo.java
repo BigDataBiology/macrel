@@ -7,27 +7,45 @@ package FACSWebsiteEnd.Entity;
  */
 public class FileInfo {
 
-    private String filename;
+    private String filenameWithExtension;
+    private String filenameWithOutExtension;
+    private String dir;
     private String path;
-    private String fullpath;
     private String extension;
 
     public FileInfo() {
     }
 
-    public FileInfo(String filename, String path, String fullpath, String extension) {
-        this.filename = filename;
+    public FileInfo(String filenameWithExtension, String filenameWithOutExtension, String dir, String path, String extension) {
+        this.filenameWithExtension = filenameWithExtension;
+        this.filenameWithOutExtension = filenameWithOutExtension;
+        this.dir = dir;
         this.path = path;
-        this.fullpath = fullpath;
         this.extension = extension;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getFilenameWithExtension() {
+        return filenameWithExtension;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setFilenameWithExtension(String filenameWithExtension) {
+        this.filenameWithExtension = filenameWithExtension;
+    }
+
+    public String getFilenameWithOutExtension() {
+        return filenameWithOutExtension;
+    }
+
+    public void setFilenameWithOutExtension(String filenameWithOutExtension) {
+        this.filenameWithOutExtension = filenameWithOutExtension;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
     }
 
     public String getPath() {
@@ -36,14 +54,6 @@ public class FileInfo {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public String getFullpath() {
-        return fullpath;
-    }
-
-    public void setFullpath(String fullpath) {
-        this.fullpath = fullpath;
     }
 
     public String getExtension() {
@@ -57,9 +67,10 @@ public class FileInfo {
     @Override
     public String toString() {
         return "FileInfo{" +
-                "filename='" + filename + '\'' +
+                "filenameWithExtension='" + filenameWithExtension + '\'' +
+                ", filenameWithOutExtension='" + filenameWithOutExtension + '\'' +
+                ", dir='" + dir + '\'' +
                 ", path='" + path + '\'' +
-                ", fullpath='" + fullpath + '\'' +
                 ", extension='" + extension + '\'' +
                 '}';
     }

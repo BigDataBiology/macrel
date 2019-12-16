@@ -1,12 +1,9 @@
 package FACSWebsiteEnd.utils;
 
-import ch.ethz.ssh2.ChannelCondition;
-import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.Session;
+import FACSWebsiteEnd.common.Constant;
+import ch.ethz.ssh2.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * @Author: HiramHe
@@ -15,26 +12,32 @@ import java.io.InputStreamReader;
  */
 public class RemoteUtils {
 
+    private static Connection conn;
+
+    public static Boolean login(String ip,Integer port,String username,String password){
+        conn = new Connection(ip,port);
+
+        try {
+            conn.connect();
+            return conn.authenticateWithPassword(username,password);
+        } catch (IOException e) {
+            System.out.println("登录远程服务器失败:"+ip);
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     /**
      * @param command 只接受字符串形式的命令
      */
 
     public static void remoteInvokeShell(String command){
 
-        String ip = "39.106.68.204";
-        int port = 22;
-        String username = "HiramHe";
-        String password = "hiram1024";
-
-        Connection connection = null;
-
-        try {
-
-            connection = new Connection(ip,port);
-            connection.connect();
-
-            if (connection.authenticateWithPassword(username,password)){
-                Session session = connection.openSession();
+        if (login(Constant.REMOTE_SERVER_IP,Constant.REMOTE_SERVER_PORT,Constant.REMOTE_SERVER_USERNAME,Constant.REMOTE_SERVER_PASSWORD)){
+            Session session = null;
+            try {
+                session = conn.openSession();
                 session.execCommand(command);
 
                 String charsetName = "gbk";
@@ -51,37 +54,31 @@ public class RemoteUtils {
 
                 session.waitForCondition(ChannelCondition.EXIT_STATUS, 0);
                 int ret = session.getExitStatus();
-                System.out.println("exitStatus:"+ret);
+//                System.out.println("exitStatus:"+ret);
 
                 br.close();
                 brErr.close();
-
-            } else {
-                System.out.println("登录远程服务器失败:"+ip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if (conn != null) {
+                    conn.close();
+                }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
     }
 
     public static void remoteInvokeShell
             (String ip, int port, String username, String password, String command){
 
-        Connection connection = null;
-
-        try {
-
-            connection = new Connection(ip,port);
-            connection.connect();
-
-            if (connection.authenticateWithPassword(username,password)){
-                Session session = connection.openSession();
-                session.execCommand(command);
+        if (login(ip,port,username,password)){
+            Session session = null;
+            try {
+                session = conn.openSession();
+                session.execCommand("cd upload");
+                session.execCommand("ls");
+//                session.execCommand(command);
 
                 String charsetName = "gbk";
                 BufferedReader br = new BufferedReader(new InputStreamReader(session.getStdout(),charsetName));
@@ -97,21 +94,37 @@ public class RemoteUtils {
 
                 session.waitForCondition(ChannelCondition.EXIT_STATUS, 0);
                 int ret = session.getExitStatus();
-                System.out.println("exitStatus:"+ret);
+//                System.out.println("exitStatus:"+ret);
 
                 br.close();
                 brErr.close();
-
-            } else {
-                System.out.println("登录远程服务器失败:"+ip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if (conn != null) {
+                    conn.close();
+                }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
+    }
+
+    public static void copyRemoteFile(String remotePath,String filename,String localPath){
+
+        if (login(Constant.REMOTE_SERVER_IP,Constant.REMOTE_SERVER_PORT,Constant.REMOTE_SERVER_USERNAME,Constant.REMOTE_SERVER_PASSWORD)){
+
+            try {
+                SCPClient scpClient = conn.createSCPClient();
+                SCPInputStream scpInputStream = scpClient.get(remotePath);
+                File file = new File(localPath+filename);
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+                byte[] bytes = new byte[1024];
+                scpInputStream.read(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 }

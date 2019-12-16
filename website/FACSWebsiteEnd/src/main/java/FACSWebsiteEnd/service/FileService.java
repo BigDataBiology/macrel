@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface FileService {
 
-    FileInfo upload(MultipartFile file);
+    FileInfo uploadFileToLocal(MultipartFile file, String fullDir);
 
-    FileInfo saveTextToFile(String text, String extension);
+    FileInfo saveTextToFile(String text, String fullDir, String extension);
 
-    List<Object> readTsvGzToObject(String fullFilePath, Object object);
+    List<Object> readLocalTsvGzToObject(String fullFilePath, Object object);
 }

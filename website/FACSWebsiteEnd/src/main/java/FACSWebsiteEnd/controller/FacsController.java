@@ -2,19 +2,22 @@ package FACSWebsiteEnd.controller;
 
 import FACSWebsiteEnd.Entity.PredictionForm;
 import FACSWebsiteEnd.Entity.FileInfo;
+import FACSWebsiteEnd.Entity.PredictionOut;
 import FACSWebsiteEnd.common.Constant;
 import FACSWebsiteEnd.common.ResultCode;
 import FACSWebsiteEnd.common.ResultObject;
 import FACSWebsiteEnd.service.FacsService;
-import FACSWebsiteEnd.utils.EffectiveCheckUtils;
-import FACSWebsiteEnd.utils.FileUtils;
+import FACSWebsiteEnd.service.FileService;
+import FACSWebsiteEnd.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -25,21 +28,31 @@ import java.util.Map;
  */
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RequestMapping("/facs")
 public class FacsController {
 
     @Autowired
     private FacsService facsService;
+    @Autowired
+    private FileService fileService;
+
+    private ApplicationHome applicationHome = new ApplicationHome(getClass());
+    private File jarFile = applicationHome.getSource();
+    private String jarPath = jarFile.getParentFile().toString();
 
     @PostMapping("/prediction")
     public ResultObject analysis(PredictionForm predictionForm){
 
+        String savedDir = FacsUtils.makeSavedFolderOnLinux(jarPath);
+        String allOutDir = FacsUtils.makeAllOutFolderOnLinux(jarPath);
+
         FileInfo fileInfo = null;
         String dataType = predictionForm.getDataType();
 
+        // 校验数据类型是否为空
         if (!EffectiveCheckUtils.strEffectiveCheck(dataType)){
-            return ResultObject.failure(ResultCode.DATATYPE__EMPTY);
+            return ResultObject.failure(ResultCode.DATATYPE_EMPTY);
         }
 
         // 校验上传的文本和文件
@@ -48,9 +61,10 @@ public class FacsController {
             return ResultObject.failure(ResultCode.DATA_IS_EMPTY);
         }
 
+        // 保存数据
         // 上传的是文本
         if (EffectiveCheckUtils.strEffectiveCheck(predictionForm.getTextData())){
-            fileInfo = facsService.saveSequenceToFile(predictionForm.getTextData(),predictionForm.getDataType());
+            fileInfo = fileService.saveTextToFile(predictionForm.getTextData(),savedDir,Constant.FA);
         } else {
             // 上传的是文件
             MultipartFile file = predictionForm.getFile();
@@ -59,41 +73,42 @@ public class FacsController {
             String extension = fileInformation.get("extension").toString();
 
             if (extension != null){
-                // 判断是否是指定类型的文件
+                // 判断是否是指定类型的文件,格式需为 fasta、fa
 
-                // PEPTIDES，上传文件的格式需为 fasta、fa
-                if (Constant.PEPTIDES.equals(dataType)){
-                    if (Constant.FASTA.equals(extension) || Constant.FA.equals(extension)){
-                        fileInfo = facsService.saveFile(file);
-                    }else {
-                        return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTA_OR_FA_ERROR);
-                    }
-                } else if (Constant.NUCLEOTIDE.equals(dataType)){
-                    // NUCLEOTIDE，上传的文件格式需为 fastaq
-                    if (Constant.FASTTQ.equals(extension)){
-                        fileInfo = facsService.saveFile(file);
-                    }else {
-                        return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTQ_ERROR);
-                    }
+                if (Constant.FASTA.equals(extension) || Constant.FA.equals(extension)){
+                    fileInfo = fileService.uploadFileToLocal(file,savedDir);
                 } else {
-                    return ResultObject.failure(ResultCode.FILETYPE__ERROR);
+                    return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTA_OR_FA_ERROR);
                 }
-
-
             } else {
                 return ResultObject.failure(ResultCode.FILETYPE_UNKNOWN_ERROR);
             }
 
         }
+//        System.out.println(fileInfo);
 
-        // 校验数据类型是否为空
-        if (!EffectiveCheckUtils.strEffectiveCheck(predictionForm.getDataType())){
-            return ResultObject.failure(ResultCode.DATATYPE_UNSPECIFIED);
-        }
+        // 调用脚本
+        // windows上远程测试时用,在Linux上运行时请注释掉
+//        fileInfo.setFullpath(Constant.FILESAVED_REMOTE_DIR + fileInfo.getFilename());
 
-        List<Object> objects = facsService.callShell(fileInfo, dataType);
+        // 在Linux上把当前输出的文件夹创建出来
+        String outfolderName = fileInfo.getFilenameWithOutExtension();
+        String currentOutDir = FacsUtils.makeCurrentOutFolderOnLinux(allOutDir,outfolderName);
 
-        return ResultObject.success(objects);
+        // 调用pipeline，对数据进行处理
+        facsService.callShell(fileInfo, currentOutDir, dataType);
+
+        String filePath = currentOutDir + Constant.FACS_OUT_FILENAME;
+        // 读取结果
+        List<Object> objects = facsService.readLocalResults(filePath);
+
+        // 封装数据
+        PredictionOut predictionOut = new PredictionOut();
+        predictionOut.setObjects(objects);
+        predictionOut.setFilePath(filePath);
+
+        // 返回数据
+        return ResultObject.success(predictionOut);
     }
 
 }

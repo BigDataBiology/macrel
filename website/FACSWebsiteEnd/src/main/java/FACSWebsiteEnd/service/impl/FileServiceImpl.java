@@ -29,25 +29,32 @@ import java.util.zip.GZIPInputStream;
 public class FileServiceImpl implements FileService {
 
     @Override
-    public FileInfo upload(MultipartFile file) {
+    public FileInfo uploadFileToLocal(MultipartFile file, String savedDir) {
 
         FileInfo fileInfo = new FileInfo();
 
         Map information = FileUtils.getFileInformation(file);
-        String filename = information.get("filename").toString();
+
+        String filenameWithExtension = information.get("filenameWithExtension").toString();
+        String filenameWithOutExtension = information.get("filenameWithOutExtension").toString();
         String extension = information.get("extension").toString();
 
-        fileInfo.setFilename(filename);
-        fileInfo.setExtension(extension);
+        // 对文件重命名
+        filenameWithOutExtension = filenameWithOutExtension + "-" + CommonUtils.getUUID();
+        filenameWithExtension = filenameWithOutExtension + "." + extension;
 
-        String fullpath = Constant.FILESAVED_DIR+filename;
-        fileInfo.setPath(Constant.FILESAVED_DIR);
-        fileInfo.setFullpath(fullpath);
+        String path = savedDir + filenameWithExtension;
+
+        fileInfo.setFilenameWithExtension(filenameWithExtension);
+        fileInfo.setFilenameWithOutExtension(filenameWithOutExtension);
+        fileInfo.setDir(savedDir);
+        fileInfo.setPath(path);
+        fileInfo.setExtension(extension);
 
         BufferedOutputStream outputStream = null;
         try {
 
-            outputStream = new BufferedOutputStream(new FileOutputStream(fullpath));
+            outputStream = new BufferedOutputStream(new FileOutputStream(path));
             outputStream.write(file.getBytes());
             outputStream.flush();
 
@@ -68,15 +75,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileInfo saveTextToFile(String text, String extension) {
+    public FileInfo saveTextToFile(String text, String savedDir, String extension) {
 
         String dot = ".";
-        String fileName = Constant.TEXTFILEPREX + CommonUtils.getUUID() + dot + extension;
-        String fullpath = Constant.FILESAVED_DIR + fileName;
+        String filenameWithOutExtension = Constant.TEXTFILEPREX + CommonUtils.getUUID();
+        String filenameWithExtension =  filenameWithOutExtension + dot + extension;
+        String path = savedDir + filenameWithExtension;
 
-        FileInfo fileInfo = new FileInfo(fileName, Constant.FILESAVED_DIR, fullpath, extension);
+        FileInfo fileInfo = new FileInfo(filenameWithExtension,filenameWithOutExtension, savedDir, path, extension);
 
-        File outputFile = new File(fullpath);
+        File outputFile = new File(path);
 
         BufferedWriter bufferedWriter = null;
 
@@ -104,7 +112,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<Object> readTsvGzToObject(String fullFilePath, Object object){
+    public List<Object> readLocalTsvGzToObject(String filePath, Object object){
 
         // 将读取的tsv的每一行保存到对象中，再将对象放到集合中返回
         List<Object> objects = new ArrayList<Object>();
@@ -112,7 +120,7 @@ public class FileServiceImpl implements FileService {
         // try start.
         try {
             // 文件输入流
-            FileInputStream fileInputStream = new FileInputStream(fullFilePath);
+            FileInputStream fileInputStream = new FileInputStream(filePath);
             // 解压工作流
             GZIPInputStream gzipInputStream = new GZIPInputStream(fileInputStream);
             Scanner scanner = new Scanner(gzipInputStream);

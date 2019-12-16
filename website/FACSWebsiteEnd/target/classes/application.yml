@@ -4,10 +4,9 @@ server:
 spring:
   servlet:
     multipart:
-      # 上传中文件的大小
-      max-request-size: 10MB
-      # 上传单个文件的大小
-      file-size-threshold: 10MB
-
-  profiles:
-    active: 163
+      # 启用文件上传
+      enabled: true
+      # 上传一个文件最大值,默认1MB
+      max-file-size: 2MB
+      # 上传多个文件最大值,默认10MB
+      max-request-size: 20MB

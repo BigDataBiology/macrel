@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
 Test set: FACSWebsiteEnd.CommonUtilsTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in FACSWebsiteEnd.CommonUtilsTest
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.852 s <<< FAILURE! - in FACSWebsiteEnd.CommonUtilsTest
+testGetCurrentTime  Time elapsed: 0 s  <<< ERROR!
+java.lang.IllegalStateException: Failed to load ApplicationContext
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'facsController' defined in file [E:\ISYSLAB\fudan_ISTBI\FACS\FACSWebsiteEnd\target\classes\FACSWebsiteEnd\controller\FacsController.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [FACSWebsiteEnd.controller.FacsController]: Constructor threw exception; nested exception is java.lang.NullPointerException
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [FACSWebsiteEnd.controller.FacsController]: Constructor threw exception; nested exception is java.lang.NullPointerException
+Caused by: java.lang.NullPointerException
+

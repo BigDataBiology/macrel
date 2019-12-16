@@ -12,8 +12,8 @@ import java.util.List;
  */
 public interface FacsService {
 
-    FileInfo saveSequenceToFile(String sequence, String dataType);
-    FileInfo saveFile(MultipartFile multipartFile);
-    List<Object> callShell(FileInfo fileInfo, String dataType);
+    void callShell(FileInfo fileInfo, String currentOutDir, String dataType);
+    List<Object> readLocalResults(String filePath);
+    List<Object> readRemoteResults(String outfolderPath,String filename);
 
 }

@@ -77,7 +77,7 @@ public class FacsOutTsv {
     @Override
     public String toString() {
         return "FacsOutTsv{" +
-                "Access='" + Access + '\'' +
+                ", Access='" + Access + '\'' +
                 ", Sequence='" + Sequence + '\'' +
                 ", AMP_family='" + AMP_family + '\'' +
                 ", AMP_probability=" + AMP_probability +

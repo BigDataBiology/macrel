@@ -13,16 +13,21 @@ import java.util.Map;
 public class FileUtils {
 
     public static Map getFileInformation(MultipartFile file){
+
         Map<String,String> infoMap = new HashMap<String,String>();
 
-        String extension = null;
-        String filename = file.getOriginalFilename();
-
-        infoMap.put("filename",filename);
+        String originalFilename = file.getOriginalFilename();
 
         // 获取上传文件的类型
-        extension = filename.indexOf(".") != -1 ?
-                filename.substring(filename.lastIndexOf(".")+1) : null;
+        String extension = originalFilename.indexOf(".") != -1 ?
+                originalFilename.substring(originalFilename.lastIndexOf(".")+1) : null;
+
+        int lengthOfSuffix = extension.length() + 1;
+
+        String filenameWithOutExtension = originalFilename.substring(0,originalFilename.length()-lengthOfSuffix);
+
+        infoMap.put("filenameWithExtension",originalFilename);
+        infoMap.put("filenameWithOutExtension",filenameWithOutExtension);
         infoMap.put("extension",extension);
 
         return infoMap;

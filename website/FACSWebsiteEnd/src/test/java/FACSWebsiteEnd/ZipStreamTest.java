@@ -7,10 +7,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.FileInputStream;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
 
 /**
  * @Author: HiramHe

@@ -1,5 +1,6 @@
 package FACSWebsiteEnd;
 
+import FACSWebsiteEnd.common.Constant;
 import FACSWebsiteEnd.utils.CommandUtils;
 import FACSWebsiteEnd.utils.RemoteUtils;
 import com.jcraft.jsch.JSch;
@@ -33,10 +34,10 @@ public class RemoteUtilsTest {
      */
     @Before
     public void initParam(){
-        this.ip = "39.106.68.204";
-        this.port = 22;
-        this.username = "HiramHe";
-        this.password = "hiram1024";
+        this.ip = Constant.REMOTE_SERVER_IP;
+        this.port = Constant.REMOTE_SERVER_PORT;
+        this.username = Constant.REMOTE_SERVER_USERNAME;
+        this.password = Constant.REMOTE_SERVER_PASSWORD;
     }
 
     /**
@@ -108,7 +109,7 @@ public class RemoteUtilsTest {
         String shellPath = "./FACS-master/FACS.sh";
         command1 = CommandUtils.buildShellCommand(bash,shellPath,commandParams1);
 
-        RemoteUtils.remoteInvokeShell(ip,port,username,password,command1);
+//        RemoteUtils.remoteInvokeShell(ip,port,username,password,command1);
     }
 
     public void testjsch(){
