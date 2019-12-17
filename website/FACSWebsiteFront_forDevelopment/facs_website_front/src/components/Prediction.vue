@@ -56,18 +56,18 @@
 
                             <br/>
                             <el-form-item class="btns">
-                                <el-button type="primary" @click="onSubmit('pFormRef')">submit</el-button>
-                                <el-button type="danger" @click="resetForm('pFormRef')">cancel</el-button>
-                                <el-button type="info" @click="onExamle('pFormRef')">example</el-button>
+                                <el-button type="primary" @click="onSubmit('pFormRef')">Submit</el-button>
+                                <el-button type="danger" @click="resetForm('pFormRef')">Clear Form</el-button>
+                                <el-button type="info" @click="onExample('pFormRef')">Example</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
                 </div>
                 <div class="introducion">
-                    <p>Antimicrobial peptides (AMPs) are small proteins (10–100 amino acids) that through interaction with microbial membranes can either cause lysis or interfere intracellular molecular targets. The rapid growth of antibiotic-resistant microorganisms in the last years became a world health problem. Thus, AMPs could represent newer antibiotic treatments. Recently, with the high-throughput sequencing technologies, more and more genomic and metagenomic sequences have been produced but their prospection still is not promoted. The Fast AMPs Classification System (FACS) is a pipeline that overcomes most of the problems associated to the prospection of AMPs in high throughput data sets analyzing diverse types of inputs (reads, contigs, protein sequences). The protein sequences predicted as AMPs by FACS are, usually, specific and accurate, what can reduce the cost of experiments.</p>
-                    <p>FACS uses machine learning to select which peptides have more probability to be an AMP. Furthermore, using the smallest set of descriptors so far reported to this task (22), FACS is also capable to perform the classification of AMPs into hemolytic and non-hemolytic peptides. This allows to select the most interesting peptides for further testing in vitro.</p>
-                    <p>Peptides submitted to the FACS prediction should consist of 20 canonical amino acids and their length should be in the ranging from 10 to 100 amino acids. Please avoid input contigs containing non-canonical bases, such as N, R or Y.</p>
-                    <p>This prediction system will output to you a table containing the predicted AMP sequence, its probability to be an AMP and the family it belongs, as well as the predictions relative to the hemolytic activity.</p>
+                    <p>Antimicrobial peptides (AMPs) are small proteins (10–100 amino acids) that can either cause lysis or generally interferre with cell growth.The rapid growth of antibiotic-resistant microorganisms in the last years became a world health problem. Thus, AMPs could represent a source of new antibiotic treatments. Recently, more and more genomic and metagenomic sequences have become publicly available. The Fast AMPs Classification System (FACS) is a pipeline that overcomes most of the problems associated to the prospection of AMPs in high throughput data sets analyzing diverse types of inputs (reads, contigs, protein sequences). The protein sequences predicted as AMPs by FACS are, usually, specific and accurate, what can reduce the cost of experiments.</p>
+                    <p>FACS uses machine learning to select peptides with high probability of being an AMP. Furthermore, FACS is also capable to perform the classification of AMPs into hemolytic and non-hemolytic peptides. This allows researchers to select the most interesting peptides for further testing <i>in vitro</i>.</p>
+                    <p>Peptides submitted to the FACS prediction should consist of 20 canonical amino acids and their length should range from 10 to 100 amino acids. Please avoid contigs containing non-canonical bases, such as N, R or Y.</p>
+                    <p>This prediction system will output a table containing the predicted AMP sequence, its probability to be an AMP and the family it belongs, as well as the predictions relative to the hemolytic activity.</p>
                 </div>
                 <div class="glossary">
                     <h3>Glossary:</h3>
@@ -198,7 +198,7 @@
                 this.$refs[formRef].resetFields();
             },
 
-            onExamle(refName){
+            onExample(refName){
                 this.$refs[refName].validate(valid => {
                     if(!valid) return;
                     var dataType = this.pFormModel.dataType;
