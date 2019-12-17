@@ -571,7 +571,7 @@ do
 		echo -e "header\tseq\tgroup" > .tmp
 		sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
 		rm -rf "$i"
-		R --vanilla --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
+		R --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
 		rm -rf .tmp
 	
 		echo "[ M ::: Formatting descriptors -- $i ]"
@@ -804,7 +804,8 @@ then
 else
     	echo "[ W ::: ERR585 - We are sorry to inform. Your procedure did not return any AMP sequence. We are closing now ]"
         echo "[ W ::: We really tried. None of $tot called smORFs were assigned to a probability higher than 0.5 or survived until here ]"
-	cd ../; rm -rf $tp
+	cd ../;
+	rm -rf $tp
 	exit
 fi
 }
