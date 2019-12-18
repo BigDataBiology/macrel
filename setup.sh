@@ -73,13 +73,13 @@ echo "[ ## 2.] Installing prodigal_modified"
 
 (cd prodigal_modified && make && mv prodigal ../envs/FACS_env/bin/prodigal_sm )
 
-echo "[ ## 3.] Getting python scripts"
-echo "# Downloading"
-curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/CTDDClass.py
-curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/readFasta.py
-curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/saveCode.py
+#echo "[ ## 3.] Getting python scripts"
+#echo "# Downloading"
+#curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/CTDDClass.py
+#curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/readFasta.py
+#curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/saveCode.py
 
-chmod +x CTDDClass.py readFasta.py saveCode.py
+#chmod +x CTDDClass.py readFasta.py saveCode.py
 
 echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
