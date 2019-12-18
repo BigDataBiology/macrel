@@ -1,7 +1,13 @@
 #!/usr/bin/env python
-#_*_coding:utf-8_*_
+# _*_coding:utf-8_*_
 
-import sys, os, re, math
+import sys
+import os
+import re
+import math
+import collections
+
+# the current python file location
 pPath = os.path.split(os.path.realpath(__file__))[0]
 sys.path.append(pPath)
 
@@ -17,69 +23,77 @@ EXAMPLE:
     python CTDDClass.py example/test-protein.txt CTDDClass.tsv RKEDQN GASTPHY CLVIMFW
 """
 
-def Count(aaSet, sequence):
-    number = 0
-    for aa in sequence:
-        if aa in aaSet:
-            number = number + 1
-    cutoffNums = [1, math.floor(0.25 * number), math.floor(0.50 * number), math.floor(0.75 * number), number]
-    cutoffNums = [i if i >=1 else 1 for i in cutoffNums]
-
-    code = []
-    for cutoff in cutoffNums:
-        myCount = 0
-        for i in range(len(sequence)):
-            if sequence[i] in aaSet:
-                myCount += 1
-                if myCount == cutoff:
-                    code.append((i + 1) / len(sequence) * 100)
-                    break
-        if myCount == 0:
-            code.append(0)
-    return code
-	
 # -------------------------------------------------------------------------------------------------------------------------------------
-	
+
+
 # merged from readFasta.py
 def readFasta(file):
-    if os.path.exists(file) == False:
+    if not os.path.exists(file):
         print('Error: "' + file + '" does not exist.')
         sys.exit(1)
 
     with open(file) as f:
         records = f.read()
 
-    if re.search('>', records) == None:
+    if re.search('>', records) is None:
         print('The input file seems not in fasta format.')
         sys.exit(1)
 
     records = records.split('>')[1:]
-    myFasta = []
+    fastas = []
     for fasta in records:
         array = fasta.split('\n')
-        name, sequence = array[0].split()[0], re.sub('[^ARNDCQEGHILKMFPSTWYV-]', '-', ''.join(array[1:]).upper())
-        myFasta.append([name, sequence])
-    return myFasta
+        name, sequence = array[0].split()[0], re.sub('[^ARNDCQEGHILKMFPSTWYV-]', '', ''.join(array[1:]).upper())
+        fastas.append([name, sequence])
+    return fastas
+
 
 # merged from saveCode.py
-def savetsv(encodings, file = 'encoding.tsv'):
+def savetsv(encodings, file='encoding.tsv'):
+    lengthOfEncodings = len(encodings)
     with open(file, 'w') as f:
-        if encodings == 0:
+        if lengthOfEncodings == 0:
             f.write('Descriptor calculation failed.')
         else:
             for i in range(len(encodings[0]) - 1):
                 f.write(encodings[0][i] + '\t')
             f.write(encodings[0][-1] + '\n')
-            for i in encodings[1:]:
-                f.write(i[0] + '\t')
-                for j in range(1, len(i) - 1):
-                    f.write(str(float(i[j])) + '\t')
-                f.write(str(float(i[len(i)-1])) + '\n')
+            for encoding in encodings[1:]:
+                for j in range(0, len(encoding) - 1):
+                    f.write(str(encoding[j]) + '\t')
+                f.write(str(encoding[len(encoding)-1]) + '\n')
     return None
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
-def CTDDClass(fastas, groups):
+
+def count(group, sequence):
+    number = 0
+    lengthOfSequence = len(sequence)
+
+    letterFrequency = collections.Counter(sequence)
+    for letter, frequency in letterFrequency.items():
+        if letter in group:
+            number = number + frequency
+
+    cutoffNums = [1, math.floor(0.25 * number), math.floor(0.50 * number), math.floor(0.75 * number), number]
+    cutoffNums = [num if num >= 1 else 1 for num in cutoffNums]
+
+    code = []
+    for num in cutoffNums:
+        count = 0
+        for i in range(lengthOfSequence):
+            if sequence[i] in group:
+                count += 1
+                if count == num:
+                    code.append((i + 1) / lengthOfSequence * 100)
+                    break
+        if count == 0:
+            code.append(0)
+    return code
+
+
+def ctdd(fastas, groups):
     encodings = []
     header = ['#']
 
@@ -88,11 +102,11 @@ def CTDDClass(fastas, groups):
             header.append('Group.' + str(g+1) + '.residue' + d)
     encodings.append(header)
 
-    for i in fastas:
-        name, sequence = i[0], re.sub('-', '', i[1])
+    for fasta in fastas:
+        name, sequence = fasta[0], fasta[1]
         code = [name]
         for group in groups:
-            code = code + Count(group, sequence)
+            code = code + count(group, sequence)
         encodings.append(code)
 
     return encodings
@@ -104,10 +118,14 @@ if __name__ == '__main__':
         sys.exit(1)
 
     groups = sys.argv[3:]
-    myStr = ''.join(groups)
-    myStr = re.sub('[^ACDEFGHIKLMNPQRSTVWY]', '', myStr)
-    if len(myStr) != 20 or len(set(myStr)) != 20:
+
+    groupsStr = ''.join(groups)
+    groupsStr = re.sub('[^ACDEFGHIKLMNPQRSTVWY]', '', groupsStr)
+    if len(groupsStr) != 20 or len(set(groupsStr)) != 20:
         print('\nERROR: The amino acid must be no-repeat in each groups and the sum is 20!\n')
+
     fastas = readFasta(sys.argv[1])
-    encodings = CTDDClass(fastas, groups)
+    if (0 == len(fastas)):
+        print("The content of input file is empty!\n")
+    encodings = ctdd(fastas, groups)
     savetsv(encodings, sys.argv[2])
