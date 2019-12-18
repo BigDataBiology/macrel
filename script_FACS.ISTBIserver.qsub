@@ -6,7 +6,7 @@
 
 ######################## PBS Script ###################################
 # Job Name
-#PBS -N 1_cel_test
+#PBS -N facs_test
 # Merge output and error files
 #PBS -j oe
 #PBS -l walltime=1:00:00
@@ -20,10 +20,10 @@
 # Send email on abort, begin and end
 #PBS -m abe
 # Specify mail recipient
-#PBS -M celio.diasjunior@gmail.com
+#PBS -M xxx@Email.com
 #######################################################################
 
 ######################### CMDs ########################################
 
-/home1/celiodias/FACS/FACS17v2.sh -m c --fasta /home1/celiodias/Desktop/benchmark/analysis/metagenome/test.contigs.fna.gz -t 7 --block 100M --log test.log --outfolder /home1/celiodias/Desktop/benchmark/analysis/metagenome/ --outtag script_test_qsub
+FACS-master/FACS17v2.sh -m c --fasta /path/to/test.contigs.fna.gz -t 7 --block 100M --log test.log --outfolder /path/to/output/ --outtag script_test_qsub --tmp TEMP
 
