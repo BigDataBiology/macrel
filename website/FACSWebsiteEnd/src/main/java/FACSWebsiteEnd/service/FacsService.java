@@ -1,6 +1,7 @@
 package FACSWebsiteEnd.service;
 
 import FACSWebsiteEnd.Entity.FileInfo;
+import FACSWebsiteEnd.config.RemoteProperties;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -12,8 +13,6 @@ import java.util.List;
  */
 public interface FacsService {
 
-    String callPipeline(String pipelineHome, FileInfo fileInfo, String currentOutDir, String dataType, Boolean enableRemote);
-    List<Object> readResultsLocally(String filePath);
-    List<Object> readResultsRemotely(String outfolderPath,String filename);
+    String callPipeline(String pipelineHome, FileInfo fileInfo, String currentOutDir, String dataType, RemoteProperties remoteProperties);
 
 }

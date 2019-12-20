@@ -3,6 +3,7 @@ package FACSWebsiteEnd.service.impl;
 import FACSWebsiteEnd.Entity.FacsOutTsv;
 import FACSWebsiteEnd.Entity.FileInfo;
 import FACSWebsiteEnd.common.Constant;
+import FACSWebsiteEnd.config.RemoteProperties;
 import FACSWebsiteEnd.service.FacsService;
 import FACSWebsiteEnd.service.FileService;
 import FACSWebsiteEnd.utils.CommandUtils;
@@ -27,7 +28,7 @@ public class FacsServiceImpl implements FacsService {
     private FileService fileService;
 
     @Override
-    public String callPipeline(String pipelineHome, FileInfo fileInfo, String currentOutDir, String dataType, Boolean enableRemote) {
+    public String callPipeline(String pipelineHome, FileInfo fileInfo, String currentOutDir, String dataType, RemoteProperties remoteProperties) {
 
         String command = "";
 
@@ -38,7 +39,7 @@ public class FacsServiceImpl implements FacsService {
         String tempFolderName = Constant.FACS_TEMP_FOLDER_PREFIX + fileInfo.getFilenameWithOutExtension();
 
         String inputFilePath = fileInfo.getPath();
-        String outputFilePath = "";
+        String outputFilePath = null;
 
         if (Constant.PEPTIDES.equals(dataType)){
             // run FACS on peptides
@@ -49,7 +50,7 @@ public class FacsServiceImpl implements FacsService {
             command = CommandUtils.buildShellCommand(bash,shellPath,commandParams);
 //            System.out.println(command);
 
-            this.execute(command,enableRemote);
+            this.execute(command,remoteProperties);
 
             outputFilePath = currentOutDir + Constant.FACS_OUT_FILENAME;
 
@@ -62,7 +63,8 @@ public class FacsServiceImpl implements FacsService {
             command = CommandUtils.buildShellCommand(bash,shellPath,commandParams);
 //            System.out.println(command);
 
-            this.execute(command,enableRemote);
+            this.execute(command,remoteProperties);
+
             outputFilePath = currentOutDir + Constant.FACS_OUT_FILENAME;
 
         }
@@ -78,26 +80,14 @@ public class FacsServiceImpl implements FacsService {
         commandParams.put("--tmp",tempFolderName);
     }
 
-    private void execute(String command,Boolean enableRemote){
-        if (!enableRemote){
+    private void execute(String command,RemoteProperties remoteProperties){
+        if (!remoteProperties.getEnableRemote()){
             // 本地执行
             CommandUtils.executeCommandLocally(command);
         } else {
             // todo：远程执行
+            CommandUtils.executeCommandRemotely(remoteProperties,command);
         }
     }
 
-    @Override
-    public List<Object> readResultsLocally(String filePath) {
-
-        // 读取tsv结果文件
-        List<Object> objects = fileService.readLocalTsvGzToObject(filePath, new FacsOutTsv());
-        return objects;
-    }
-
-    @Override
-    public List<Object> readResultsRemotely(String outfolderPath, String filename) {
-        // todo
-        return null;
-    }
 }

@@ -1,5 +1,6 @@
 package FACSWebsiteEnd.controller;
 
+import FACSWebsiteEnd.Entity.FacsOutTsv;
 import FACSWebsiteEnd.Entity.PredictionForm;
 import FACSWebsiteEnd.Entity.FileInfo;
 import FACSWebsiteEnd.Entity.PredictionOut;
@@ -39,9 +40,9 @@ public class FacsController {
     private FileService fileService;
 
     @Autowired
-    private PipelineProperties pipelineConfiguration;
+    private PipelineProperties pipelineProperties;
     @Autowired
-    private RemoteProperties remoteConfiguration;
+    private RemoteProperties remoteProperties;
 
     @PostMapping("/prediction")
     public ResultObject analysis(PredictionForm predictionForm){
@@ -62,37 +63,31 @@ public class FacsController {
             return ResultObject.failure(ResultCode.DATA_IS_EMPTY);
         }
 
-        // 判断website与pipeline是否在同一台服务器上
-        if (!remoteConfiguration.getEnableRemote()){
-            FacsUtils.createFolderLocally(pipelineConfiguration.getInputDir());
-            FacsUtils.createFolderLocally(pipelineConfiguration.getOutputDir());
-        } else {
-//            Session session = CommandUtils.connect(remoteConfiguration);
-            FacsUtils.createFolderRemotely(remoteConfiguration,pipelineConfiguration);
-        }
-
         FileInfo fileInfo = null;
         // 保存数据
         // 上传的是文本
         if (EffectiveCheckUtils.strEffectiveCheck(predictionForm.getTextData())){
-            if (!remoteConfiguration.getEnableRemote()){
-                fileInfo = fileService.saveTextToFileLocally(predictionForm.getTextData(),pipelineConfiguration.getInputDir(),Constant.FA);
+            String content = predictionForm.getTextData();
+            if (!remoteProperties.getEnableRemote()){
+                fileInfo = fileService.saveTextToFileLocally(content,pipelineProperties.getInputDir(),Constant.FA);
             } else {
-                //todo
+                // done
+                fileInfo = fileService.saveContentToFileRemotely(remoteProperties, pipelineProperties.getInputDir(), Constant.FA, content);
             }
         } else {
             // 上传的是文件
             MultipartFile file = predictionForm.getFile();
             Map fileInformation = FileUtils.getFileInformation(file);
 
-            String extension = fileInformation.get("extension").toString();
+            Object extension = fileInformation.get("extension");
             if (extension != null){
+                extension = extension.toString();
                 // 判断是否是指定类型的文件,格式需为 fasta、fa
                 if (Constant.FASTA.equals(extension) || Constant.FA.equals(extension)){
-                    if (!remoteConfiguration.getEnableRemote()){
-                        fileInfo = fileService.uploadFileToLocal(file,pipelineConfiguration.getInputDir());
+                    if (!remoteProperties.getEnableRemote()){
+                        fileInfo = fileService.uploadFileToLocal(file,pipelineProperties.getInputDir());
                     } else {
-                        //todo
+                        fileInfo = fileService.uploadFileToRemote(remoteProperties, pipelineProperties.getInputDir(), file);
                     }
                 } else {
                     return ResultObject.failure(ResultCode.FILETYPE_NOT_FASTA_OR_FA_ERROR);
@@ -103,16 +98,23 @@ public class FacsController {
         }
 //        System.out.println(fileInfo);
 
-        // 在Linux上把当前输出的文件夹创建出来
-        String folderName = null;
-        if (fileInfo != null){
-            folderName = fileInfo.getFilenameWithOutExtension();
+        if (fileInfo == null){
+            return ResultObject.failure(ResultCode.FILE_INFO_FAIL);
         }
+
+        // 在Linux上把当前的输出文件夹创建出来
+        String folderName = fileInfo.getFilenameWithOutExtension();
         String currentOutputDir = null;
-        if (!remoteConfiguration.getEnableRemote()){
-            currentOutputDir = FacsUtils.createFolderLocally(pipelineConfiguration.getOutputDir(),folderName);
+        if (!remoteProperties.getEnableRemote()){
+            currentOutputDir = FacsUtils.createFolderLocally(pipelineProperties.getOutputDir(),folderName);
         } else {
-            //todo
+            // done
+            currentOutputDir = FacsUtils.createFolderRemotely(remoteProperties,pipelineProperties.getOutputDir(),folderName);
+        }
+//        System.out.println("currentOutputDir:"+currentOutputDir);
+
+        if (currentOutputDir == null){
+            return ResultObject.failure(ResultCode.FOLDER_CREATE_FAIL);
         }
 
         // just for test
@@ -121,17 +123,24 @@ public class FacsController {
 //        String currentOutDir = "/home/HiramHe/facs_out/sequence-7ead845137a64d08b0092b8224766e25";
 
         // 调用pipeline，对数据进行处理
-        String outputFilePath = null;
-        if (fileInfo!= null){
-            outputFilePath = facsService.callPipeline(pipelineConfiguration.getHome(), fileInfo, currentOutputDir, dataType, remoteConfiguration.getEnableRemote());
+        String outputFilePath = facsService.callPipeline(pipelineProperties.getHome(), fileInfo, currentOutputDir, dataType, remoteProperties);
+//        System.out.println("outputFilePath:"+outputFilePath);
+
+        if (outputFilePath == null){
+            return ResultObject.failure(ResultCode.PIPELINE_CALL_ERROR);
         }
 
         // 读取结果
         List<Object> objects = null;
-        if (!remoteConfiguration.getEnableRemote()){
-            objects = facsService.readResultsLocally(outputFilePath);
+        if (!remoteProperties.getEnableRemote()){
+            objects = fileService.readFileToObjectFromLocal(outputFilePath,new FacsOutTsv());
         } else {
-            //todo
+            // done
+            objects = fileService.readFileToObjectFromRemote(remoteProperties,outputFilePath,new FacsOutTsv());
+        }
+
+        if (objects == null){
+            return ResultObject.failure(ResultCode.RESULT_READ_FAIL);
         }
 
         // 封装数据

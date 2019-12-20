@@ -17,7 +17,7 @@ public enum ResultCode {
     /* prediction相关：10001-19999 */
     FILE_SAVE_SUCCESS(10001, "文件上传成功."),
     FILE_IS_NULL(10002, "没有选择文件或文件内容为空."),
-    FILE_SAVE_FAIL(10003, "内部错误,文件保存失败."),
+    FILE_SAVE_FAIL(10003, "内部错误,数据保存失败."),
     DATA_IS_EMPTY(10004, "至少输入序列文本或者上传文件"),
     FILETYPE_NOT_FASTQ_ERROR(10005, "非fastq文件."),
     FILETYPE_UNKNOWN_ERROR(10006, "未知文件."),
@@ -26,6 +26,10 @@ public enum ResultCode {
     FILETYPE_ERROR(10009, "文件类型错误."),
     DATATYPE_EMPTY(10010, "请选择数据类型."),
     FILE_NOT_EXIST(10011, "文件不存在."),
+    FILE_INFO_FAIL(10012, "内部错误,保存数据信息失败."),
+    FOLDER_CREATE_FAIL(10013, "内部错误,创建文件夹失败."),
+    PIPELINE_CALL_ERROR(10014, "调用pipeline出现错误."),
+    RESULT_READ_FAIL(10015, "读取结果出现错误."),
 
     /* 反馈相关： 20001-29999*/
     FEEDBACK_SUCCESS(20001,"反馈成功"),

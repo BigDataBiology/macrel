@@ -39,7 +39,7 @@ public class FileServiceImplTest {
         String fullFilePath = "FACS_OUT.tsv.gz";
         Object objectType = new FacsOutTsv();
 
-        List<Object> objects = fileService.readLocalTsvGzToObject(fullFilePath, objectType);
+        List<Object> objects = fileService.readFileToObjectFromLocal(fullFilePath, objectType);
 
         for (Object object : objects) {
             System.out.println(object);

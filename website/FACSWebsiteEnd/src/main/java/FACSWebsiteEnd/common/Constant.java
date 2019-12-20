@@ -27,4 +27,8 @@ public class Constant {
     public static final String PAIRED_END_READS = "paired-end reads";
     public static final String SINGLE_END_READS = "single-end reads";
 
+    public static final String CHANNEL_TYPE_EXEC = "exec";
+    public static final String CHANNEL_TYPE_SHELL = "shell";
+    public static final String CHANNEL_TYPE_SFTP = "sftp";
+
 }

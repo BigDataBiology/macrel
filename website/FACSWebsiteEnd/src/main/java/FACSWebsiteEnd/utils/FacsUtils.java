@@ -21,6 +21,8 @@ public class FacsUtils {
 
     public static String createFolderLocally(String dir, String folderName){
         // 在Linux上创建文件夹，用来保存当前结果
+        String newDir = null;
+
         String space = " ";
         String commands = "cd" + space + dir + ";" +
                 "mkdir -p" + space + folderName;
@@ -28,11 +30,25 @@ public class FacsUtils {
 
         CommandUtils.executeCommandsLocally(shell);
 
-        String newDir =  dir + folderName + "/";
+        newDir =  dir + folderName + "/";
+        return newDir;
+    }
+
+    public static String createFolderRemotely(RemoteProperties remoteProperties,String dir,String folderName){
+
+        String newDir = null;
+
+        String space = " ";
+        String commands = "mkdir -p" + space + dir + folderName + "/";
+
+        CommandUtils.executeCommandRemotely(remoteProperties,commands);
+
+        newDir = dir + folderName + "/";
         return newDir;
     }
 
     public static void createFolderRemotely(RemoteProperties remoteConfiguration, PipelineProperties pipelineConfiguration){
+
         String space = " ";
         String commands = "mkdir -p" + space + pipelineConfiguration.getInputDir() + ";" +
                 "mkdir -p" + space + pipelineConfiguration.getOutputDir();
