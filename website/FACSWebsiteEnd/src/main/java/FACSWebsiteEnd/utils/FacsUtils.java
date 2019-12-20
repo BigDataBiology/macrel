@@ -1,6 +1,7 @@
 package FACSWebsiteEnd.utils;
 
-import FACSWebsiteEnd.common.Constant;
+import FACSWebsiteEnd.config.PipelineProperties;
+import FACSWebsiteEnd.config.RemoteProperties;
 
 /**
  * @Author: HiramHe
@@ -9,35 +10,33 @@ import FACSWebsiteEnd.common.Constant;
  */
 public class FacsUtils {
 
-    public static String makeSavedFolderOnLinux(String jarPath){
+    public static void createFolderLocally(String dir){
         // 在Linux上创建文件夹，用来保存用户上传的数据
-        String commands = "cd "+jarPath+";"+"mkdir "+ Constant.FILESAVED_FOLDER_NAME;
+        String space = " ";
+        String commands = "mkdir -p" + space + dir;
         String[] shell = {"/bin/sh", "-c",commands};
-        CommandUtils.executeLocalCommandArray(shell);
 
-        String savedDir = jarPath + "/" + Constant.FILESAVED_FOLDER_NAME + "/";
-        return savedDir;
+        CommandUtils.executeCommandsLocally(shell);
     }
 
-    public static String makeAllOutFolderOnLinux(String jarPath){
-        // 在Linux上创建文件夹，用来保存所有结果
-        String commands = "cd "+jarPath+";"+"mkdir "+Constant.FACS_ALLOUT_FOLDER_NAME;
-        String[] shell = {"/bin/sh", "-c",commands};
-        CommandUtils.executeLocalCommandArray(shell);
-
-        String allOutDir = jarPath +  "/" + Constant.FACS_ALLOUT_FOLDER_NAME + "/";
-        return allOutDir;
-    }
-
-    public static String makeCurrentOutFolderOnLinux(String allOutDir, String foldername){
-
+    public static String createFolderLocally(String dir, String folderName){
         // 在Linux上创建文件夹，用来保存当前结果
-        String commands = "cd "+allOutDir+";"+"mkdir "+foldername;
+        String space = " ";
+        String commands = "cd" + space + dir + ";" +
+                "mkdir -p" + space + folderName;
         String[] shell = {"/bin/sh", "-c",commands};
-        CommandUtils.executeLocalCommandArray(shell);
 
-        String currentOutDir =  allOutDir + foldername + "/";
-        return currentOutDir;
+        CommandUtils.executeCommandsLocally(shell);
 
+        String newDir =  dir + folderName + "/";
+        return newDir;
+    }
+
+    public static void createFolderRemotely(RemoteProperties remoteConfiguration, PipelineProperties pipelineConfiguration){
+        String space = " ";
+        String commands = "mkdir -p" + space + pipelineConfiguration.getInputDir() + ";" +
+                "mkdir -p" + space + pipelineConfiguration.getOutputDir();
+
+        CommandUtils.executeCommandRemotely(remoteConfiguration,commands);
     }
 }

@@ -75,7 +75,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileInfo saveTextToFile(String text, String savedDir, String extension) {
+    public FileInfo saveTextToFileLocally(String text, String savedDir, String extension) {
 
         String dot = ".";
         String filenameWithOutExtension = Constant.TEXTFILEPREX + CommonUtils.getUUID();

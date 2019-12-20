@@ -30,7 +30,7 @@ public class FileServiceImplTest {
                 "who are you";
         String extension = "fastq";
 
-        fileService.saveTextToFile(text,"",extension);
+        fileService.saveTextToFileLocally(text,"",extension);
     }
 
     @Test

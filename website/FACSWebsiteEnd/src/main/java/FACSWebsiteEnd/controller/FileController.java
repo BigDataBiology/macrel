@@ -1,6 +1,7 @@
 package FACSWebsiteEnd.controller;
 
 import FACSWebsiteEnd.Entity.FileInfo;
+import FACSWebsiteEnd.common.Constant;
 import FACSWebsiteEnd.common.ResultCode;
 import FACSWebsiteEnd.common.ResultObject;
 import FACSWebsiteEnd.service.FileService;
@@ -35,7 +36,7 @@ public class FileController {
             return ResultObject.failure(ResultCode.FILE_IS_NULL);
         }
 
-        FileInfo fileInfo = fileService.uploadFileToLocal(file,"G:\\tmp\\");
+        FileInfo fileInfo = fileService.uploadFileToLocal(file, Constant.FILESAVED_WIN_DIR);
 
         if (fileInfo != null){
             return ResultObject.success();

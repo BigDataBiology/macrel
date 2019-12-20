@@ -12,8 +12,8 @@ import java.util.List;
  */
 public interface FacsService {
 
-    void callShellScript(FileInfo fileInfo, String currentOutDir, String dataType, Boolean isRemote);
-    List<Object> readLocalResults(String filePath);
-    List<Object> readRemoteResults(String outfolderPath,String filename);
+    String callPipeline(String pipelineHome, FileInfo fileInfo, String currentOutDir, String dataType, Boolean enableRemote);
+    List<Object> readResultsLocally(String filePath);
+    List<Object> readResultsRemotely(String outfolderPath,String filename);
 
 }

@@ -14,7 +14,7 @@ public interface FileService {
 
     FileInfo uploadFileToLocal(MultipartFile file, String fullDir);
 
-    FileInfo saveTextToFile(String text, String fullDir, String extension);
+    FileInfo saveTextToFileLocally(String text, String fullDir, String extension);
 
     List<Object> readLocalTsvGzToObject(String fullFilePath, Object object);
 }

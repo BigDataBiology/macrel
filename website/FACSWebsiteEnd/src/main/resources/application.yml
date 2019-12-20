@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   servlet:
@@ -7,6 +7,27 @@ spring:
       # 启用文件上传
       enabled: true
       # 上传一个文件最大值,默认1MB
-      max-file-size: 2MB
+      max-file-size: 500KB
       # 上传多个文件最大值,默认10MB
-      max-request-size: 20MB
+      max-request-size: 1MB
+  profiles:
+    active:
+
+# default configuration.
+
+# the last "/" is required,or the path is invalid.
+pipeline:
+  # required!!!
+  home: /home/HiramHe/FACS/
+
+  inputDir: /tmp/facs_website/input/
+  outputDir: /tmp/facs_website/output/
+
+# remote server configuration.
+remote:
+  enableRemote: false
+  ip: none
+  port: -1
+  username: none
+  password: none
+

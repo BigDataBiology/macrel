@@ -4,6 +4,7 @@ import FACSWebsiteEnd.common.Constant;
 import FACSWebsiteEnd.utils.CommandUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -19,6 +20,9 @@ import java.util.Map;
 @SpringBootTest
 public class CommandUtilsTest {
 
+    @Value("${facs_home}")
+    private String facsHome;
+
     @Test
     public void testBuildShellCommand(){
 
@@ -26,7 +30,7 @@ public class CommandUtilsTest {
 
         Map<String,Object> commandParams = new HashMap<String, Object>();
         String bash = Constant.BASH;
-        String shellPath = Constant.FACS_HOME + Constant.FACS_SHELL;
+        String shellPath = facsHome + Constant.FACS_SHELL;
 
         commandParams.put("--mode","p");
         commandParams.put("--fasta","fasta");
