@@ -15,7 +15,7 @@
                         <p>This project was supported by Shanghai Municipal Science and Technology Major Project (2018SHZDZX01), ZHANGJIANG LAB and Fudan University.</p>
                         <el-divider></el-divider>
                         <p>If you used FACS, please cite:</p>
-                        <p>Santos-Junior, C.D., Pan, S.J., Zhao, X.M., Coelho, L.P. 2019. FACS: antimicrobial peptide screening in genomes and metagenomes. BioRxiv xx.</p>
+                        <p>Santos-Junior, C.D., Pan, S.J., Zhao, X.M., Coelho, L.P. 2019. FACS: antimicrobial peptide screening in genomes and metagenomes. BioRxiv <a href="https://doi.org/10.1101/2019.12.17.880385">DOI:10.1101/2019.12.17.880385</a></p>
                         <el-divider></el-divider>
                         <h3>Contacts:</h3>
                         <p>Dr. Celio Dias Santos Junior (<a href="mailto:celio.diasjunior@gmail.com">celio.diasjunior@gmail.com</a>)</p>
