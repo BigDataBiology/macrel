@@ -17,8 +17,8 @@ router.beforeEach( (to,from,next) =>{
 Vue.config.productionTip = false;
 
 // 配置请求的根路径
-axios.defaults.baseURL= 'http://39.106.68.204:8081/';
-// axios.defaults.baseURL='http://localhost:8081';
+axios.defaults.baseURL= 'http://39.106.68.204:8080/';
+// axios.defaults.baseURL='http://localhost:8080';
 // 定义成全局变量，所有vue组件都可以用
 Vue.prototype.$http = axios;
 

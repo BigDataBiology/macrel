@@ -104,7 +104,7 @@
                 pFormRules: {
 
                     dataType: [
-                        { required: true, message: '请选择数据类型', trigger: 'change' },
+                        { required: true, message: 'please select data type', trigger: 'change' },
                     ],
                 },
 
@@ -147,18 +147,21 @@
                     //     loading.close();
                     // }, 2000);
 
-                    // 将返回数据中服务器返回的data取出来命名为res
-                    const {data:resultObject} = await this.$http.post('/facs/prediction',formData,config)
-                        // .then(
-                        //     response => {
-                        //         if (response.code === 200){
-                        //             // 提交成功要执行的代码
-                        //             console.log("submit success");
-                        //         }
-                        //     }
-                        // ).catch(function (error) {
-                        //     console.log(error);
-                        // })
+                    // 将返回数据中服务器返回的data取出来命名为resultObject
+                    let resultObject;
+                    await this.$http.post('/facs/prediction',formData,config)
+                        .then(
+                            response => {
+                                if (response.status === 200){
+                                    // 提交成功要执行的代码
+                                    resultObject = response.data;
+                                    console.log("submit success");
+                                }
+                            }
+                        ).catch( ()=> {
+                            loading.close();
+                            this.$message.error({message:'The server is under maintenance,please try again later',duration:5000});
+                        })
                     ;
 
                     if (resultObject.code !==1){
@@ -167,6 +170,7 @@
                         return ;
                     }
 
+                    // 将结果对象转为字符串，然后保存在浏览器会话中
                     let resultObjectStr = JSON.stringify(resultObject);
                     window.sessionStorage.setItem('resultObjectStr',resultObjectStr);
 
@@ -178,8 +182,8 @@
                 });
             },
 
-            handleExceed(files, fileList) {
-                this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            handleExceed() {
+                this.$message.warning({message:'Only one file can be uploaded at a time',duration:5000});
             },
 
             beforeFASTAUpload(file){
@@ -188,13 +192,14 @@
                 const isFA = extension === 'fa';
 
                 if (!isFA){
-                    this.$message.error('not FASTA/FA file!');
+                    this.$message.error({message:'not FASTA/FA file!',duration:5000});
                 }
 
                 return (isFASTA || isFA);
             },
 
             resetForm(formRef) {
+                this.$refs['upload'].clearFiles();
                 this.$refs[formRef].resetFields();
             },
 
