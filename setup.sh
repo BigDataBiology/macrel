@@ -21,7 +21,6 @@ fi
 
 eval "$(conda shell.bash hook)"
 
-echo "[ ## 1.] Installing routine linux softwares"
 echo "# Creating new environment for FACS"
 mkdir -p envs
 conda create -p ./envs/FACS_env python=3.7
