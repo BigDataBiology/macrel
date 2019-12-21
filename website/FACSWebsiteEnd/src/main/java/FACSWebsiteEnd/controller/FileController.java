@@ -4,6 +4,8 @@ import FACSWebsiteEnd.Entity.FileInfo;
 import FACSWebsiteEnd.common.Constant;
 import FACSWebsiteEnd.common.ResultCode;
 import FACSWebsiteEnd.common.ResultObject;
+import FACSWebsiteEnd.config.PipelineProperties;
+import FACSWebsiteEnd.config.RemoteProperties;
 import FACSWebsiteEnd.service.FileService;
 import FACSWebsiteEnd.utils.EffectiveCheckUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,11 @@ public class FileController {
 
     @Autowired
     private FileService fileService;
+    @Autowired
+    RemoteProperties remoteProperties;
+    @Autowired
+    PipelineProperties pipelineProperties;
+
 
     @PostMapping("/upload")
     public ResultObject upload(@RequestParam(value = "file") MultipartFile file) {
@@ -36,7 +43,8 @@ public class FileController {
             return ResultObject.failure(ResultCode.FILE_IS_NULL);
         }
 
-        FileInfo fileInfo = fileService.uploadFileToLocal(file, Constant.FILESAVED_WIN_DIR);
+        String dir = Constant.FILESAVED_WIN_DIR;
+        FileInfo fileInfo = fileService.uploadFileToLocal(file,dir);
 
         if (fileInfo != null){
             return ResultObject.success();
@@ -58,59 +66,19 @@ public class FileController {
 
         File file = new File(filePath);
 
-        if (file.exists()){
-            // 实现文件下载
-
-            byte[] buffer = new byte[1024];
-            FileInputStream fileInputStream = null;
-            BufferedInputStream bufferedInputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-
-                //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
-                response.setContentType("multipart/form-data");
-                //2.设置文件头：最后一个参数是设置下载文件名
-                String fileName = URLEncoder.encode(filenameWithExtension, "UTF-8");
-                response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-                // 便于前端获取文件名
-                response.setHeader("fileName", fileName);
-                response.setHeader("Access-Control-Expose-Headers", "fileName");
-                fileInputStream = new FileInputStream(file);
-                bufferedInputStream = new BufferedInputStream(fileInputStream);
-
-                //3.通过response获取OutputStream对象
-                outputStream = response.getOutputStream();
-
-                int i = bufferedInputStream.read(buffer);
-                while (i != -1) {
-                    outputStream.write(buffer, 0, i);
-                    i = bufferedInputStream.read(buffer);
-                }
-
-                return null;
-
-            } catch (IOException e) {
-                return null;
-            } finally {
-                if (bufferedInputStream != null){
-                    try {
-                        bufferedInputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (fileInputStream != null){
-                    try {
-                        fileInputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+        ResultObject resultObject = null;
+        if (!remoteProperties.getEnableRemote()){
+            if (file.exists()){
+                resultObject = fileService.getFileForDownloadFromLocal(file,filenameWithExtension,response);
+                return resultObject;
+            } else {
+                return ResultObject.failure(ResultCode.FILE_NOT_EXIST);
             }
 
         } else {
-            return ResultObject.failure(ResultCode.FILE_NOT_EXIST);
+            // done 远程下载
+            resultObject = fileService.getFileForDownloadFromRemote(remoteProperties,filePath,filenameWithExtension,response);
+            return resultObject;
         }
 
     }

@@ -5,6 +5,8 @@ import FACSWebsiteEnd.config.RemoteProperties;
 import com.jcraft.jsch.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -110,13 +112,12 @@ public class CommandUtils {
 
             if (session.isConnected()){
                 System.out.println("login---"+ip+"---successfully.");
-                return session;
-            } else {
-                System.out.println("failed to login:"+ip+".");
-                session.disconnect();
-                return null;
             }
+
+            return session;
+
         } catch (JSchException e) {
+            System.out.println("failed to login:"+ip);
             e.printStackTrace();
             return null;
         }
@@ -275,7 +276,7 @@ public class CommandUtils {
         }
     }
 
-    public static List downloadFileFromRemote(RemoteProperties remoteProperties,String filePath, Object object){
+    public static List downloadFileToObjectFromRemote(RemoteProperties remoteProperties,String filePath, Object object){
 
         InputStream inputStream = null;
         List objects = null;
@@ -306,6 +307,28 @@ public class CommandUtils {
             disConnectChannel();
         }
 
+    }
+
+    public static InputStream getFileForDownloadFromRemote(RemoteProperties remoteProperties, String filePath){
+        InputStream inputStream = null;
+        try {
+
+            setupChannel(remoteProperties,Constant.CHANNEL_TYPE_SFTP);
+            channelSftp.connect();
+
+            if (session == null || channelSftp == null){
+                return null;
+            }
+
+            inputStream = channelSftp.get(filePath);
+
+            return inputStream;
+
+        } catch (JSchException | SftpException e) {
+            e.printStackTrace();
+            disConnectChannel();
+            return null;
+        }
     }
 
 }

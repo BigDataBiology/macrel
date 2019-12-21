@@ -1,14 +1,19 @@
 package FACSWebsiteEnd.service.impl;
 
 import FACSWebsiteEnd.Entity.FileInfo;
+import FACSWebsiteEnd.common.ResultCode;
+import FACSWebsiteEnd.common.ResultObject;
 import FACSWebsiteEnd.config.RemoteProperties;
 import FACSWebsiteEnd.service.FileService;
 import FACSWebsiteEnd.utils.CommandUtils;
 import FACSWebsiteEnd.utils.FileUtils;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -102,7 +107,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public List readFileToObjectFromRemote(RemoteProperties remoteProperties, String filePath, Object object) {
         List objects;
-        objects = CommandUtils.downloadFileFromRemote(remoteProperties, filePath, object);
+        objects = CommandUtils.downloadFileToObjectFromRemote(remoteProperties, filePath, object);
 
         return objects;
     }
@@ -124,6 +129,114 @@ public class FileServiceImpl implements FileService {
             return fileInfo;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public ResultObject getFileForDownloadFromLocal(File file, String filename, HttpServletResponse response) {
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            Boolean isSuccessful = writeFileToBrowser(response,fileInputStream,filename);
+
+            if (isSuccessful){
+                return null;
+            } else {
+                System.out.println("fail to write file to browser.");
+                return ResultObject.failure(ResultCode.SERVER_INTERNAL_ERROR);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return ResultObject.failure(ResultCode.FILE_NOT_EXIST);
+        } finally {
+            if (fileInputStream != null){
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public ResultObject getFileForDownloadFromRemote(RemoteProperties remoteProperties, String filePath, String filename, HttpServletResponse response) {
+
+        InputStream inputStream = null;
+        try {
+
+            inputStream = CommandUtils.getFileForDownloadFromRemote(remoteProperties, filePath);
+
+            if (inputStream != null){
+                Boolean isSuccessful = writeFileToBrowser(response,inputStream,filename);
+                if (isSuccessful){
+                    return null;
+                } else {
+                    System.out.println("fail to write file to browser.");
+                    return ResultObject.failure(ResultCode.SERVER_INTERNAL_ERROR);
+                }
+            } else {
+                System.out.println("未能读取远程服务器上的文件.");
+                return ResultObject.failure(ResultCode.FILE_NOT_EXIST);
+            }
+
+        } finally {
+            if (inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            CommandUtils.disConnectChannel();
+        }
+
+    }
+
+    private Boolean writeFileToBrowser(HttpServletResponse response, InputStream inputStream, String filename){
+
+        // 实现文件下载
+        byte[] buffer = new byte[1024];
+        BufferedInputStream bufferedInputStream = null;
+        OutputStream outputStream = null;
+        try {
+
+            //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
+            response.setContentType("multipart/form-data");
+            //2.设置文件头：最后一个参数是设置下载文件名
+            String newFilename = URLEncoder.encode(filename, "UTF-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + newFilename);
+            // 便于前端获取文件名
+            response.setHeader("fileName", newFilename);
+            response.setHeader("Access-Control-Expose-Headers", "fileName");
+
+            bufferedInputStream = new BufferedInputStream(inputStream);
+
+            //3.通过response获取OutputStream对象
+            outputStream = response.getOutputStream();
+
+            int i = bufferedInputStream.read(buffer);
+            while (i != -1) {
+                outputStream.write(buffer, 0, i);
+                i = bufferedInputStream.read(buffer);
+            }
+
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (bufferedInputStream != null){
+                try {
+                    bufferedInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

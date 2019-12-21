@@ -25,7 +25,7 @@ public enum ResultCode {
     FILETYPE_NOT_FASTA_OR_FA_ERROR(10008, "上传的文件格式需为fasta或者fa."),
     FILETYPE_ERROR(10009, "文件类型错误."),
     DATATYPE_EMPTY(10010, "请选择数据类型."),
-    FILE_NOT_EXIST(10011, "文件不存在."),
+    FILE_NOT_EXIST(10011, "no such file."),
     FILE_INFO_FAIL(10012, "内部错误,保存数据信息失败."),
     FOLDER_CREATE_FAIL(10013, "内部错误,创建文件夹失败."),
     PIPELINE_CALL_ERROR(10014, "调用pipeline出现错误."),

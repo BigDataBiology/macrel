@@ -33,8 +33,10 @@ public class OnAppStartUp implements ApplicationRunner {
         if (!remoteProperties.getEnableRemote()){
             FacsUtils.createFolderLocally(pipelineProperties.getInputDir());
             FacsUtils.createFolderLocally(pipelineProperties.getOutputDir());
+
         } else {
             FacsUtils.createFolderRemotely(remoteProperties,pipelineProperties);
+
         }
     }
 }

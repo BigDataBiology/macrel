@@ -15,6 +15,8 @@ public class Constant {
     public static final String FACS_ALLOUT_FOLDER_NAME = "facs_output";
     public static final String FACS_OUT_FILENAME = "FACS_OUT.tsv.gz";
     public static final String FACS_OUT_IDS_FILENAME = "FACS_OUT.ids.tsv.gz";
+    public static final Integer FACS_THREADS = 3;
+    public static final long FACS_BLOCK = 10000000;
     public static final String BASH = "bash";
     public static final String FACS_SHELL = "FACS.sh";
     public static final String TEXTFILEPREX = "sequence-";

@@ -74,8 +74,8 @@ public class FacsServiceImpl implements FacsService {
 
     private void commonParams(Map<String,Object> commandParams,String inputFilePath,String currentOutDir, String tempFolderName){
         commandParams.put("--fasta",inputFilePath);
-        commandParams.put("-t",1);
-        commandParams.put("--block",100000);
+        commandParams.put("-t",Constant.FACS_THREADS);
+        commandParams.put("--block",Constant.FACS_BLOCK);
         commandParams.put("--outfolder",currentOutDir);
         commandParams.put("--tmp",tempFolderName);
     }
