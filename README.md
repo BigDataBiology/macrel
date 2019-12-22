@@ -4,14 +4,15 @@ If you use this software in a publication please cite
 
     FACS: antimicrobial peptide screening in genomes and metagenomes
     Celio Dias Santos-Junior, Shaojun Pan, Xing-Ming Zhao, Luis Pedro Coelho
-    bioRxiv 2019.12.17.880385; doi: https://doi.org/10.1101/2019.12.17.880385
+    bioRxiv 2019.12.17.880385; doi:
+    [https://doi.org/10.1101/2019.12.17.880385](https://doi.org/10.1101/2019.12.17.880385)
 
 **NOTE**: This is still a _work in progress_ and, while the results of the tool
 should be correct, we are still working on making FACS easier to install and
 use.
 
-Fast AMP Classification System pipeline is a system created by Celio Dias Santos
-Jr. and Luis Pedro Coelho, from Fudan University (Shanghai). It is
+Fast AMP Classification System pipeline is a system created by Celio Dias
+Santos Jr. and Luis Pedro Coelho, from Fudan University (Shanghai). It is
 distributed under MIT license and represents a new way to prospect AMPs in
 natural environments using metagenomic data or genomic data to generate large
 datasets of antimicrobial peptides.
