@@ -49,7 +49,7 @@ And executing the installation script:
 To run FACS on peptides:
 
 ```bash
-    FACS.sh --mode p \
+    bash FACS.sh --mode p \
         --fasta example_seqs/expep.faa.gz \
         --outfolder out_peptides \
         --outtag example -t 4
@@ -62,7 +62,7 @@ The outputs will be written into a folder called `out_peptides`, and FACS will
 To run FACS on contigs, use:
 
 ```bash
-    FACS.sh --mode c \
+    bash FACS.sh --mode c \
         --fasta example_seqs/excontigs.fna.gz \
         --outfolder out_contigs \
         --outtag out_contigs \
@@ -75,11 +75,10 @@ file with nucleotide sequences, writing the output to `out_contigs`.
 To run FACS on paired-end reads, use:
 
 ```bash
-
-    FACS.sh --mode r \
+    bash FACS.sh --mode r \
         --fwd example_seqs/R1.fq.gz \
         --rev example_seqs/R2.fq.gz \
-        --outfolder out_metag
+        --outfolder out_metag \
         --outtag example_metag \
         -t 4
 ```
@@ -95,11 +94,11 @@ different types of references:
 1. Fasta file with peptide sequences:
 
 ```bash
-    FACS.sh --mode a \
+    bash FACS.sh --mode a \
         --fwd example_seqs/R1.fq.gz \
-        --fasta example_seqs/excontigs.faa.gz
-        --outfolder out_abundance
-        --outtag example_abundance
+        --fasta example_seqs/excontigs.faa.gz \
+        --outfolder out_abundance \
+        --outtag example_abundance \
         -t 4
 ```
 
@@ -109,7 +108,7 @@ different types of references:
    commmand:
 
 ```bash
-    FACS.sh --mode a \
+    bash FACS.sh --mode a \
         --fwd example_seqs/R1.fq.gz \
         --ref out_metag/example_metag.tsv.gz
         --outfolder out_abundance_pred
