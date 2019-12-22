@@ -41,6 +41,81 @@ And executing the installation script:
 `$ bash install.sh`
 
 
+### Examples
+
+> FACS supports gzipped inputs
+
+To run FACS on peptides:
+
+```bash
+    FACS.sh --mode p \
+        --fasta example_seqs/expep.faa.gz \
+        --outfolder out_peptides \
+        --outtag example -t 4
+```
+
+In this case, we use `example_seqs/expep.faa.gz` as input sequence. This should be an amino-acid FASTA file.
+The outputs will be written into a folder called `out_peptides`, and FACS will
+4 threads. Adapt as needed and see the full list of arguments below.
+
+To run FACS on contigs, use:
+
+```bash
+    FACS.sh --mode c \
+        --fasta example_seqs/excontigs.fna.gz \
+        --outfolder out_contigs \
+        --outtag out_contigs \
+        -t 4
+```
+
+In this example, we use the example file `excontigs.fna.gz` which is a FASTA
+file with nucleotide sequences, writing the output to `out_contigs`.
+
+To run FACS on paired-end reads, use:
+
+```bash
+
+    FACS.sh --mode r \
+        --fwd example_seqs/R1.fq.gz \
+        --rev example_seqs/R2.fq.gz \
+        --outfolder out_metag
+        --outtag example_metag \
+        -t 4
+```
+
+The paired-end reads are given as paired files (here, `example_seqs/R1.fq.gz`
+and `example_seqs/R2.fq.gz`). If you only have single-end reads, you can omit
+the `--rev` argument.
+
+To run FACS to get abundance profiles, you only need the forward reads file and
+a reference with peptide sequences. You can run abundance mode using two
+different types of references:
+
+1. Fasta file with peptide sequences:
+
+```bash
+    FACS.sh --mode a \
+        --fwd example_seqs/R1.fq.gz \
+        --fasta example_seqs/excontigs.faa.gz
+        --outfolder out_abundance
+        --outtag example_abundance
+        -t 4
+```
+
+2. FACS output with predicted AMPs, it will be the `$outtag.tsv.gz` file
+   generated. To use this file containing the peptide sequences and the
+   probabilities associated to the prediction, you can run the following
+   commmand:
+
+```bash
+    FACS.sh --mode a \
+        --fwd example_seqs/R1.fq.gz \
+        --ref out_metag/example_metag.tsv.gz
+        --outfolder out_abundance_pred
+        --outtag example_abundance_pred
+        -t 4
+```
+
 ## Usage
 
 There are few options to make the running of the program a bit customized and speed up process according to the settings of the system available.
@@ -88,48 +163,6 @@ There are few options to make the running of the program a bit customized and sp
     
     --cls                 Cluster peptides: yes (1) or no (0). [Default: 1 - yes]
 
-
-### Quick running commands:
-
-> FACS supports gzipped inputs
-
-To run FACS on peptides, type directly:
-
-```bash FACS.sh -m p --fasta /path/to/file.fa --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
-
-To run FACS on contigs, type directly:
-
-```bash FACS.sh -m c --fasta /path/to/file.fa --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
-
-To run FACS on paired-end reads, type directly:
-
-```bash FACS.sh -m r --fwd /path/to/R1_file.fq.gz --rev /path/to/R2_file.fq.gz --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
-
-To run FACS on single-end reads, type directly:
-
-```bash FACS.sh -m r --fwd /path/to/R1_file.fq.gz --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
-
-To run FACS to get abundance profiles, you only need the forward reads file and a reference with peptide sequences. You can run abundance mode using two different types of references:
-
-1. Fasta file with peptide sequences:
-
-```bash FACS.sh -m a --fwd /path/to/R1_file.fq.gz --fasta /path/to/file.fa --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
-
-2. FACS output with predicted AMPs, it will be the "$outtag.tsv.gz" file generated. To use this file containing the peptide sequences and the probabilities associated to the prediction, you can run the following commmand:
-
-```bash FACS.sh -m a --fwd /path/to/R1_file.fq.gz --ref /path/to/FACS_output.tsv.gz --outfolder /path/to/output_folder --outtag name_to_your_results -t #_of_cpus --tmp tempdir_name```
-
-We have provided to you example files that can help you to test your installed pipeline:
-     
-     - R1.fq.gz, R2.fq.gz to reads mode
-     - excontigs.fa.gz to contigs mode
-     - expep.fa.gz to peptides mode
-     
-     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-     +++++                    NOTE:                        ++++
-     +++++ You also can use expep.fa.gz and R1.fq.gz files ++++
-     +++++ to test the abundance mode.                     ++++
-     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ## Pipeline overview
 
