@@ -1,97 +1,44 @@
-# FACS pipeline - Fast AMP Clustering System
+# FACS pipeline - Fast AMP Classification System
+
+If you use this software in a publication please cite
+
+    FACS: antimicrobial peptide screening in genomes and metagenomes
+    Celio Dias Santos-Junior, Shaojun Pan, Xing-Ming Zhao, Luis Pedro Coelho
+    bioRxiv 2019.12.17.880385; doi: https://doi.org/10.1101/2019.12.17.880385
 
 **NOTE**: This is still a _work in progress_ and, while the results of the tool
 should be correct, we are still working on making FACS easier to install and
 use.
 
-Fast AMP Clustering System pipeline is a system created by Celio Dias Santos
-Jr. and Luis Pedro Coelho, from Fudan University (Shanghai / CN). It is
-distributed under MIT license and represents a new way to prospect AMPs in natural environments using metagenomic data or genomic data to generate large datasets of antimicrobial peptides.
+Fast AMP Classification System pipeline is a system created by Celio Dias Santos
+Jr. and Luis Pedro Coelho, from Fudan University (Shanghai). It is
+distributed under MIT license and represents a new way to prospect AMPs in
+natural environments using metagenomic data or genomic data to generate large
+datasets of antimicrobial peptides.
 
 (A modified version of the Prodigal software is distributed with FACS under the GPL license)
 
 ## Applications
 
-FACS can be used in a wide-ranging of scenarios, such as screening for novel AMPs generating candidates to further testing and patenting, as well as, determination of microbiome quorum sensing mechanisms linking AMPs to health conditions or presence of diseases.
+FACS can be used in a wide-ranging of scenarios, such as screening for novel
+AMPs generating candidates to further testing and patenting, as well as,
+determination of microbiome quorum sensing mechanisms linking AMPs to health
+conditions or presence of diseases.
 
-## Installing
+## Install
 
-Before installation, make sure your system settings are as follows:
+The preferred installation method uses _conda_ (in particular, using
+[bioconda](https://bioconda.github.io/) and
+[conda-forge](https://conda-forge.org/)) to install all dependencies in a
+FACS-private environment, so that should be available on your system.
 
-1. Linux (preferably Ubuntu 64 bits, version 18+);
-
-2. Dependencies
-
-		- apt
-
-		- git
-
-		- Python Version 3.0 or above
-
-		- The following packages should be already installed in Python environment:
-		  sys, os, shutil, scipy, argparse, collections, platform,
-		  math, re, numpy (1.13.1), sklearn (0.19.1), matplotlib (2.1.0),
-		  pandas (0.20.1).
-
-		- R Version 3.5.2 or above
-		
-		- Conda/MiniConda
-
-
-### Third-party software
-
-Also, before start installation, make sure you know the needed third party software list:
-
-1. To quality trimming of reads and selection/sorting of paired-end reads, it is used [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
-
-   - As a complement: to work with Trimmomatic, you will need OpenJDK-11-JDK-headless.
-   
-2. To assembly reads, we use [MEGAHIT v.1](https://www.ncbi.nlm.nih.gov/pubmed/25609793)
-
-3. To predict smORFs, we use a modified version of the [Prodigal](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2848648/) program.
-
-4. To produce descriptors and use the randomforest models, we use the following R packages:
-
-     - randomForest
-     - caret
-     - Peptides
-     - data.table
-     - dplyr
-     - parallel
-     - doParallel
-
-    4.1. To calculate distribution parameters we used scripts from the project [iLearn](https://github.com/Superzchen/iLearn):
-
-     - CTDDClass.py
-     - saveCode.py
-     - readFasta.py
-    
-5. The library FAST from CPANM to speed up Perl.
-
-6. The GNUParallel library to speed up the script.
-   - Additional libraries needed can include: zlib1g, zlib1g-dev, and libpthread-stubs0-dev
-
-7. To speed up the compressing and decompressing of files, we used [pigz](https://zlib.net/pigz/) software.
-
-
-
-### Install process
-
->                                  WARNING:                                 
-> To install FACS you will need CONDA or miniCONDA installed in your system 
-
-Proceed with the installation by first cloning this repository:
+If it is, the installation should be simply a matter of getting the source code:
 
 `$ git clone https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS/`
 
-Then decompress the file:
+And executing the installation script:
 
-`$ gunzip FACS-master.gz
-$ cd FACS-master/`
-
-And execute the installation script:
-
-`$ sh install.sh`
+`$ bash install.sh`
 
 
 ## Usage
