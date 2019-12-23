@@ -12,9 +12,6 @@
 ##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-######################################## test
-echo $Lib
-
 # Default variables
 outfolder="../"
 block=100000000  #100Mb
@@ -556,15 +553,10 @@ mkdir splits/
 parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
 rm -rf .pep.faa
 
-############################ test
-ls -a
-
 for i in splits/small-chunk*
 do
 	count=`grep -c ">" $i`
 	echo -e "$i\t$count" >> counte.tsv
-	###################################################### test
-	ls
 	unset count
 	echo "[ M ::: Counting distribution using SA scale -- $i ]"
 	python3 "$Lib"/CTDDClass.py "$i" .CTDDC-SA.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
@@ -572,9 +564,6 @@ do
 	sed -i '1,1d' .tmp
 	echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
 	cat .header .tmp > .CTDDC-SA.tsv;
-	
-	###################################################### test
-	ls -a
 	
 	rm -rf .tmp .header
 
@@ -585,9 +574,6 @@ do
 	echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
 	cat .header .tmp > .CTDDC-hb.tsv;
 	
-	###################################################### test
-	ls -a
-	
 	rm -rf .tmp .header
 
 	if [[ -s .CTDDC-SA.tsv ]] && [[ -s .CTDDC-hb.tsv ]]
@@ -596,10 +582,7 @@ do
 		echo -e "header\tseq\tgroup" > .tmp
 		sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
 		rm -rf "$i"
-		R --slave --args .tmp .out.file < feat.R >/dev/stdout 2>/dev/stderr
-		
-		###################################################### test
-		ls -a
+		R --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
 		
 		rm -rf .tmp
 	
@@ -623,9 +606,6 @@ done
 
 checkout()
 {
-
-######################################## test
-ls -a ./splits/
 
 for i in splits/small-chunk*
 do
@@ -657,13 +637,11 @@ predicter()
 {
 if [ "$(ls -A splits/)" ]
 then
-	######################################## test
-	ls -a ./splits/
 	
 	for i in splits/small-chunk*
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
-		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/stdout 2>/dev/stderr
+		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
 		if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
 		then
 			touch "${i/.tabdesc.tsv/.fin}"
