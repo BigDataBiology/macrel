@@ -62,13 +62,13 @@ install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", depend
 R --vanilla --slave < inst.R --quiet
 rm -rf inst.R
 
-source deactivate
-
 echo "[ ## 2.] Installing prodigal_modified"
 
 cd prodigal_modified
 make CC=$GCC # conda will add $GCC to environment
 mv prodigal ../envs/FACS_env/bin/prodigal_sm
+
+source deactivate
 
 echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
