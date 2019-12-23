@@ -557,7 +557,7 @@ parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk
 rm -rf .pep.faa
 
 ############################ test
-ls
+ls -a
 
 for i in splits/small-chunk*
 do
@@ -572,8 +572,10 @@ do
 	sed -i '1,1d' .tmp
 	echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
 	cat .header .tmp > .CTDDC-SA.tsv;
+	
 	###################################################### test
-	ls
+	ls -a
+	
 	rm -rf .tmp .header
 
 	echo "[ M ::: Counting distribution using HB scale -- $i ]"
@@ -584,7 +586,7 @@ do
 	cat .header .tmp > .CTDDC-hb.tsv;
 	
 	###################################################### test
-	ls
+	ls -a
 	
 	rm -rf .tmp .header
 
@@ -597,7 +599,7 @@ do
 		R --slave --args .tmp .out.file < feat.R >/dev/stdout 2>/dev/stderr
 		
 		###################################################### test
-		ls
+		ls -a
 		
 		rm -rf .tmp
 	
@@ -621,6 +623,10 @@ done
 
 checkout()
 {
+
+######################################## test
+ls -a ./splits/
+
 for i in splits/small-chunk*
 do
 	colu=`awk -F'\t' '{print NF}' $i | sort -nu | wc -l`
@@ -651,10 +657,13 @@ predicter()
 {
 if [ "$(ls -A splits/)" ]
 then
+	######################################## test
+	ls -a ./splits/
+	
 	for i in splits/small-chunk*
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
-		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
+		R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/stdout 2>/dev/stderr
 		if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
 		then
 			touch "${i/.tabdesc.tsv/.fin}"
