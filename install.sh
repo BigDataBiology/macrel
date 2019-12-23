@@ -33,7 +33,6 @@ conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
-pwd
 conda install -y \
 		sqlite \
         trimmomatic \
