@@ -51,7 +51,7 @@ args <- commandArgs(TRUE)
 set.seed(95014)
 
 # Reading and transforming datasets
-Testingset <- fread(args[1],"\t")
+hs <- fread(file=args[1], sep="\t")
 Testingset <- as.data.frame(Testingset)
 Testingset$group <- as.factor(Testingset$group)
 str(Testingset)
