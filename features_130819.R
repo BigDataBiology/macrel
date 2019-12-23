@@ -44,7 +44,7 @@ if(!require(doParallel)){
 ##########################################################################
 print("[ M :::: Setting speeding up configs ]")
 intervalStart <- Sys.time()
-cluster <- makeCluster(detectCores() - 1, # number of cores to use
+cluster <- makeCluster(detectCores(), # number of cores to use
                          type = "FORK") # type of cluster
 registerDoParallel(cluster)
 set.seed(95014)
@@ -52,7 +52,7 @@ set.seed(95014)
 print("[ M :::: Taking argument ]")
 args <- commandArgs(TRUE)
 print("[ M :::: Reading converted Tab/multifasta ]")
-hs <- fread(file = args[1], sep="\t")
+hs <- fread(args[1],"\t")
 headers <- as.list(as.character(hs$header))
 seqs <- as.list(as.character(hs$seq))
 group <- as.list(as.character(hs$group))

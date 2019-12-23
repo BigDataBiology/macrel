@@ -1,0 +1,16 @@
+server:
+  port: 8082
+
+# the last "/" is required,or the path is invalid.
+pipeline:
+  home: none
+  inputDir: none
+  outputDir: none
+
+# remote server configuration.
+remote:
+  enableRemote: false
+  ip: none
+  port: -1
+  username: none
+  password: none

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -e
+
 echo "
 #########################################################################
-######## FACS pipeline - Fast AMP Clustering System   ###################
+######## FACS - Fast AMP Classification System        ###################
 #########################################################################
 ########                    Authors:                  ###################
 ########                                              ###################
@@ -21,7 +23,6 @@ fi
 
 eval "$(conda shell.bash hook)"
 
-echo "[ ## 1.] Installing routine linux softwares"
 echo "# Creating new environment for FACS"
 mkdir -p envs
 conda create -p ./envs/FACS_env python=3.7
@@ -31,30 +32,24 @@ conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
-conda config --env --set auto_activate_base false
-
-echo "# Installing Bioinformatics packages"
-conda install -y sqlite
-conda install -y trimmomatic
-conda install -y megahit
-conda install -y paladin
-conda install -y samtools
-conda install -y eXpress
-conda install -y pigz
-conda install -y parallel
-
-echo "# Installing Python packages"
-conda install -y matplotlib
-conda install -y scikit-learn
-conda install -y pandas
-
-echo "# Installing R packages"
-conda install -y r-essentials
-conda install -y r-base
-conda install -y r-caret
-conda install -y r-randomforest
-conda install -y r-dplyr
-conda install -y r-data.table
+echo "# Installing conda packages"
+conda install -y sqlite \
+        trimmomatic \
+        megahit \
+        paladin \
+        samtools \
+        eXpress \
+        pigz \
+        parallel \
+        matplotlib \
+        scikit-learn \
+        pandas \
+        r-essentials \
+        r-base \
+        r-caret \
+        r-randomforest \
+        r-dplyr \
+        r-data.table
 
 echo "# Installing non-conda R packages"
 echo "
@@ -67,22 +62,14 @@ install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", depend
 R --vanilla --slave < inst.R
 rm -rf inst.R
 
-conda deactivate
-
 echo "[ ## 2.] Installing prodigal_modified"
 
-(cd prodigal_modified && make && mv prodigal ../envs/FACS_env/bin/prodigal_sm )
-
-echo "[ ## 3.] Getting python scripts"
-echo "# Downloading"
-curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/CTDDClass.py
-curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/readFasta.py
-curl -O https://raw.githubusercontent.com/Superzchen/iLearn/master/descproteins/saveCode.py
-
-chmod +x CTDDClass.py readFasta.py saveCode.py
+cd prodigal_modified
+make CC=$GCC # conda will add $GCC to environment
+mv prodigal ../envs/FACS_env/bin/prodigal_sm
 
 echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
---- If any bug appears report to:
+--- Please submit bugreports/comments to
 celio.diasjunior@gmail.com
 "
