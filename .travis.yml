@@ -1,2 +1,2 @@
-scrypt:
-  - bash install.sh -y
+install:
+  - ./install.sh
