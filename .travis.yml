@@ -1,2 +1,2 @@
 scrypt:
-  - bash FACS.sh --mode p --fasta ./example_seqs/expep.faa.gz --outfolder out_peptides --outtag example -t 4
+  - bash install.sh
