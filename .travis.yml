@@ -8,3 +8,4 @@ before_install:
   - conda update --yes conda
 install:
   - conda install --yes numpy
+script: true
