@@ -34,7 +34,6 @@ conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
 conda install -y \
-        gcc_linux-64 \
         sqlite \
         trimmomatic \
         megahit \
