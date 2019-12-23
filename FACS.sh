@@ -563,14 +563,18 @@ do
 	awk '{print $2"\t"$7"\t"$12}' .CTDDC-SA.tsv > .tmp
 	sed -i '1,1d' .tmp
 	echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
-	cat .header .tmp > .CTDDC-SA.tsv; rm -rf .tmp .header
+	cat .header .tmp > .CTDDC-SA.tsv;
+	
+	rm -rf .tmp .header
 
 	echo "[ M ::: Counting distribution using HB scale -- $i ]"
 	python3 "$Lib"/CTDDClass.py "$i" .CTDDC-hb.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
 	awk '{print $2"\t"$7"\t"$12}' .CTDDC-hb.tsv > .tmp
 	sed -i '1,1d' .tmp
 	echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
-	cat .header .tmp > .CTDDC-hb.tsv; rm -rf .tmp .header
+	cat .header .tmp > .CTDDC-hb.tsv;
+	
+	rm -rf .tmp .header
 
 	if [[ -s .CTDDC-SA.tsv ]] && [[ -s .CTDDC-hb.tsv ]]
 	then
@@ -579,6 +583,7 @@ do
 		sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
 		rm -rf "$i"
 		R --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
+		
 		rm -rf .tmp
 	
 		echo "[ M ::: Formatting descriptors -- $i ]"
@@ -601,6 +606,7 @@ done
 
 checkout()
 {
+
 for i in splits/small-chunk*
 do
 	colu=`awk -F'\t' '{print NF}' $i | sort -nu | wc -l`
@@ -631,6 +637,7 @@ predicter()
 {
 if [ "$(ls -A splits/)" ]
 then
+	
 	for i in splits/small-chunk*
 	do
 		echo "[ M ::: Predicting AMPs -- $i ]"
@@ -998,6 +1005,9 @@ sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/features_130819.R > f
 sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/Predict_130819.R > pred.R
 chmod +x feat.R
 chmod +x pred.R
+
+###################################################### test
+ls -l
 
 if [[ $mode == "pe" ]]
 then
