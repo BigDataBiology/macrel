@@ -26,14 +26,15 @@ eval "$(conda shell.bash hook)"
 echo "# Creating new environment for FACS"
 mkdir -p envs
 conda create -p ./envs/FACS_env python=3.7
-conda activate ./envs/FACS_env
+source activate ./envs/FACS_env
 conda config --env --add channels r
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
-conda install -y sqlite \
+conda install -y \
+		sqlite \
         trimmomatic \
         megahit \
         paladin \
@@ -49,7 +50,8 @@ conda install -y sqlite \
         r-caret \
         r-randomforest \
         r-dplyr \
-        r-data.table
+        r-data.table \
+		--quiet
 
 echo "# Installing non-conda R packages"
 echo "
@@ -59,14 +61,16 @@ install.packages(\"doParallel\", repos = \"http://cran.us.r-project.org\", depen
 install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
 ##########################################################################
 " > inst.R
-R --vanilla --slave < inst.R
+R --vanilla --slave < inst.R --quiet
 rm -rf inst.R
 
 echo "[ ## 2.] Installing prodigal_modified"
 
 cd prodigal_modified
-make CC=$GCC # conda will add $GCC to environment
+make --quiet # conda will add $GCC to environment
 mv prodigal ../envs/FACS_env/bin/prodigal_sm
+
+source deactivate
 
 echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
