@@ -15,7 +15,7 @@ Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # Default variables
 outfolder="../"
 block=100000000  #100Mb
-j=$(echo "$(nproc) * 9 / 10" | bc)
+j=$(echo "$(nproc)" | bc)
 outtag="FACS_OUT"
 clust="0"
 mem="0.75"
@@ -320,13 +320,29 @@ else
 	exit
 fi
 
+if [[ ! -e $tp ]];
+then
+	echo "[ W ::: Temporary folder ($tp) does not exist. Creating folder... ]"
+	mkdir $tp
+	cd $tp
+elif [[ -e $tp ]];
+then
+	echo "[ W ::: Temporary folder ($tp) exists. cd folder... ]"
+	cd $tp
+elif [[ ! -d $tp ]];
+then
+	echo "[ W ::: $tp already exists but is not a directory ]" 1>&2
+fi
+
 if [[ -n $outfolder ]]
 then
-	if [ -d "$outfolder" ] 
-		then
-			echo "" 
-		else
-			echo "[ W ::: Directory $outfolder does not exist // Outputting in the current folder ]"
+	if [ -d "$outfolder" ]
+	then
+		echo ""
+	else
+		echo "[ W ::: Directory $outfolder does not exist // create it. ]"
+		outfolder=$(mktemp --tmpdir --directory $outfolder.XXXXXXX)
+		echo "folder: $outfolder"
 	fi
 else
 	echo "[ W ::: Output folder error ]"
@@ -334,15 +350,6 @@ else
 	exit
 fi
 
-if [[ ! -e $tp ]];
-then
-	echo "[ W ::: Temporary folder ($tp) does not exist. Creating folder... ]"
-	mkdir $tp
-	cd $tp
-elif [[ ! -d $tp ]];
-then
-	echo "[ W ::: $tp already exists but is not a directory ]" 1>&2
-fi
 }
 
 ############################################################################################################################
