@@ -5,4 +5,4 @@ before_install:
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes conda
 install:
-  - conda install --yes pigz
+  - conda install --yes numpy
