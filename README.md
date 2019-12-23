@@ -96,7 +96,7 @@ different types of references:
 ```bash
     bash FACS.sh --mode a \
         --fwd example_seqs/R1.fq.gz \
-        --fasta example_seqs/excontigs.faa.gz \
+        --fasta example_seqs/expep.faa.gz \
         --outfolder out_abundance \
         --outtag example_abundance \
         -t 4
