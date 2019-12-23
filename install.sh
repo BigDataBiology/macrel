@@ -33,7 +33,9 @@ conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
-conda install -y sqlite \
+conda install -y \
+        gcc_linux-64 \
+        sqlite \
         trimmomatic \
         megahit \
         paladin \
@@ -49,7 +51,8 @@ conda install -y sqlite \
         r-caret \
         r-randomforest \
         r-dplyr \
-        r-data.table --quiet
+        r-data.table \
+        --quiet
 
 echo "# Installing non-conda R packages"
 echo "
