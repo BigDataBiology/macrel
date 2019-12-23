@@ -7,5 +7,5 @@ before_install:
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes conda
 install:
-  - bash install.sh
+  - bash --yes install.sh
 script: true
