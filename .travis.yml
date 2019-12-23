@@ -7,5 +7,5 @@ before_install:
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes conda
 install:
-  - conda install --yes numpy
+  - bash install.sh
 script: true
