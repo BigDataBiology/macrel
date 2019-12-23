@@ -4,7 +4,5 @@ before_install:
   - "./miniconda.sh -b"
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes conda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
 install:
   - conda install --yes pigz
