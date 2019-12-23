@@ -25,7 +25,7 @@ eval "$(conda shell.bash hook)"
 
 echo "# Creating new environment for FACS"
 mkdir -p envs
-conda create -y -p ./envs/FACS_env python=3.7
+conda create --yes -p ./envs/FACS_env python=3.7
 conda activate ./envs/FACS_env
 conda config --env --add channels r
 conda config --env --add channels defaults
