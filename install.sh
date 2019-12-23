@@ -33,6 +33,7 @@ conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
+pwd
 conda install -y \
 		sqlite \
         trimmomatic \
@@ -72,6 +73,7 @@ mv prodigal ../envs/FACS_env/bin/prodigal_sm
 
 source deactivate
 
+pwd
 chmod +x CTDDClass.py
 
 echo "############ Installation procedures finished
