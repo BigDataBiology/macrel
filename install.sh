@@ -18,7 +18,7 @@ if ! which conda > /dev/null; then
     echo "[ Conda not found. Please install miniconda and add 'conda' to the PATH: "
     echo "    curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     echo "    sh Miniconda3-latest-Linux-x86_64.sh"
-#    exit 1
+    exit 1
 fi
 
 eval "$(conda shell.bash hook)"
