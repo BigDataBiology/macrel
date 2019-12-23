@@ -7,4 +7,4 @@ before_install:
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
 install:
-  - ./install.sh
+  - conda install --yes pigz
