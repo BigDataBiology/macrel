@@ -12,6 +12,9 @@
 ##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+######################################## test
+echo $Lib
+
 # Default variables
 outfolder="../"
 block=100000000  #100Mb
@@ -553,24 +556,37 @@ mkdir splits/
 parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
 rm -rf .pep.faa
 
+############################ test
+ls
+
 for i in splits/small-chunk*
 do
 	count=`grep -c ">" $i`
 	echo -e "$i\t$count" >> counte.tsv
+	###################################################### test
+	ls
 	unset count
 	echo "[ M ::: Counting distribution using SA scale -- $i ]"
 	python3 "$Lib"/CTDDClass.py "$i" .CTDDC-SA.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
 	awk '{print $2"\t"$7"\t"$12}' .CTDDC-SA.tsv > .tmp
 	sed -i '1,1d' .tmp
 	echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
-	cat .header .tmp > .CTDDC-SA.tsv; rm -rf .tmp .header
+	cat .header .tmp > .CTDDC-SA.tsv;
+	###################################################### test
+	ls
+	rm -rf .tmp .header
 
 	echo "[ M ::: Counting distribution using HB scale -- $i ]"
 	python3 "$Lib"/CTDDClass.py "$i" .CTDDC-hb.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
 	awk '{print $2"\t"$7"\t"$12}' .CTDDC-hb.tsv > .tmp
 	sed -i '1,1d' .tmp
 	echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
-	cat .header .tmp > .CTDDC-hb.tsv; rm -rf .tmp .header
+	cat .header .tmp > .CTDDC-hb.tsv;
+	
+	###################################################### test
+	ls
+	
+	rm -rf .tmp .header
 
 	if [[ -s .CTDDC-SA.tsv ]] && [[ -s .CTDDC-hb.tsv ]]
 	then
@@ -578,7 +594,11 @@ do
 		echo -e "header\tseq\tgroup" > .tmp
 		sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
 		rm -rf "$i"
-		R --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
+		R --slave --args .tmp .out.file < feat.R >/dev/stdout 2>/dev/stderr
+		
+		###################################################### test
+		ls
+		
 		rm -rf .tmp
 	
 		echo "[ M ::: Formatting descriptors -- $i ]"
@@ -998,6 +1018,9 @@ sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/features_130819.R > f
 sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/Predict_130819.R > pred.R
 chmod +x feat.R
 chmod +x pred.R
+
+###################################################### test
+ls -l
 
 if [[ $mode == "pe" ]]
 then
