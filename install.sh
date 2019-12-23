@@ -25,7 +25,7 @@ eval "$(conda shell.bash hook)"
 
 echo "# Creating new environment for FACS"
 mkdir -p envs
-conda create --yes -p ./envs/FACS_env python=3.7 --quiet
+conda create --yes -p ./envs/FACS_env python=3.7
 source activate ./envs/FACS_env
 conda config --env --add channels r
 conda config --env --add channels defaults
@@ -34,7 +34,7 @@ conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
 conda install -y \
-        sqlite \
+		sqlite \
         trimmomatic \
         megahit \
         paladin \
@@ -51,7 +51,7 @@ conda install -y \
         r-randomforest \
         r-dplyr \
         r-data.table \
-        --quiet
+		--quiet
 
 echo "# Installing non-conda R packages"
 echo "
@@ -71,6 +71,8 @@ make --quiet # conda will add $GCC to environment
 mv prodigal ../envs/FACS_env/bin/prodigal_sm
 
 source deactivate
+
+chmod +x CTDDClass.py
 
 echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
