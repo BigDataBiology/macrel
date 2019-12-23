@@ -33,7 +33,7 @@ conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
-conda install -y --quite sqlite \
+conda install -y --quiet sqlite \
         trimmomatic \
         megahit \
         paladin \
