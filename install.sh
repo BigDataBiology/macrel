@@ -73,6 +73,7 @@ mv prodigal ../envs/FACS_env/bin/prodigal_sm
 
 source deactivate
 
+cd ..
 pwd
 chmod +x CTDDClass.py
 
