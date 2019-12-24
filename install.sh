@@ -72,6 +72,8 @@ mv prodigal ../envs/FACS_env/bin/prodigal_sm
 
 source deactivate
 
+chmod +x CTDDClass.py
+
 echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
 --- Please submit bugreports/comments to
