@@ -357,7 +357,7 @@ fi
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ################################################       ENV      ############################################################
 
-export PATH=$PATH:$Lib
+export PATH=$Lib:$PATH
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ################################################    FUNCTIONS   ############################################################
@@ -995,7 +995,7 @@ rm -rf .ref.* .read_1.paired.fastq.* .m* feat.R pred.R
 ################################################    CMDs   #################################################################
 
 
-export PATH=$PATH:$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_env/etc:$Lib/envs/FACS_env/jmods:$Lib/envs/FACS_env/lib:$Lib/envs/FACS_env/libexec:$Lib/envs/FACS_env/mkspecs:$Lib/envs/FACS_env/plugins:$Lib/envs/FACS_env/resources:$Lib/envs/FACS_env/share:$Lib/envs/FACS_env/translations:$Lib/envs/FACS_env/x86_64-conda_cos6-linux-gnu:$Lib/envs/FACS_env/compiler_compat:$Lib/envs/FACS_env/conf:$Lib/envs/FACS_env/doc:$Lib/envs/FACS_env/include:$Lib/envs/FACS_env/legal:$Lib/envs/FACS_env/lib64:$Lib/envs/FACS_env/man:$Lib/envs/FACS_env/phrasebooks:$Lib/envs/FACS_env/qml:$Lib/envs/FACS_env/sbin:$Lib/envs/FACS_env/ssl:$Lib/envs/FACS_env/var:$Lib:~/miniconda3/pkgs/:$Lib/envs/FACS_env/lib/R/library/
+export PATH=$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_env/etc:$Lib/envs/FACS_env/jmods:$Lib/envs/FACS_env/lib:$Lib/envs/FACS_env/libexec:$Lib/envs/FACS_env/mkspecs:$Lib/envs/FACS_env/plugins:$Lib/envs/FACS_env/resources:$Lib/envs/FACS_env/share:$Lib/envs/FACS_env/translations:$Lib/envs/FACS_env/x86_64-conda_cos6-linux-gnu:$Lib/envs/FACS_env/compiler_compat:$Lib/envs/FACS_env/conf:$Lib/envs/FACS_env/doc:$Lib/envs/FACS_env/include:$Lib/envs/FACS_env/legal:$Lib/envs/FACS_env/lib64:$Lib/envs/FACS_env/man:$Lib/envs/FACS_env/phrasebooks:$Lib/envs/FACS_env/qml:$Lib/envs/FACS_env/sbin:$Lib/envs/FACS_env/ssl:$Lib/envs/FACS_env/var:$Lib:~/miniconda3/pkgs/:$Lib/envs/FACS_env/lib/R/library/:$PATH
 
 date
 
