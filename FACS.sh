@@ -1006,9 +1006,6 @@ sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/Predict_130819.R > pr
 chmod +x feat.R
 chmod +x pred.R
 
-###################################################### test
-ls -l
-
 if [[ $mode == "pe" ]]
 then
 	PEreads_trimming
