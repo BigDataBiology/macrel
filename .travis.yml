@@ -1,10 +1,10 @@
 language:
-  - c
+  - R
 before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - "./miniconda.sh -b"
-  - export PATH=/home/travis/miniconda2/bin:$PATH
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda3.sh
+  - chmod +x miniconda3.sh
+  - "./miniconda3.sh -b"
+  - export PATH=/home/travis/miniconda3/bin:$PATH
   - conda update --yes conda --quiet
 install:
   - bash install.sh
