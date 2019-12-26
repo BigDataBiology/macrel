@@ -23,10 +23,12 @@ fi
 
 eval "$(conda shell.bash hook)"
 
+Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 echo "# Creating new environment for FACS"
 mkdir -p envs
-conda create --yes -p ./envs/FACS_env python=3.7
-source activate ./envs/FACS_env
+conda create --yes -p $Lib/envs/FACS_env python=3.7
+source activate $Lib/envs/FACS_env
 conda config --env --add channels r
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
@@ -47,18 +49,20 @@ conda install -y \
         pandas \
         r-essentials \
         r-base \
-        r-caret \
         r-randomforest \
-        r-dplyr \
+		r-caret \
+		r-dplyr \
         r-data.table \
+		r-peptides \
+		r-doparallel \
 		--quiet
+
+conda install -y -c r r-stringi --quiet
 
 echo "# Installing non-conda R packages"
 echo "
 ##########################################################################
-install.packages(\"Peptides\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
-install.packages(\"doParallel\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
-install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", dependencies=TRUE)
+install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", lib=\""$Lib"/envs/FACS_env/lib/R/library\", dependencies=TRUE)
 ##########################################################################
 " > inst.R
 R --vanilla --slave < inst.R --quiet
@@ -67,7 +71,7 @@ rm -rf inst.R
 echo "[ ## 2.] Installing prodigal_modified"
 
 cd prodigal_modified
-make --quiet # conda will add $GCC to environment
+make CC=$GCC --quiet # conda will add $GCC to environment
 mv prodigal ../envs/FACS_env/bin/prodigal_sm
 
 source deactivate
