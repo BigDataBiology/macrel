@@ -29,10 +29,10 @@ echo "# Creating new environment for FACS"
 mkdir -p envs
 conda create --yes -p $Lib/envs/FACS_env python=3.7
 source activate $Lib/envs/FACS_env
-conda config --env --add channels r
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
+conda config --env --add channels r
 
 echo "# Installing conda packages"
 conda install -y \
@@ -55,21 +55,10 @@ conda install -y \
         r-data.table \
 		r-peptides \
 		r-doparallel \
+		r-stringi \
 		--quiet
 
-conda install -y -c r r-stringi --quiet
-
-echo "# Installing non-conda R packages"
-echo "
-##########################################################################
-install.packages(\"obliqueRF\", repos = \"http://cran.us.r-project.org\", lib=\""$Lib"/envs/FACS_env/lib/R/library\", dependencies=TRUE)
-##########################################################################
-" > inst.R
-R --vanilla --slave < inst.R --quiet
-rm -rf inst.R
-
 echo "[ ## 2.] Installing prodigal_modified"
-
 cd prodigal_modified
 make CC=$GCC --quiet # conda will add $GCC to environment
 mv prodigal ../envs/FACS_env/bin/prodigal_sm
