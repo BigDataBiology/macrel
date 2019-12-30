@@ -12,8 +12,7 @@ mkdir -p $outdir/envs/FACS_env/bin
 
 # compile c
 cd prodigal_modified
-#make
-cp -r /home/ubuntu/miniconda3/conda-bld/prodigal ./prodigal
+make
 chmod +x prodigal
 cd ..
 
