@@ -1,0 +1,47 @@
+{% set name = "facs" %}
+{% set version = "0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+  
+source:
+  git_url: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
+
+build:
+  number: 0
+
+requirements:
+  run:
+    - python
+    - sqlite
+    - trimmomatic
+    - megahit
+    - paladin
+    - samtools
+    - eXpress
+    - pigz
+    - parallel
+    - matplotlib
+    - scikit-learn
+    - pandas
+    - r-essentials
+    - r-base
+    - r-randomforest
+    - r-caret
+    - r-dplyr
+    - r-data.table
+    - r-peptides
+    - r-doparallel
+
+about:
+  home: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
+  license: MIT
+  summary: "a module for amp prediction"
+  description: |
+    amp prediction
+  dev_url: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
+  
+extra:
+  recipe-maintainers:
+    - HiramHe
