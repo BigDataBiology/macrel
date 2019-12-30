@@ -130,6 +130,22 @@ if [[ -n $mode ]]
 then
 	if [[ $mode == "r" ]]
 	then
+		
+		if [ -s "$Lib/$read_1" ]
+		then
+			read_1="$Lib/$read_1"
+		fi
+		
+		if [ -z $read_2 ]
+		then
+			echo ""
+		else
+			if [ -s "$Lib/$read_2" ]
+			then
+				read_2="$Lib/$read_2"
+			fi
+		fi
+		
 		if [[ -n $read_1 ]]
 		then
 			if [[ -n $read_2 ]]
@@ -184,6 +200,12 @@ Log		$outfolder/$log"
 	elif	[[ $mode == "p" ]]
 	then
 		mode="pep"
+		
+		if [ -s "$Lib/$fasta" ]
+		then
+			fasta="$Lib/$fasta"
+		fi
+		
 		if [ -s "$fasta" ]
 		then 
 			echo "[ M ::: FACS mode has been assigned as Peptides ]
@@ -205,6 +227,12 @@ Log			$outfolder/$log"
 		fi
 	elif	[[ $mode == "c" ]]
 	then
+		
+		if [ -s "$Lib/$fasta" ]
+		then
+			fasta="$Lib/$fasta"
+		fi
+		
 		if [ -s "$fasta" ]
 		then 
 			echo "[ M ::: FACS mode has been assigned as Contigs ]
@@ -227,6 +255,42 @@ Log			$outfolder/$log"
 	elif [[ $mode == "a" ]]
 	then
 		echo "[ M ::: FACS mode has been assigned as read mapper ]"
+		
+		if [ -s "$Lib/$read_1" ]
+		then
+			read_1="$Lib/$read_1"
+		fi
+		
+		if [ -z $read_2 ]
+		then
+			echo ""
+		else
+			if [ -s "$Lib/$read_2" ]
+			then
+				read_2="$Lib/$read_2"
+			fi
+		fi
+		
+		if [ -z $fasta ]
+		then
+			echo ""
+		else
+			if [ -s "$Lib/$fasta" ]
+			then
+				fasta="$Lib/$fasta"
+			fi
+		fi
+		
+		if [ -z $Reference ]
+		then
+			echo ""
+		else
+			if [ -s "/tmp/$Reference" ]
+			then
+				Reference="/tmp/$Reference"
+			fi
+		fi
+		
 		if [ -s "$Reference" ]
 		then
 			RF="0"
@@ -341,8 +405,10 @@ then
 		echo ""
 	else
 		echo "[ W ::: Directory $outfolder does not exist // create it. ]"
-		outfolder=$(mktemp --tmpdir --directory $outfolder.XXXXXXX)
-		echo "folder: $outfolder"
+		mkdir -p /tmp/$outfolder
+		outfolder="/tmp/$outfolder"
+		#outfolder=$(mktemp --tmpdir --directory $outfolder)
+		echo "outfolder: $outfolder"
 	fi
 else
 	echo "[ W ::: Output folder error ]"
