@@ -130,7 +130,11 @@ do
             log=${2}
         ;;
         -ref|--ref|--Ref|-Ref)
-            Reference=${2}
+            reference=$(readlink -e ${2})
+            if [[ $? != 0 ]]; then
+                echo "[ Could not find reference file (${2}) ]"
+                exit 1
+            fi
         ;;
         -mem|--Mem|--mem|-Mem)
             mem=${2}
@@ -242,7 +246,7 @@ Log         $outfolder/$log"
         echo "[ M ::: FACS mode has been assigned as read mapper ]"
         
         
-        if [ -s "$Reference" ]
+        if [ -s "$reference" ]
         then
             RF="0"
             if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
@@ -254,7 +258,7 @@ Log         $outfolder/$log"
 ** Mapper with paired-end reads
 Mode        $mode
 Threads     $j
-Reference   $Reference
+Reference   $reference
 R1          $read_1
 R2          $read_2
 Folder      $outfolder
@@ -270,7 +274,7 @@ Log         $outfolder/$log"
 ** Mapper with single-end reads
 Mode        $mode
 Threads     $j
-Reference   $Reference
+Reference   $reference
 R1          $read_1
 Folder      $outfolder
 Tag         $outtag
@@ -319,7 +323,7 @@ Log         $outfolder/$log"
                 exit 1
             fi
         else
-            >&2 echo "[ W ::: ERR011.1 - FACS has not found your reference file ($fasta) ]"
+            >&2 echo "[ W ::: ERR011.1 - FACS has not found your reference file ($reference) ]"
             exit 1
         fi
     fi
@@ -928,7 +932,7 @@ mapping ()
 echo "[ M ::: Indexing references ]"
 if [[ "$RF" == "0" ]]
 then
-    pigz -dc "$Reference" | sed '1,1d' | awk '{ print ">"$1"\n"$2 }' > .ref.fa
+    pigz -dc "$reference" | sed '1,1d' | awk '{ print ">"$1"\n"$2 }' > .ref.fa
 elif [[ "$RF" == "1" ]]
 then
     if [[ "$fasta" =~ \.gz$ ]];
