@@ -1,4 +1,4 @@
-#!/usr/bin env
+#!/usr/bin/env R
 
 ##########################################################################
 # Features extractor and table generator
@@ -6,10 +6,6 @@
 # Author: Célio D. Santos Jr.
 ##########################################################################
 
-##########################################################################
-# Being feisty
-.libPaths("PEPPERIDY")
-##########################################################################
 
 ##########################################################################
 # Required libraries
@@ -108,11 +104,66 @@ boman <- as.list(as.numeric(boman))
 hydrophobicity <- as.list(as.numeric(hydrophobicity))
 hmoment <- as.list(as.numeric(hmoment))
 print("[ M :::: Preparing tables and binding lists ]")
-t <- rbindlist(list(headers, seqs, group, tinyAA, smallAA, aliphaticAA, aromaticAA, nonpolarAA, polarAA, chargedAA, basicAA, acidicAA, charge, pI, aindex, instaindex, boman, hydrophobicity, hmoment), use.names=FALSE, fill=FALSE, idcol=NULL)
-rm(headers, seqs, group, tinyAA, smallAA, aliphaticAA, aromaticAA, nonpolarAA, polarAA, chargedAA, basicAA, acidicAA, charge, pI, aindex, instaindex, boman, hydrophobicity, hmoment)
+t <- rbindlist(list(
+            headers,
+            seqs,
+            group,
+            tinyAA,
+            smallAA,
+            aliphaticAA,
+            aromaticAA,
+            nonpolarAA,
+            polarAA,
+            chargedAA,
+            basicAA,
+            acidicAA,
+            charge,
+            pI,
+            aindex,
+            instaindex,
+            boman,
+            hydrophobicity,
+            hmoment), use.names=FALSE, fill=FALSE, idcol=NULL)
+rm(headers,
+   seqs,
+   group,
+   tinyAA,
+   smallAA,
+   aliphaticAA,
+   aromaticAA,
+   nonpolarAA,
+   polarAA,
+   chargedAA,
+   basicAA,
+   acidicAA,
+   charge,
+   pI,
+   aindex,
+   instaindex,
+   boman,
+   hydrophobicity,
+   hmoment)
 rownames(t) <- NULL
 print("[ M :::: Formating rownames and colnames ]")
-df <- c("access", "sequence", "group", "tinyAA", "smallAA", "aliphaticAA", "aromaticAA", "nonpolarAA", "polarAA", "chargedAA", "basicAA", "acidicAA", "charge", "pI", "aindex", "instaindex", "boman", "hydrophobicity", "hmoment") 
+df <- c("access",
+        "sequence",
+        "group",
+        "tinyAA",
+        "smallAA",
+        "aliphaticAA",
+        "aromaticAA",
+        "nonpolarAA",
+        "polarAA",
+        "chargedAA",
+        "basicAA",
+        "acidicAA",
+        "charge",
+        "pI",
+        "aindex",
+        "instaindex",
+        "boman",
+        "hydrophobicity",
+        "hmoment")
 df <- as.data.frame(t(df))
 t<-as.data.frame(t(t))
 Final_table <- rbindlist(list(df,t))

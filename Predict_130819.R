@@ -13,14 +13,8 @@
 ######################### Author: Célio D. Santos Jr.
 #####################################################
 
-#####################################################
-# Being feisty
-.libPaths("PEPPERIDY")
-#####################################################
 
-#####################################################
 # Required libraries
-#####################################################
 if(!require(randomForest)){
   install.packages("randomForest")
   library(randomForest)
@@ -54,7 +48,6 @@ set.seed(95014)
 Testingset <- fread(args[1], sep="\t")
 Testingset <- as.data.frame(Testingset)
 Testingset$group <- as.factor(Testingset$group)
-str(Testingset)
 
 ######## Screening with model1
 
@@ -68,15 +61,17 @@ predictionsProb <- predict(model, Testingset, type = "prob")[,1]
 Testingset[["group"]] <- as.character(predictionsFit)
 Testingset <- cbind(Testingset, predictionsProb)
 Testingset <- Testingset %>% filter(group == "AMP")
-Testingset$group <- ifelse (Testingset$acidicAA > Testingset$basicAA, ifelse(grepl("C", Testingset$sequence), "ADP", "ALP") , ifelse(grepl("C", Testingset$sequence), "CDP", "CLP"))
+Testingset$group <- ifelse (Testingset$acidicAA > Testingset$basicAA,
+                                ifelse(grepl("C", Testingset$sequence), "ADP", "ALP") ,
+                                ifelse(grepl("C", Testingset$sequence), "CDP", "CLP"))
 
 ######## Test section
 
 if(dim(Testingset)[1] == 0){
-	print("No AMPs were found, cannot keep")
-	quit("no")
+    print("No AMPs found.")
+    quit("no")
 }else{
-	print("Keeping")
+    print("Keeping")
 }
 
 ######## Screening with model2

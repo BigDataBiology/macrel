@@ -591,7 +591,7 @@ do
         echo -e "header\tseq\tgroup" > .tmp
         sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
         rm -rf "$i"
-        R --slave --args .tmp .out.file < feat.R >/dev/null 2>/dev/null
+        R --slave --args .tmp .out.file < $Lib/features_130819.R >/dev/null 2>/dev/null
         
         rm -rf .tmp
     
@@ -650,7 +650,7 @@ then
     for i in splits/small-chunk*
     do
         echo "[ M ::: Predicting AMPs -- $i ]"
-        R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < pred.R >/dev/null 2>/dev/null
+        R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < $Lib/Predict_130819.R >/dev/null 2>/dev/null
         if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
         then
             touch "${i/.tabdesc.tsv/.fin}"
@@ -995,7 +995,7 @@ then
 else
     echo "[ W ::: ERR054 - Abundance calling failed ]"
 fi
-rm -rf .ref.* .read_1.paired.fastq.* .m* feat.R pred.R
+rm -rf .ref.* .read_1.paired.fastq.* .m*
 }
 
 ############################################################################################################################
@@ -1009,11 +1009,6 @@ export PATH=$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_
 date
 
 sanity_check
-
-sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/features_130819.R > feat.R
-sed "s|PEPPERIDY|$Lib/envs/FACS_env/lib/R/library/|g" $Lib/Predict_130819.R > pred.R
-chmod +x feat.R
-chmod +x pred.R
 
 if [[ $mode == "pe" ]]
 then
