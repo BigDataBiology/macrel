@@ -1,12 +1,14 @@
-language:
-  - R
+sudo: required
+dist: xenial
+language: c
+cache:
+  ccache: true
+  directories:
+    - $HOME/miniconda3
 before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda3.sh
-  - chmod +x miniconda3.sh
-  - "./miniconda3.sh -b"
-  - export PATH=/home/travis/miniconda3/bin:$PATH
-  - conda update --yes conda --quiet
+  - .travis/travis_before_install.sh
 install:
+  - export PATH=$HOME/miniconda3/bin:$PATH
   - bash install.sh
 script:
   - bash automatedTest.sh
