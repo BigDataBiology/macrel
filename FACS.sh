@@ -13,15 +13,24 @@
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Default variables
-outfolder="../"
-block=100000000  #100Mb
-j=$(echo "$(nproc)" | bc)
-outtag="FACS_OUT"
-clust="0"
-mem="0.75"
+outfolder_DEFAULT="FACS_output"
+outfolder=$outfolder_DEFAULT
+
+block_DEFAULT="100M"
+block=$block_DEFAULT
+
+j=$(nproc)
+
+outtag_DEFAULT="FACS_OUT"
+outtag=$outtag_DEFAULT
+
+mem_DEFAULT="0.75"
+mem=$mem_DEFAULT
+
 tp=$(mktemp --tmpdir --directory FACS.XXXXXXX)
 cls="1"
 ep="0"
+log="log.txt"
 
 # Help message
 show_help ()
@@ -50,15 +59,15 @@ show_help ()
                 \"a\" to map reads against AMP output database and generate abundances table
 
     --fasta             Contigs or peptides fasta file (possibly compressed)
-    --fwd               Short-read sequencing file in Fastq format (R1), please leave it compressed and full path
-    --rev               Short-read sequencing file in Fastq format (R2), please leave it compressed and pass the full path
+    --fwd               Short-read sequencing file in FASTQ format (forward reads file)
+    --rev               Short-read sequencing file in FASTQ format (reverse reads file)
     --ref               Output of module \"c\" in its raw format [file type TSV and compressed ]
-    --outfolder         Folder where output will be generated [Default: ./]
-    --outtag            Tag used to name outputs [Default: FACS_OUT]
+    --outfolder         Folder where output will be generated [$outfolder_DEFAULT]
+    --outtag            Tag used to name outputs [Default: $outtag_DEFAULT]
     -t, --threads [N]   Number of threads [Default: number of processors]
-    --block             Bucket size (in Bytes). [100MB]
+    --block             Bucket size (in Bytes, but M/G/T/m/g/t postfixes are accepted). [$block_DEFAULT]
     --log               Log file name. FACS will save the run results to this log file in output folder.
-    --mem               Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
+    --mem               Memory available to FACS ranging from 0 - 1. [$mem_DEFAULT]
     --tmp               Temporary folder
     --cls               Cluster peptides: yes (1) or no (0). [Default: 1 - yes]
     --ep                Extra profilling (solubility, proteases susceptibility and antigenicity): yes (1) or no (0). [Default: 0 - no ]
@@ -84,16 +93,32 @@ do
             j=${2}
         ;;
         --fasta|-fasta|-fa)
-            fasta=${2}
+            fasta=$(readlink -f ${2})
+            if [[ $? != 0 ]]; then
+                echo "[ Could not find fasta file (${2}) ]"
+                exit 1
+            fi
         ;;
         --fwd|-fwd|--FWD|-r1|-R1|-l)
-            read_1=${2}
+            read_1=$(readlink -f ${2})
+            if [[ $? != 0 ]]; then
+                echo "[ Could not find forward read file (${2}) ]"
+                exit 1
+            fi
         ;;
         --rev|--Rev|-rev|-R2|-r2)
-            read_2=${2}
+            read_2=$(readlink -f ${2})
+            if [[ $? != 0 ]]; then
+                echo "[ Could not find reverse read file (${2}) ]"
+                exit 1
+            fi
         ;;
         --outfolder|-outfolder|-of)
-            outfolder=${2}
+            outfolder=$(readlink -f ${2})
+            if [[ $? != 0 ]]; then
+                echo "[ Could not find output folder (${2}) ]"
+                exit 1
+            fi
         ;;
         --outtag|-tag)
             outtag=${2}
@@ -128,20 +153,7 @@ then
     if [[ $mode == "r" ]]
     then
         
-        if [ -s "$Lib/$read_1" ]
-        then
-            read_1="$Lib/$read_1"
-        fi
         
-        if [ -z $read_2 ]
-        then
-            echo ""
-        else
-            if [ -s "$Lib/$read_2" ]
-            then
-                read_2="$Lib/$read_2"
-            fi
-        fi
         
         if [[ -n $read_1 ]]
         then
@@ -161,7 +173,7 @@ Tag         $outtag
 Bucket      $block
 Log         $outfolder/$log"
                 else
-                    >&2 echo "[ W ::: ERR010 - FACS has not found your reads files. ]"
+                    >&2 echo "[ ERR010 - FACS has not found your reads files. ]"
                     exit 1
                 fi
             elif [[ -s $read_1 ]]
@@ -190,15 +202,9 @@ Log         $outfolder/$log"
     then
         mode="pep"
         
-        if [ -s "$Lib/$fasta" ]
-        then
-            fasta="$Lib/$fasta"
-        fi
-        
         if [ -s "$fasta" ]
         then
-            echo "[ M ::: FACS mode has been assigned as Peptides ]
-[ M ::: FACS has found your peptides fasta file, starting work... ]"
+            echo "[ M ::: FACS has found your peptides fasta file, starting work... ]"
             echo -e "[ M ::: Configuration ]
 
 Mode        p
@@ -215,15 +221,9 @@ Log         $outfolder/$log"
     elif    [[ $mode == "c" ]]
     then
         
-        if [ -s "$Lib/$fasta" ]
-        then
-            fasta="$Lib/$fasta"
-        fi
-        
         if [ -s "$fasta" ]
         then
-            echo "[ M ::: FACS mode has been assigned as Contigs ]
-[ M ::: FACS has found your contigs file, starting work... ]"
+            echo "[ M ::: FACS has found your contigs file, starting work... ]"
             echo -e "[ M ::: Here we specify your variables ]
 
 Mode        $mode
@@ -241,40 +241,6 @@ Log         $outfolder/$log"
     then
         echo "[ M ::: FACS mode has been assigned as read mapper ]"
         
-        if [ -s "$Lib/$read_1" ]
-        then
-            read_1="$Lib/$read_1"
-        fi
-        
-        if [ -z $read_2 ]
-        then
-            echo ""
-        else
-            if [ -s "$Lib/$read_2" ]
-            then
-                read_2="$Lib/$read_2"
-            fi
-        fi
-        
-        if [ -z $fasta ]
-        then
-            echo ""
-        else
-            if [ -s "$Lib/$fasta" ]
-            then
-                fasta="$Lib/$fasta"
-            fi
-        fi
-        
-        if [ -z $Reference ]
-        then
-            echo ""
-        else
-            if [ -s "/tmp/$Reference" ]
-            then
-                Reference="/tmp/$Reference"
-            fi
-        fi
         
         if [ -s "$Reference" ]
         then
@@ -286,14 +252,14 @@ Log         $outfolder/$log"
                 echo -e "[ M ::: Here we specify your variables ]
 
 ** Mapper with paired-end reads
-Mode            $mode
-Threads         $j
-Reference       $Reference
+Mode        $mode
+Threads     $j
+Reference   $Reference
 R1          $read_1
 R2          $read_2
-Folder          $outfolder
+Folder      $outfolder
 Tag         $outtag
-Bucket          $block
+Bucket      $block
 Log         $outfolder/$log"
             elif [[ -s "$read_1" ]]
             then
@@ -324,14 +290,14 @@ Log         $outfolder/$log"
                 echo -e "[ M ::: Here we specify your variables ]
 
 ** Mapper with paired-end reads
-Mode            $mode
-Threads         $j
-Reference       $fasta
+Mode        $mode
+Threads     $j
+Reference   $fasta
 R1          $read_1
 R2          $read_2
-Folder          $outfolder
+Folder      $outfolder
 Tag         $outtag
-Bucket          $block
+Bucket      $block
 Log         $outfolder/$log"
             elif [[ -s "$read_1" ]]
             then
@@ -353,7 +319,7 @@ Log         $outfolder/$log"
                 exit 1
             fi
         else
-            >&2 echo "[ W ::: ERR011.1 - FACS has not found your reference file ]"
+            >&2 echo "[ W ::: ERR011.1 - FACS has not found your reference file ($fasta) ]"
             exit 1
         fi
     fi
@@ -364,16 +330,15 @@ fi
 
 if [[ ! -e $tp ]];
 then
-    echo "[ W ::: Temporary folder ($tp) does not exist. Creating folder... ]"
+    echo "[ Temporary folder ($tp) does not exist. Creating it... ]"
     mkdir $tp
     cd $tp
 elif [[ -e $tp ]];
 then
-    echo "[ W ::: Temporary folder ($tp) exists. cd folder... ]"
     cd $tp
 elif [[ ! -d $tp ]];
 then
-    echo "[ W ::: $tp already exists but is not a directory ]" 1>&2
+    echo "[ Temporary folder ($tp) already exists but is not a directory ]" 1>&2
 fi
 
 if [[ -n $outfolder ]]
@@ -383,13 +348,10 @@ then
         echo ""
     else
         echo "[ W ::: Directory $outfolder does not exist.  Creating it... ]"
-        mkdir -p /tmp/$outfolder
-        outfolder="/tmp/$outfolder"
-        #outfolder=$(mktemp --tmpdir --directory $outfolder)
-        echo "outfolder: $outfolder"
+        mkdir -p $outfolder || (>&2 echo "[ Error creating output folder ($outfolder) ]" ; exit 1)
     fi
 else
-    >&2 echo "[ W ::: Output folder error ]"
+    >&2 echo "[ No output folder specified ]"
     exit 1
 fi
 
@@ -882,7 +844,7 @@ Threads     $j
 read_R1     $read_1
 read_R2     $read_2
 Folder      $outfolder
-Tag     $outtag
+Tag         $outtag
 Bucket      $block
 
 ========================================= Files were treated
@@ -917,7 +879,7 @@ else
 Threads     $j
 Contigs     $fasta
 Folder      $outfolder
-Tag     $outtag
+Tag         $outtag
 Bucket      $block
 
 ========================================= Files were treated
@@ -1004,7 +966,7 @@ fi
 
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
 
-echo "[ M ::: Starting the paladin ]"
+echo "[ M ::: Starting paladin ]"
 paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | samtools view -Sb | samtools sort > .m.bam
 
 if [[ -s .m.bam ]]
