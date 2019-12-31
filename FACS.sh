@@ -43,25 +43,25 @@ show_help ()
 
     -h, --help          Show this help message
 
-    -m          Mode of operation, type:
+    -m          Mode of operation, one of:
                 \"c\" to work with contigs,
                 \"p\" to predict AMPs directly from a peptides FASTA file,
                 \"r\" to work with paired-end reads,
                 \"a\" to map reads against AMP output database and generate abundances table
-    --fasta         Compressed (or not gzipped) contigs or peptides fasta file
-    --fwd                   Illumina sequencing file in Fastq format (R1), please leave it compressed and full path
-    --rev               Illumina sequencing file in Fastq format (R2), please leave it compressed and pass the full path
-    --ref                   Output of module \"c\" in its raw format [file type tsv and compressed ]
-    --outfolder     Folder where output will be generated [Default: ./]
+
+    --fasta             Contigs or peptides fasta file (possibly compressed)
+    --fwd               Short-read sequencing file in Fastq format (R1), please leave it compressed and full path
+    --rev               Short-read sequencing file in Fastq format (R2), please leave it compressed and pass the full path
+    --ref               Output of module \"c\" in its raw format [file type TSV and compressed ]
+    --outfolder         Folder where output will be generated [Default: ./]
     --outtag            Tag used to name outputs [Default: FACS_OUT]
-    -t, --threads [N]   Number of threads [Default: 90% of available threads]
-    --block         Bucket size (take in mind it is measured in Bytes and also it influences memory usage). [100MB]
-    --log           Log file name. FACS will save the run results to this log file in output folder.
-    --mem           Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
-    --tmp           Temporary folder
-    --cls           Cluster peptides: yes (1) or no (o). [Default: 1 - yes]
-    --ep            Extra profilling (solubility, proteases susceptibility and antigenicity): yes (1) or no (0).
-                [Default: 0 - no ]
+    -t, --threads [N]   Number of threads [Default: number of processors]
+    --block             Bucket size (in Bytes). [100MB]
+    --log               Log file name. FACS will save the run results to this log file in output folder.
+    --mem               Memory available to FACS ranging from 0 - 1. [Defult: 0.75]
+    --tmp               Temporary folder
+    --cls               Cluster peptides: yes (1) or no (0). [Default: 1 - yes]
+    --ep                Extra profilling (solubility, proteases susceptibility and antigenicity): yes (1) or no (0). [Default: 0 - no ]
 "
 }
 
@@ -71,7 +71,7 @@ do
     case $1 in
         -h|--help|-help|\?|-\?)
             show_help
-            exit
+            exit 0
         ;;
         -m|-M|--mode|--Mode|--m|--M)
             mode=${2}
@@ -113,9 +113,6 @@ do
         -cls|--cls)
             cls=${2}
         ;;
-        -cls|--cls)
-            cls=${2}
-        ;;
         -ep|--ep)
             ep=${2}
         ;;
@@ -152,24 +149,20 @@ then
             then
                 if [[ -s $read_1 ]] || [[ -s $read_2 ]]
                 then
-                    echo "[ M ::: FACS mode has been assigned as paired-end reads ]
-[ M ::: FACS has found your reads files, starting work... ]"
+                    echo "[ M ::: FACS has found your reads files ($read_1/$read_2), starting work... ]"
                     mode="pe"
-                    echo -e "[ M ::: Here we specify your variables ]
-
+                    echo -e "[ M ::: Configuration ]
 Mode        $mode
 Threads     $j
 read_R1     $read_1
 read_R2     $read_2
 Folder      $outfolder
-Tag     $outtag
+Tag         $outtag
 Bucket      $block
-Log     $outfolder/$log"
+Log         $outfolder/$log"
                 else
-                    echo "[ M ::: FACS mode has been assigned as Reads ]
-[ W ::: ERR010 - FACS has not found your reads files. ]"
-                    show_help
-                    exit
+                    >&2 echo "[ W ::: ERR010 - FACS has not found your reads files. ]"
+                    exit 1
                 fi
             elif [[ -s $read_1 ]]
             then
@@ -182,20 +175,16 @@ Mode        $mode
 Threads     $j
 read_R1     $read_1
 Folder      $outfolder
-Tag     $outtag
+Tag         $outtag
 Bucket      $block
-Log     $outfolder/$log"
+Log         $outfolder/$log"
             else
-                echo "[ M ::: FACS mode has been assigned as Reads ]
-[ W ::: ERR010 - FACS has not found your reads files. ]"
-                show_help
-                exit
+                >&2 echo "[ W ::: ERR010 - FACS has not found your reads file ($read_1). ]"
+                exit 1
             fi
         else
-            echo "[ M ::: FACS mode has been assigned as Reads ]
-[ W ::: ERR010 - FACS has not found your reads files. ]"
-            show_help
-            exit
+            >&2 echo "[ W ::: ERR010 - FACS has not found your read files. ]"
+            exit 1
         fi
     elif    [[ $mode == "p" ]]
     then
@@ -210,20 +199,18 @@ Log     $outfolder/$log"
         then
             echo "[ M ::: FACS mode has been assigned as Peptides ]
 [ M ::: FACS has found your peptides fasta file, starting work... ]"
-            echo -e "[ M ::: Here we specify your variables ]
+            echo -e "[ M ::: Configuration ]
 
-Mode            p
-Threads         $j
-Contigs         $fasta
-Folder          $outfolder
+Mode        p
+Threads     $j
+Contigs     $fasta
+Folder      $outfolder
 Tag         $outtag
-Bucket          $block
+Bucket      $block
 Log         $outfolder/$log"
         else
-            echo "[ M ::: FACS mode has been assigned as Peptides ]
-[ W ::: ERR011 - Your peptides fasta file is not present, please review the command line ]"
-            show_help
-            exit
+            >&2 echo "[ ERR011 - Peptides file ($fasta) is not present ]"
+            exit 1
         fi
     elif    [[ $mode == "c" ]]
     then
@@ -239,18 +226,16 @@ Log         $outfolder/$log"
 [ M ::: FACS has found your contigs file, starting work... ]"
             echo -e "[ M ::: Here we specify your variables ]
 
-Mode            $mode
-Threads         $j
-Contigs         $fasta
-Folder          $outfolder
+Mode        $mode
+Threads     $j
+Contigs     $fasta
+Folder      $outfolder
 Tag         $outtag
-Bucket          $block
+Bucket      $block
 Log         $outfolder/$log"
         else
-            echo "[ M ::: FACS mode has been assigned as Contigs ]
-[ W ::: ERR011 - Your contigs file is not present, please review the command line ]"
-            show_help
-            exit
+            >&2 echo "[ W ::: ERR011 - Contigs file ($fasta) not found ]"
+            exit 1
         fi
     elif [[ $mode == "a" ]]
     then
@@ -317,19 +302,17 @@ Log         $outfolder/$log"
                 echo -e "[ M ::: Here we specify your variables ]
 
 ** Mapper with single-end reads
-Mode            $mode
-Threads         $j
-Reference       $Reference
+Mode        $mode
+Threads     $j
+Reference   $Reference
 R1          $read_1
-Folder          $outfolder
+Folder      $outfolder
 Tag         $outtag
-Bucket          $block
+Bucket      $block
 Log         $outfolder/$log"
             else
-                echo "[ M ::: FACS mode has been assigned as mapper ]
-[ W ::: ERR011 - FACS has not found your reads files ]"
-                show_help
-                exit
+                >&2 echo " [ W ::: ERR011 - FACS has not found your reads files ]"
+                exit 1
             fi
         elif [ -s "$fasta" ]
         then
@@ -357,31 +340,26 @@ Log         $outfolder/$log"
                 echo -e "[ M ::: Here we specify your variables ]
 
 ** Mapper with single-end reads
-Mode            $mode
-Threads         $j
-Reference       $fasta
+Mode        $mode
+Threads     $j
+Reference   $fasta
 R1          $read_1
-Folder          $outfolder
+Folder      $outfolder
 Tag         $outtag
-Bucket          $block
+Bucket      $block
 Log         $outfolder/$log"
             else
-                echo "[ M ::: FACS mode has been assigned as mapper ]
-[ W ::: ERR011 - FACS has not found your reads files ]"
-                show_help
-                exit
+                >&2 echo "[ W ::: ERR011 - FACS has not found your reads files ]"
+                exit 1
             fi
         else
-            echo "[ M ::: FACS mode has been assigned as mapper ]
-[ W ::: ERR011.1 - FACS has not found your reference file ]"
-            show_help
-            exit
+            >&2 echo "[ W ::: ERR011.1 - FACS has not found your reference file ]"
+            exit 1
         fi
     fi
 else
-    echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
-    show_help
-    exit
+    >&2 echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
+    exit 1
 fi
 
 if [[ ! -e $tp ]];
@@ -404,16 +382,15 @@ then
     then
         echo ""
     else
-        echo "[ W ::: Directory $outfolder does not exist // create it. ]"
+        echo "[ W ::: Directory $outfolder does not exist.  Creating it... ]"
         mkdir -p /tmp/$outfolder
         outfolder="/tmp/$outfolder"
         #outfolder=$(mktemp --tmpdir --directory $outfolder)
         echo "outfolder: $outfolder"
     fi
 else
-    echo "[ W ::: Output folder error ]"
-    show_help
-    exit
+    >&2 echo "[ W ::: Output folder error ]"
+    exit 1
 fi
 
 }
@@ -448,9 +425,9 @@ if [ -s ".read_2.paired.fastq.gz" ]
 then
     rm -rf ".read_1.singles.fastq.gz" ".read_2.singles.fastq.gz"
 else
-    echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
     cd ../; rm -rf $tp
-    exit
+    >&2 echo "[ W ::: ERR231 - Read trimming failed ]"
+    exit 1
 fi
 }
 
@@ -463,9 +440,9 @@ if [ -s ".read_1.paired.fastq.gz" ]
 then
     touch ."read_1.paired.fastq.gz"
 else
-    echo "[ W ::: ERR231 - Your trimming procedures did not result into a true value ]"
+    >&2 echo "[ W ::: ERR231 - Read trimming failed ]"
     cd ../; rm -rf $tp
-    exit
+    exit 1
 fi
 }
 
@@ -482,9 +459,9 @@ elif [[ $mode == "se" ]]
 then
     megahit --presets meta-large -r .read_1.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 else
-    echo "[ E ::: ERR222 - Internal Error: should never happen ]"
+    >&2 echo "[ E ::: ERR222 - Internal Error: should never happen ]"
     cd ../; rm -rf $tp
-    exit
+    exit 1
 fi
 
 if [[ -s out/final.contigs.fa ]]
@@ -492,9 +469,9 @@ then
     mv out/final.contigs.fa .callorfinput.fa
     rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz
 else
-    echo "[ W ::: ERR128 - Assembly returned ECC0 ]"
+    >&2 echo "[ W ::: ERR128 - Assembly failed ]"
     cd ../; rm -rf $tp/
-    exit
+    exit 1
 fi
 }
 
@@ -518,9 +495,9 @@ then
     then
         rm -rf t
     else
-        echo "[ W ::: ERR910 - Error in producing predictions ]"
+        >&2 echo "[ W ::: ERR910 - Error in producing predictions ]"
         cd ../; rm -rf $tp
-        exit
+        exit 1
     fi
 
     if [[ $mode == "c" ]]
@@ -574,9 +551,9 @@ then
             echo "[ M ::: Eliminated all duplicated sequences ]"
             rm -rf .sorted-huge-file
         else
-            echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
+            >&2 echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
             cd ../; rm -rf $tp
-            exit
+            exit 1
         fi
 
         echo "[ M ::: Outputting genes lists ]"
@@ -601,9 +578,9 @@ then
     fi
 
 else
-    echo "[ W ::: ERR122 - Your ORFs calling procedure did not result into a true value ]"
+    >&2 echo "[ W ::: ERR122 - ORFs calling procedure failed ]"
     cd ../; rm -rf $tp
-    exit
+    exit 1
 fi
 
 
@@ -720,8 +697,8 @@ then
 else
     cd ../
     rm -rf $tp
-    echo "[ W ::: There is not valid samples to be processed over pipeline, we are sorry -- ERR675 ]"
-    exit
+    >&2 echo "[ W ::: There is not valid samples to be processed over pipeline, we are sorry -- ERR675 ]"
+    exit 1
 fi
 }
 
@@ -886,7 +863,7 @@ else
         echo "[ W ::: We really tried. None of $tot called smORFs were assigned to a probability higher than 0.5 or survived until here ]"
     cd ../;
     rm -rf $tp
-    exit
+    exit 0
 fi
 }
 
@@ -1000,7 +977,7 @@ then
         ln -s $fasta .ref.fa
     fi
 else
-    echo "[ W ::: ERR222 - FACS followed by a weird way ]"
+    >&2 echo "[ W ::: ERR223 - FACS followed by a weird way ]"
 fi
 
 paladin index -r 3 .ref.fa
@@ -1014,15 +991,15 @@ then
     then
         touch .read_1.paired.fastq.gz
     else
-        echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITARY PROCESS ]"
+        >&2 echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITY CHECK FAIL ]"
         cd ../; rm -rf $tp/
-        exit
+        exit 1
     fi
 else
     rm -rf .ref.fa*
-    echo "[ W ::: ERR303 - Error in indexing ]"
+    >&2 echo "[ W ::: ERR303 - Error in indexing ]"
     cd ../; rm -rf $tp/
-    exit
+    exit 1
 fi
 
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
@@ -1034,9 +1011,9 @@ if [[ -s .m.bam ]]
 then
     touch .m.bam
 else
-    echo "[ W ::: ERR052 - Mapping failed ]"
+    >&2 echo "[ ERR052 - Mapping failed ]"
     cd ../; rm -rf $tp
-    exit
+    exit 1
 fi
 }
 
@@ -1137,10 +1114,9 @@ then
     mapping
     ab_profiling
 else
-    echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
-    show_help
+    >&2 echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
     cd ../; rm -rf $tp/
-    exit
+    exit 1
 fi
 cd ../
 rm -rf $tp/
