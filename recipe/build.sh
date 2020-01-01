@@ -18,6 +18,7 @@ for f in \
         LICENSE \
         Predict_130819.R \
         features_130819.R \
+        features.sh \
         r22_largeTraining.rds \
         rf_dataset1.rds \
         trim.pe.ngl \

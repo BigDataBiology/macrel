@@ -581,61 +581,9 @@ rm -rf .pep.faa
 
 for i in splits/small-chunk*
 do
-    count=$(grep -c ">" $i)
-    echo -e "$i\t$count" >> counte.tsv
-    unset count
-    echo "[ M ::: Counting distribution using SA scale -- $i ]"
-    python3 "$Lib"/CTDDClass.py "$i" .CTDDC-SA.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
-    awk '{print $2"\t"$7"\t"$12}' .CTDDC-SA.tsv > .tmp
-    sed -i '1,1d' .tmp
-    echo -e "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" > .header
-    cat .header .tmp > .CTDDC-SA.tsv;
-    
-    rm -rf .tmp .header
-
-    echo "[ M ::: Counting distribution using HB scale -- $i ]"
-    python3 "$Lib"/CTDDClass.py "$i" .CTDDC-hb.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
-    awk '{print $2"\t"$7"\t"$12}' .CTDDC-hb.tsv > .tmp
-    sed -i '1,1d' .tmp
-    echo -e "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" > .header
-    cat .header .tmp > .CTDDC-hb.tsv;
-    
-    rm -rf .tmp .header
-
-    if [[ -s .CTDDC-SA.tsv ]] && [[ -s .CTDDC-hb.tsv ]]
-    then
-        echo "[ M ::: Computing cheminformatics descriptors -- $i ]"
-        echo -e "header\tseq\tgroup" > .tmp
-        sed '/>/d' "$i" > .seqs
-        grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade
-        paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp
-        rm -rf .heade .seqs
+    bash $Lib/features.sh "$i" "$Lib" "$log"
+    if [[ $? != 0 ]]; then
         rm -rf "$i"
-        echo "Calling $Lib/features_130819.R" >> "$log"
-        Rscript --vanilla $Lib/features_130819.R .tmp .out.file >>"$log"
-        date >> "$log"
-        echo >> "$log"
-        if [[ $? != 0 ]]; then
-            echo "[ Calling features failed ]"
-            clean_temp
-            exit 1
-        fi
-        
-        rm -rf .tmp
-    
-        echo "[ M ::: Formatting descriptors -- $i ]"
-        if [[ -s .out.file ]]; then
-            paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > $i.tabdesc.tsv
-            rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
-        else
-            rm -rf .CTDDC-SA.tsv .CTDDC-hb.tsv $i
-            echo "[ W ::: Error in predictors calculation during cheminformatics steps -- ERR 229 ]"
-            clean_temp
-            exit 1
-        fi
-    else
-        rm -rf $i
-        echo "[ W ::: Error in predictors calculation during CTD steps -- ERR 230 ]"
         clean_temp
         exit 1
     fi
