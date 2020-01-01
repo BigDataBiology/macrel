@@ -12,14 +12,19 @@ chmod +x prodigal
 cd ..
 
 cp $SRC_DIR/prodigal_modified/prodigal $outdir/envs/FACS_env/bin/prodigal_sm
-cp $SRC_DIR/CTDDClass.py $outdir/CTDDClass.py
-cp $SRC_DIR/FACS.sh $outdir/FACS.sh
-cp $SRC_DIR/LICENSE $outdir/LICENSE
-cp $SRC_DIR/Predict_130819.R $outdir/Predict_130819.R
-cp $SRC_DIR/features_130819.R $outdir/features_130819.R
-cp $SRC_DIR/r22_largeTraining.rds $outdir/r22_largeTraining.rds
-cp $SRC_DIR/rf_dataset1.rds $outdir/rf_dataset1.rds
-
+for f in \
+        CTDDClass.py \
+        FACS.sh \
+        LICENSE \
+        Predict_130819.R \
+        features_130819.R \
+        r22_largeTraining.rds \
+        rf_dataset1.rds \
+        trim.pe.ngl \
+        trim.se.ngl \
+        ; do
+    cp $SRC_DIR/$f $outdir/$f
+done
 
 ln -s $outdir/* $PREFIX/bin/
 

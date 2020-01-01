@@ -372,42 +372,25 @@ export PATH=$Lib:$PATH
 ################################################    FUNCTIONS   ############################################################
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ################################# 1. generating two files with matching pairs of reads #####################################
-PEreads_trimming ()
+
+read_trimming ()
 {
 echo "[ M ::: Trimming low quality bases ]"
-trimmomatic PE -phred33 -threads "$j" \
-"$read_1" \
-"$read_2" \
-.read_1.paired.fastq.gz \
-.read_1.singles.fastq.gz \
-.read_2.paired.fastq.gz \
-.read_2.singles.fastq.gz \
-LEADING:3 \
-TRAILING:3 \
-SLIDINGWINDOW:4:15 \
-MINLEN:75 >/dev/null
-
-if [ -s ".read_2.paired.fastq.gz" ]
+if [[ $1 == "paired" ]]
 then
-    rm -rf ".read_1.singles.fastq.gz" ".read_2.singles.fastq.gz"
+    ngl=trim.pe.ngl
+    files="$read_1 $read_2"
 else
-    cd ../; rm -rf $tp
-    >&2 echo "[ W ::: ERR231 - Read trimming failed ]"
-    exit 1
+    ngl=trim.se.ngl
+    files="$read_1"
 fi
-}
 
-SEreads_trimming ()
-{
-echo "[ M ::: Trimming low quality bases ]"
-trimmomatic SE -phred33 -threads "$j" "$read_1" .read_1.paired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75 >/dev/null
-
-if [ -s ".read_1.paired.fastq.gz" ]
+ngless --no-create-report --quiet -j $j --temporary-directory $tp $Lib/$ngl $files
+if [[ $? != 0 ]]
 then
-    touch ."read_1.paired.fastq.gz"
-else
     >&2 echo "[ W ::: ERR231 - Read trimming failed ]"
-    cd ../; rm -rf $tp
+    cd ../
+    rm -rf $tp
     exit 1
 fi
 }
@@ -420,10 +403,10 @@ assemble ()
 echo "[ M ::: Assembly using MEGAHIT ]"
 if [[ $mode == "pe" ]]
 then
-    megahit --presets meta-large -1 .read_1.paired.fastq.gz -2 .read_2.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
+    megahit --presets meta-large -1 preproc.pair.1.fq.gz -2 preproc.pair.2.fq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 elif [[ $mode == "se" ]]
 then
-    megahit --presets meta-large -r .read_1.paired.fastq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
+    megahit --presets meta-large -r preproc.pair.1.fq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
 else
     >&2 echo "[ E ::: ERR222 - Internal Error: should never happen ]"
     cd ../; rm -rf $tp
@@ -433,7 +416,7 @@ fi
 if [[ -s out/final.contigs.fa ]]
 then
     mv out/final.contigs.fa .callorfinput.fa
-    rm -rf out/ .read_1.paired.fastq.gz .read_2.paired.fastq.gz
+    rm -rf out/ preproc.pair.1.fq.gz preproc.pair.2.fq.gz
 else
     >&2 echo "[ W ::: ERR128 - Assembly failed ]"
     cd ../; rm -rf $tp/
@@ -456,7 +439,7 @@ then
 
     cat .callorfinput.fa | \
         parallel -j $j --block $block --recstart '>' --pipe \
-            $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa
+            prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa
             >/dev/null
 
     ls callorfs/*pred.smORFs.fa > t
@@ -996,10 +979,8 @@ then
     if [[ $mode == "mse" ]]
     then
         touch .ref.fa
-    elif [[ $mode == "mpe" ]]
+    elif [[ $mode != "mpe" ]]
     then
-        touch .read_1.paired.fastq.gz
-    else
         >&2 echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITY CHECK FAIL ]"
         cd ../; rm -rf $tp/
         exit 1
@@ -1014,7 +995,7 @@ fi
 echo "[ M ::: Mapping reads against references, be aware it can take a while ]"
 
 echo "[ M ::: Starting paladin ]"
-paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa .read_1.paired.fastq.gz | samtools view -Sb | samtools sort > .m.bam
+paladin align -t "$j" -T 20 -f 10 -z 11 -a -V -M .ref.fa preproc.pair.1.fq.gz | samtools view -Sb | samtools sort > .m.bam
 
 if [[ -s .m.bam ]]
 then
@@ -1038,7 +1019,7 @@ then
 else
     echo "[ W ::: ERR054 - Abundance calling failed ]"
 fi
-rm -rf .ref.* .read_1.paired.fastq.* .m*
+rm -rf .ref.* preproc.*.fq.gz .m*
 }
 
 
@@ -1053,9 +1034,9 @@ if [[ $mode == "pe" || $mode == "se" ]]
 then
     if [[ $mode == "pe" ]]
     then
-        PEreads_trimming
+        read_trimming "paired"
     else
-        SEreads_trimming
+        read_trimming "single"
     fi
     assemble
     callorf
@@ -1099,12 +1080,12 @@ elif [[ $mode == "mse" || $mode == "mpe" ]]
 then
     if [[ $mode == "mse" ]]
     then
-        SEreads_trimming
+        read_trimming "single"
     elif [[ $mode == "mpe" ]]
     then
         echo "[ W ::: NOTE _ IMPORTANT ]"
         echo "[ W ::: Abundance data is just inferred from R1 file ]"
-        PEreads_trimming
+        read_trimming "paired"
     fi
     mapping
     ab_profiling

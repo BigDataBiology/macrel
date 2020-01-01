@@ -37,7 +37,7 @@ conda config --env --add channels r
 echo "# Installing conda packages"
 conda install -y \
         sqlite \
-        trimmomatic \
+        ngless \
         megahit \
         paladin \
         samtools \

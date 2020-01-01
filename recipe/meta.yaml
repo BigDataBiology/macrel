@@ -17,7 +17,7 @@ requirements:
   run:
     - python
     - sqlite
-    - trimmomatic
+    - ngless
     - megahit
     - paladin
     - samtools
@@ -39,7 +39,7 @@ requirements:
 about:
   home: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
   license: MIT
-  summary: "a module for amp prediction"
+  summary: "a module for AMP (antimicrobial peptide) prediction"
   description: |
     amp prediction
   dev_url: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS

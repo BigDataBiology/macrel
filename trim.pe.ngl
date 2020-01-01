@@ -1,0 +1,11 @@
+ngless "1.0"
+
+input = paired(ARGV[1], ARGV[2])
+
+preproc = preprocess(input, keep_singles=False) using |r|:
+    r = r.n_to_zero_quality()
+    r = endstrim(r, min_quality=3)
+    if len(r) < 75:
+        discard
+
+write(preproc, ofile="preproc.fq.gz")
