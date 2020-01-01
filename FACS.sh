@@ -415,7 +415,7 @@ fi
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ########################################## 2. Assembly of contigs ##########################################################
 
-ASSEMBLY ()
+assemble ()
 {
 echo "[ M ::: Assembly using MEGAHIT ]"
 if [[ $mode == "pe" ]]
@@ -454,7 +454,10 @@ then
     rm -rf callorfs/
     mkdir callorfs
 
-    cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null
+    cat .callorfinput.fa | \
+        parallel -j $j --block $block --recstart '>' --pipe \
+            $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa
+            >/dev/null
 
     ls callorfs/*pred.smORFs.fa > t
     if [ -s t ]
@@ -478,7 +481,9 @@ then
 
     for i in callorfs/*;
     do
-        awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' $i | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > $i.filtered
+        awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' $i | \
+            awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' \
+            > $i.filtered
         rm -rf $i
     done
 
@@ -486,7 +491,9 @@ then
     rm -rf callorfs/
     rm -rf .callorfinput.fa
 else
-    awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' .callorfinput.fa | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' > .pep.faa.tmp
+    awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' .callorfinput.fa \
+        | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' \
+        > .pep.faa.tmp
     rm -rf .callorfinput.fa
 fi
 
@@ -498,7 +505,11 @@ then
 
         echo "[ M ::: Performing reduction in sampling space ]"
 
-        sed 's/ /_/g' .pep.faa.tmp | sed 's/;/|/g' | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' | awk '{print $2"\t"$1}' > .tmp; rm -rf .pep.faa.tmp
+        sed 's/ /_/g' .pep.faa.tmp | sed 's/;/|/g' \
+            | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' \
+            | awk '{print $2"\t"$1}' > .tmp
+
+        rm -rf .pep.faa.tmp
         
         echo "[ M ::: Sorting peptides list ]"
         mkdir sorting_folder/
@@ -510,7 +521,12 @@ then
 
         sort -S 80% --parallel="$j" -T . -k1,1 -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
 
-        perl -n -e "print unless /^$/" .sorted-huge-file | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' | sed 's/;;/\t/g' | sed 's/>//g' | sed 's/\*//g' > .tmp2
+        perl -n -e "print unless /^$/" .sorted-huge-file \
+            | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' \
+            | sed 's/;;/\t/g' \
+            | sed 's/>//g' \
+            | sed 's/\*//g' \
+            > .tmp2
 
         if [[ -s .tmp2 ]]
         then
@@ -533,7 +549,12 @@ then
         
         echo "[ M ::: Collecting statistics ]"
 
-        tail -2 .pep.faa | head -1 | sed 's/|/\t/g' | cut -f2 | sed 's/>smORF_//g' > .all.nmb
+        tail -2 .pep.faa \
+            | head -1 \
+            | sed 's/|/\t/g' \
+            | cut -f2 \
+            | sed 's/>smORF_//g' \
+            > .all.nmb
 
     else
 
@@ -589,7 +610,10 @@ do
     then
         echo "[ M ::: Computing cheminformatics descriptors -- $i ]"
         echo -e "header\tseq\tgroup" > .tmp
-        sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
+        sed '/>/d' "$i" > .seqs
+        grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade
+        paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp
+        rm -rf .heade .seqs
         rm -rf "$i"
         Rscript --vanilla $Lib/features_130819.R .tmp .out.file >/dev/null
         
@@ -618,13 +642,13 @@ checkout()
 
 for i in splits/small-chunk*
 do
-    colu=`awk -F'\t' '{print NF}' $i | sort -nu | wc -l`
-    colv=`awk -F'\t' '{print NF}' $i | sort -nu`
+    colu=$(awk -F'\t' '{print NF}' $i | sort -nu | wc -l)
+    colv=$(awk -F'\t' '{print NF}' $i | sort -nu)
     if [[ "$colu" == "1" ]] && [[ "$colv" == "25"  ]]
     then
-        ce=`grep -w "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}'`
+        ce=$(grep -w "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}')
         coe=$(($ce+1))
-        rown=`awk '{print NR}' $i | tail -1`
+        rown=$(awk '{print NR}' $i | tail -1)
         if [[ "$rown" == "$coe" ]]
         then
             touch $i
@@ -725,13 +749,34 @@ do
     rm -rf ${i/.seq/.epest} $i
 done
 
-cat final | sed '/PEST-find/d' | grep "No PEST motif was identified in " | sed 's/No PEST motif was identified in //g' | sed 's/^.   //g' | sed 's/ .*//g' | awk '{print $1"\t""-"}' > nonprotea.list
-cat final | sed '/PEST-find/d' | grep -v "No PEST motif was identified in " | sed '/^[[:space:]]*$/d' | pigz --best > "$outfolder"/"$outtag".protealytic_assessment.txt.gz
-cat final | grep -v "No PEST motif was identified in " | grep "PEST motif was identified in " | sed 's/^.* PEST motif was identified in //g' | sed 's/ .*//g' | awk '{print $1"\t""+"}' > protea.list
+cat final \
+    | sed '/PEST-find/d' \
+    | grep "No PEST motif was identified in " \
+    | sed 's/No PEST motif was identified in //g' \
+    | sed 's/^.   //g' \
+    | sed 's/ .*//g' \
+    | awk '{print $1"\t""-"}' \
+    > nonprotea.list
+
+cat final \
+    | sed '/PEST-find/d' \
+    | grep -v "No PEST motif was identified in " \
+    | sed '/^[[:space:]]*$/d' \
+    | pigz --best \
+    > "$outfolder"/"$outtag".protealytic_assessment.txt.gz
+
+cat final \
+    | grep -v "No PEST motif was identified in " \
+    | grep "PEST motif was identified in " \
+    | sed 's/^.* PEST motif was identified in //g' \
+    | sed 's/ .*//g' \
+    | awk '{print $1"\t""+"}' \
+    > protea.list
+
 cat protea.list nonprotea.list | sort -k1,1 > protea
 rm -rf final *.list
 
-pl=`zcat "$outfolder"/"$outtag".protealytic_assessment.txt.gz | awk '{print NR}' | tail -1`
+pl=$(zcat "$outfolder"/"$outtag".protealytic_assessment.txt.gz | awk '{print NR}' | tail -1)
 if [[ $pl -gt 1 ]]
 then
     echo ""
@@ -742,10 +787,10 @@ fi
 
 echo "[ W ::: Checking structures ]"
 echo -e "antigen\nprotea\nsol" > quicktest.list
-fin=`awk '{print NR}' .out2.file | tail -1`
+fin=$(awk '{print NR}' .out2.file | tail -1)
 for i in $(cat quicktest.list);
 do
-    rown=`awk '{print NR}' $i | tail -1`
+    rown=$(awk '{print NR}' $i | tail -1)
     if [[ "$fin" == "$rown" ]]
     then
         touch $i
@@ -820,8 +865,6 @@ then
     elif [[ $ep == "1" ]]
     then
         EXTRADATA
-    else
-        echo ""
     fi
     pigz --best "$outfolder"/"$outtag".tsv
 else
@@ -998,33 +1041,23 @@ fi
 rm -rf .ref.* .read_1.paired.fastq.* .m*
 }
 
-############################################################################################################################
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-################################################    CMDs   #################################################################
 
-
-export PATH=$Lib/envs/FACS_env/bin:$Lib/envs/FACS_env/conda-meta:$Lib/envs/FACS_env/etc:$Lib/envs/FACS_env/jmods:$Lib/envs/FACS_env/lib:$Lib/envs/FACS_env/libexec:$Lib/envs/FACS_env/mkspecs:$Lib/envs/FACS_env/plugins:$Lib/envs/FACS_env/resources:$Lib/envs/FACS_env/share:$Lib/envs/FACS_env/translations:$Lib/envs/FACS_env/x86_64-conda_cos6-linux-gnu:$Lib/envs/FACS_env/compiler_compat:$Lib/envs/FACS_env/conf:$Lib/envs/FACS_env/doc:$Lib/envs/FACS_env/include:$Lib/envs/FACS_env/legal:$Lib/envs/FACS_env/lib64:$Lib/envs/FACS_env/man:$Lib/envs/FACS_env/phrasebooks:$Lib/envs/FACS_env/qml:$Lib/envs/FACS_env/sbin:$Lib/envs/FACS_env/ssl:$Lib/envs/FACS_env/var:$Lib:~/miniconda3/pkgs/:$Lib/envs/FACS_env/lib/R/library/:$PATH
-
-date
+if [[ -d $Lib/envs/FACS_env/bin ]]
+then
+    export PATH=$Lib/envs/FACS_env/bin:$PATH
+fi
 
 sanity_check
 
-if [[ $mode == "pe" ]]
+if [[ $mode == "pe" || $mode == "se" ]]
 then
-    PEreads_trimming
-    ASSEMBLY
-    callorf
-    descriptors
-    checkout
-    predicter
-    cleanmessy
-    mode="r"
-    loggen
-elif [[ $mode == "se" ]]
-then
-    SEreads_trimming
-    ASSEMBLY
+    if [[ $mode == "pe" ]]
+    then
+        PEreads_trimming
+    else
+        SEreads_trimming
+    fi
+    assemble
     callorf
     descriptors
     checkout
@@ -1062,16 +1095,17 @@ then
     predicter
     cleanmessy
     loggen
-elif [[ $mode == "mse" ]]
+elif [[ $mode == "mse" || $mode == "mpe" ]]
 then
-    SEreads_trimming
-    mapping
-    ab_profiling
-elif [[ $mode == "mpe" ]]
-then
-    echo "[ W ::: NOTE _ IMPORTANT ]"
-    echo "[ W ::: Abundance data is just inferred from R1 file ]"
-    PEreads_trimming
+    if [[ $mode == "mse" ]]
+    then
+        SEreads_trimming
+    elif [[ $mode == "mpe" ]]
+    then
+        echo "[ W ::: NOTE _ IMPORTANT ]"
+        echo "[ W ::: Abundance data is just inferred from R1 file ]"
+        PEreads_trimming
+    fi
     mapping
     ab_profiling
 else
