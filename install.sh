@@ -36,7 +36,7 @@ conda config --env --add channels r
 
 echo "# Installing conda packages"
 conda install -y \
-		sqlite \
+        sqlite \
         trimmomatic \
         megahit \
         paladin \
@@ -50,15 +50,15 @@ conda install -y \
         r-essentials \
         r-base \
         r-randomforest \
-		r-caret \
-		r-dplyr \
+        r-caret \
+        r-dplyr \
         r-data.table \
-		r-peptides \
-		r-doparallel \
-		r-stringi \
-		--quiet
+        r-peptides \
+        r-doparallel \
+        r-stringi \
+        --quiet
 
-echo "[ ## 2.] Installing prodigal_modified"
+echo "# Installing prodigal_modified"
 cd prodigal_modified
 make CC=$GCC --quiet # conda will add $GCC to environment
 mv prodigal ../envs/FACS_env/bin/prodigal_sm
@@ -72,4 +72,8 @@ echo "############ Installation procedures finished
 ****** Thank you for installing FACS ********
 --- Please submit bugreports/comments to
 celio.diasjunior@gmail.com
+
+or
+
+https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS/issues
 "
