@@ -385,7 +385,7 @@ trimmomatic PE -phred33 -threads "$j" \
 LEADING:3 \
 TRAILING:3 \
 SLIDINGWINDOW:4:15 \
-MINLEN:75 >/dev/null 2>/dev/null
+MINLEN:75 >/dev/null
 
 if [ -s ".read_2.paired.fastq.gz" ]
 then
@@ -400,7 +400,7 @@ fi
 SEreads_trimming ()
 {
 echo "[ M ::: Trimming low quality bases ]"
-trimmomatic SE -phred33 -threads "$j" "$read_1" .read_1.paired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75 >/dev/null 2>/dev/null
+trimmomatic SE -phred33 -threads "$j" "$read_1" .read_1.paired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75 >/dev/null
 
 if [ -s ".read_1.paired.fastq.gz" ]
 then
@@ -454,7 +454,7 @@ then
     rm -rf callorfs/
     mkdir callorfs
 
-    cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null 2>/dev/null
+    cat .callorfinput.fa | parallel -j $j --block $block --recstart '>' --pipe $Lib/envs/FACS_env/bin/prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa >/dev/null
 
     ls callorfs/*pred.smORFs.fa > t
     if [ -s t ]
@@ -503,7 +503,7 @@ then
         echo "[ M ::: Sorting peptides list ]"
         mkdir sorting_folder/
         
-        cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null 2>/dev/null
+        cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null
         rm -rf .tmp
 
         for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
@@ -559,7 +559,7 @@ descriptors ()
 {
 echo "[ M ::: Split input into chunks ]"
 mkdir splits/
-parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}" < .pep.faa >/dev/null 2>/dev/null
+parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}" < .pep.faa >/dev/null
 rm -rf .pep.faa
 
 for i in splits/small-chunk*
@@ -591,7 +591,7 @@ do
         echo -e "header\tseq\tgroup" > .tmp
         sed '/>/d' "$i" > .seqs; grep '>' "$i" | sed 's/ .*//g' | sed 's/>//g' > .heade; paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp; rm -rf .heade .seqs
         rm -rf "$i"
-        R --slave --args .tmp .out.file < $Lib/features_130819.R >/dev/null 2>/dev/null
+        Rscript --vanilla $Lib/features_130819.R .tmp .out.file >/dev/null
         
         rm -rf .tmp
     
@@ -650,7 +650,7 @@ then
     for i in splits/small-chunk*
     do
         echo "[ M ::: Predicting AMPs -- $i ]"
-        R --vanilla --slave --args $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" < $Lib/Predict_130819.R >/dev/null 2>/dev/null
+        Rscript --vanilla $Lib/Predict_130819.R $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" >/dev/null
         if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
         then
             touch "${i/.tabdesc.tsv/.fin}"
@@ -700,7 +700,7 @@ cat protein-sol.res.tsv | cut -f1,2,3 | sort -k1,1 > sol
 rm -rf protein-sol.res.tsv
 
 echo "[ W ::: Predicting antigenicity ]"
-$Lib/envs/FACS_env/bin/antigenic -sequence .tmp.fasta -sprotein1 Y -sformat1 FASTA -minlen 9 -outfile antigenic -rformat excel -rmaxseq2 1 -raccshow2 1 >/dev/null 2>/dev/null
+$Lib/envs/FACS_env/bin/antigenic -sequence .tmp.fasta -sprotein1 Y -sformat1 FASTA -minlen 9 -outfile antigenic -rformat excel -rmaxseq2 1 -raccshow2 1 >/dev/null
 sed -i '/SeqName/d' antigenic
 echo -e "SeqName\tStart\tEnd\tScore\tStrand\tMax_score_pos" > header
 cat antigenic | cut -f1 | sort | uniq | awk '{print $1"\t""+"}' > antigen
@@ -720,7 +720,7 @@ awk '/^>/ {OUT=substr($0,2) ".seq";print " ">OUT}; OUT{print >OUT}' .tmp.fasta
 
 for i in *.seq;
 do
-    $Lib/envs/FACS_env/bin/epestfind -sequence $i  -window 9 -order score -outfile ${i/.seq/.epest} -graph none -nopoor -nomap >/dev/null 2>/dev/null
+    $Lib/envs/FACS_env/bin/epestfind -sequence $i  -window 9 -order score -outfile ${i/.seq/.epest} -graph none -nopoor -nomap >/dev/null
     cat ${i/.seq/.epest} >> final
     rm -rf ${i/.seq/.epest} $i
 done
