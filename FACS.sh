@@ -30,7 +30,9 @@ mem=$mem_DEFAULT
 tp=$(mktemp --tmpdir --directory FACS.XXXXXXX)
 cls="1"
 ep="0"
-log="log.txt"
+
+log_DEFAULT="log.txt"
+log=log_DEFAULT
 
 # Help message
 show_help ()
@@ -66,7 +68,7 @@ show_help ()
     --outtag            Tag used to name outputs [Default: $outtag_DEFAULT]
     -t, --threads [N]   Number of threads [Default: number of processors]
     --block             Bucket size (in Bytes, but M/G/T/m/g/t postfixes are accepted). [$block_DEFAULT]
-    --log               Log file name. FACS will save the run results to this log file in output folder.
+    --log               Log file name. FACS will save the run results to this log file in output folder [$log_DEFAULT].
     --mem               Memory available to FACS ranging from 0 - 1. [$mem_DEFAULT]
     --tmp               Temporary folder
     --cls               Cluster peptides: yes (1) or no (0). [Default: 1 - yes]
@@ -149,6 +151,12 @@ do
     shift
 done
 
+if [[ -n $log ]]; then
+    log=/dev/null
+else
+    log=$(readlink -f "$outfolder/$log")
+fi
+
 sanity_check ()
 # Checking input variables
 {
@@ -175,7 +183,7 @@ read_R2     $read_2
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
                 else
                     >&2 echo "[ ERR010 - FACS has not found your reads files. ]"
                     exit 1
@@ -193,7 +201,7 @@ read_R1     $read_1
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
             else
                 >&2 echo "[ W ::: ERR010 - FACS has not found your reads file ($read_1). ]"
                 exit 1
@@ -217,7 +225,7 @@ Contigs     $fasta
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
         else
             >&2 echo "[ ERR011 - Peptides file ($fasta) is not present ]"
             exit 1
@@ -236,7 +244,7 @@ Contigs     $fasta
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
         else
             >&2 echo "[ W ::: ERR011 - Contigs file ($fasta) not found ]"
             exit 1
@@ -264,7 +272,7 @@ R2          $read_2
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
             elif [[ -s "$read_1" ]]
             then
                 mode="mse"
@@ -279,7 +287,7 @@ R1          $read_1
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
             else
                 >&2 echo " [ W ::: ERR011 - FACS has not found your reads files ]"
                 exit 1
@@ -302,7 +310,7 @@ R2          $read_2
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
             elif [[ -s "$read_1" ]]
             then
                 mode="mse"
@@ -317,7 +325,7 @@ R1          $read_1
 Folder      $outfolder
 Tag         $outtag
 Bucket      $block
-Log         $outfolder/$log"
+Log         $log"
             else
                 >&2 echo "[ W ::: ERR011 - FACS has not found your reads files ]"
                 exit 1
@@ -332,18 +340,16 @@ else
     exit 1
 fi
 
-if [[ ! -e $tp ]];
-then
+if [[ ! -e $tp ]]; then
     echo "[ Temporary folder ($tp) does not exist. Creating it... ]"
-    mkdir $tp
+    mkdir -p $tp
     cd $tp
-elif [[ -e $tp ]];
-then
+elif [[ -d $tp ]]; then
     cd $tp
-elif [[ ! -d $tp ]];
-then
+else
     echo "[ Temporary folder ($tp) already exists but is not a directory ]" 1>&2
 fi
+export TMPDIR=$tp
 
 if [[ -n $outfolder ]]
 then
@@ -361,10 +367,12 @@ fi
 
 }
 
-############################################################################################################################
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-################################################       ENV      ############################################################
+clean_temp ()
+{
+    cd ..
+    rm -rf $tp
+}
+
 
 export PATH=$Lib:$PATH
 
@@ -489,11 +497,10 @@ fi
 
 if [ -s ".pep.faa.tmp" ]
 then
-
     if [[ $cls == 1 ]]
     then
 
-        echo "[ M ::: Performing reduction in sampling space ]"
+        echo "[ M ::: Clustering peptides ]"
 
         sed 's/ /_/g' .pep.faa.tmp | sed 's/;/|/g' \
             | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' \
@@ -553,7 +560,6 @@ then
         grep -c ">" .pep.faa > .all.nmb
 
     fi
-
 else
     >&2 echo "[ W ::: ERR122 - ORFs calling procedure failed ]"
     cd ../; rm -rf $tp
@@ -575,7 +581,7 @@ rm -rf .pep.faa
 
 for i in splits/small-chunk*
 do
-    count=`grep -c ">" $i`
+    count=$(grep -c ">" $i)
     echo -e "$i\t$count" >> counte.tsv
     unset count
     echo "[ M ::: Counting distribution using SA scale -- $i ]"
@@ -605,24 +611,33 @@ do
         paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp
         rm -rf .heade .seqs
         rm -rf "$i"
-        Rscript --vanilla $Lib/features_130819.R .tmp .out.file >/dev/null
+        echo "Calling $Lib/features_130819.R" >> "$log"
+        Rscript --vanilla $Lib/features_130819.R .tmp .out.file >>"$log"
+        date >> "$log"
+        echo >> "$log"
+        if [[ $? != 0 ]]; then
+            echo "[ Calling features failed ]"
+            clean_temp
+            exit 1
+        fi
         
         rm -rf .tmp
     
         echo "[ M ::: Formatting descriptors -- $i ]"
-        if [ -s .out.file ]
-        then
+        if [[ -s .out.file ]]; then
             paste -d'\t' .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv | sed 's/\"//g' > $i.tabdesc.tsv
             rm -rf .out.file .CTDDC-SA.tsv .CTDDC-hb.tsv
         else
             rm -rf .CTDDC-SA.tsv .CTDDC-hb.tsv $i
-            echo "[ W ::: Error in predictors calculation during cheminformatics steps -- ERR 229 ]
-[ ======> Erractic sample $i ]"
+            echo "[ W ::: Error in predictors calculation during cheminformatics steps -- ERR 229 ]"
+            clean_temp
+            exit 1
         fi
     else
-                rm -rf $i
-                echo "[ W ::: Error in predictors calculation during CTD steps -- ERR 230 ]
-[ ======> Erractic sample $i ]"
+        rm -rf $i
+        echo "[ W ::: Error in predictors calculation during CTD steps -- ERR 230 ]"
+        clean_temp
+        exit 1
     fi
 done
 }
@@ -664,7 +679,7 @@ then
     for i in splits/small-chunk*
     do
         echo "[ M ::: Predicting AMPs -- $i ]"
-        Rscript --vanilla $Lib/Predict_130819.R $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" >/dev/null
+        Rscript --vanilla $Lib/Predict_130819.R $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" >"$log"
         if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
         then
             touch "${i/.tabdesc.tsv/.fin}"
@@ -866,7 +881,7 @@ else
 fi
 }
 
-loggen()
+summary ()
 {
 echo "[ M ::: Generating log ]"
 
@@ -906,7 +921,7 @@ $pepval
        CLP     - Cationic Linear peptide
        HEMO    - Hemolytic
        NonHEMO - Non-Hemolytic
-########################################################" > "$outfolder"/.log
+########################################################" >> "$log"
 else
     ## Preparing report
     echo -e "######################################################## FACS report
@@ -946,14 +961,7 @@ fi
 
 sed -i 's/\"//g' "$outfolder"/.log
 
-if [[ -n $log ]]
-then
-    cat "$outfolder"/.log
-    mv "$outfolder"/.log "$outfolder"/"$log"
-else
-    cat "$outfolder"/.log
-    rm -rf "$outfolder"/.log
-fi
+cat "$outfolder"/.log | tee -a "$log"
 
 }
 
@@ -1046,7 +1054,7 @@ then
     predicter
     cleanmessy
     mode="r"
-    loggen
+    summary
 elif [[ $mode == "pep" ]]
 then
     if [[ "$fasta" =~ \.gz$ ]];
@@ -1061,7 +1069,7 @@ then
     checkout
     predicter
     cleanmessy
-    loggen
+    summary
 elif [[ $mode == "c" ]]
 then
     if [[ "$fasta" =~ \.gz$ ]];
@@ -1076,7 +1084,7 @@ then
     checkout
     predicter
     cleanmessy
-    loggen
+    summary
 elif [[ $mode == "mse" || $mode == "mpe" ]]
 then
     if [[ $mode == "mse" ]]
