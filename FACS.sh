@@ -395,27 +395,37 @@ then
 fi
 }
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-########################################## 2. Assembly of contigs ##########################################################
-
 assemble ()
 {
 echo "[ M ::: Assembly using MEGAHIT ]"
 if [[ $mode == "pe" ]]
 then
-    megahit --presets meta-large -1 preproc.pair.1.fq.gz -2 preproc.pair.2.fq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
+    read_trimming "paired"
+    megahit_args="-1 preproc.pair.1.fq.gz -2 preproc.pair.2.fq.gz"
 elif [[ $mode == "se" ]]
 then
-    megahit --presets meta-large -r preproc.pair.1.fq.gz -o out -t "$j" -m "$mem" --min-contig-len 1000
+    read_trimming "single"
+    megahit_args="-r preproc.pair.1.fq.gz"
 else
     >&2 echo "[ E ::: ERR222 - Internal Error: should never happen ]"
-    cd ../; rm -rf $tp
+    cd ../
+    rm -rf $tp
+    exit 1
+fi
+
+megahit --presets meta-large $megahit_args -o out -t "$j" -m "$mem" --min-contig-len 1000
+
+if [[ $? != 0 ]]
+then
+    >&2 echo "[ Megahit failed "]
+    cd ../
+    rm -rf $tp
     exit 1
 fi
 
 if [[ -s out/final.contigs.fa ]]
 then
-    mv out/final.contigs.fa .callorfinput.fa
+    mv out/final.contigs.fa contigs.fna
     rm -rf out/ preproc.pair.1.fq.gz preproc.pair.2.fq.gz
 else
     >&2 echo "[ W ::: ERR128 - Assembly failed ]"
@@ -424,23 +434,20 @@ else
 fi
 }
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
-########################################## 2. Generating peptides ##########################################################
 
-callorf ()
+predict_smorfs ()
 {
 
 if [[ "$mode" != "pep" ]]
 then
-    echo "[ M ::: Calling ORFs ]"
+    echo "[ M ::: Predicting ORFs ]"
 
     rm -rf callorfs/
     mkdir callorfs
 
-    cat .callorfinput.fa | \
-        parallel -j $j --block $block --recstart '>' --pipe \
-            prodigal_sm -c -m -n -p meta -f sco -a callorfs/{#}.pred.smORFs.fa
-            >/dev/null
+    parallel -j $j --block $block --recstart '>' --pipe \
+        prodigal_sm -c -m -n -p meta -f sco -a "callorfs/{#}.pred.smORFs.fa" \
+        <contigs.fna >/dev/null
 
     ls callorfs/*pred.smORFs.fa > t
     if [ -s t ]
@@ -454,9 +461,9 @@ then
 
     if [[ $mode == "c" ]]
     then
-        rm -rf .callorfinput.fa
+        rm -rf contigs.fna
     else
-        mv .callorfinput.fa $outfolder/$outtag.contigs.fna
+        mv contigs.fna $outfolder/$outtag.contigs.fna
         pigz --best $outfolder/$outtag.contigs.fna
     fi
 
@@ -472,12 +479,12 @@ then
 
     cat callorfs/* > .pep.faa.tmp
     rm -rf callorfs/
-    rm -rf .callorfinput.fa
+    rm -rf contigs.fna
 else
-    awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' .callorfinput.fa \
+    awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' contigs.fna \
         | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' \
         > .pep.faa.tmp
-    rm -rf .callorfinput.fa
+    rm -rf contigs.fna
 fi
 
 if [ -s ".pep.faa.tmp" ]
@@ -1032,14 +1039,8 @@ sanity_check
 
 if [[ $mode == "pe" || $mode == "se" ]]
 then
-    if [[ $mode == "pe" ]]
-    then
-        read_trimming "paired"
-    else
-        read_trimming "single"
-    fi
     assemble
-    callorf
+    predict_smorfs
     descriptors
     checkout
     predicter
@@ -1051,11 +1052,11 @@ then
     if [[ "$fasta" =~ \.gz$ ]];
     then
         echo "[ M ::: Decompressing contigs ]"
-        pigz -dc "$fasta" > .callorfinput.fa
+        pigz -dc "$fasta" > contigs.fna
     else
-        ln -s $fasta .callorfinput.fa
+        ln -s $fasta contigs.fna
     fi
-    callorf
+    predict_smorfs
     descriptors
     checkout
     predicter
@@ -1066,11 +1067,11 @@ then
     if [[ "$fasta" =~ \.gz$ ]];
     then
         echo "[ M ::: Decompressing contigs ]"
-        pigz -dc "$fasta" > .callorfinput.fa
+        pigz -dc "$fasta" > contigs.fna
     else
-        ln -s $fasta .callorfinput.fa
+        ln -s $fasta contigs.fna
     fi
-    callorf
+    predict_smorfs
     descriptors
     checkout
     predicter
