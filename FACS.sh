@@ -581,7 +581,10 @@ rm -rf .pep.faa
 
 for i in splits/small-chunk*
 do
-    bash $Lib/features.sh "$i" "$Lib" "$log"
+    count=$(grep -c ">" $i)
+    echo -e "$i\t$count" >> counte.tsv
+    unset count
+    bash "$Lib/features.sh" "$i" "$Lib" "$log"
     if [[ $? != 0 ]]; then
         rm -rf "$i"
         clean_temp
