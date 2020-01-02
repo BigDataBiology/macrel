@@ -36,7 +36,6 @@ conda config --env --add channels r
 
 echo "# Installing conda packages"
 conda install -y \
-        sqlite \
         ngless \
         megahit \
         paladin \
@@ -44,17 +43,14 @@ conda install -y \
         eXpress \
         pigz \
         parallel \
-        matplotlib \
-        scikit-learn \
         pandas \
-        r-essentials \
         r-base \
-        r-randomforest \
+        r-essentials \
         r-caret \
-        r-dplyr \
         r-data.table \
+        r-dplyr \
         r-peptides \
-        r-doparallel \
+        r-randomforest \
         r-stringi \
         --quiet
 

@@ -20,40 +20,17 @@ if(!require(data.table)){
   library(data.table)
 }
 
-if(!require(dplyr)){
-  install.packages("dplyr", dependencies = TRUE)
-  library(dplyr)
-}
-
-if(!require(parallel)){
-  install.packages("parallel", dependencies = TRUE)
-  library(parallel)
-}
-
-if(!require(doParallel)){
-  install.packages("doParallel", dependencies = TRUE)
-  library(doParallel)
-}
-
-##########################################################################
-# CMDs
-##########################################################################
-print("[ M :::: Setting speeding up configs ]")
-intervalStart <- Sys.time()
-cluster <- makeCluster(detectCores(), # number of cores to use
-                         type = "FORK") # type of cluster
-registerDoParallel(cluster)
 set.seed(95014)
-##########################################################################
-print("[ M :::: Taking argument ]")
+
+
 args <- commandArgs(TRUE)
-print("[ M :::: Reading converted Tab/multifasta ]")
+
 hs <- fread(args[1], sep="\t")
 headers <- as.list(as.character(hs$header))
 seqs <- as.list(as.character(hs$seq))
 group <- as.list(as.character(hs$group))
 rm(hs)
-print("[ M :::: Generating lists ]")
+
 aalist <- list()
 charge <- list()
 pI <- list()
@@ -65,7 +42,7 @@ hmoment <- list()
 print("[ M :::: Making each amino acid types list ]")
 print("[ M :::: aaCOMP ]")
 aalist <- aaComp(seq = seqs)
-print("[ M :::: Formatting ]")
+
 aalist <- as.data.frame(aalist, header = TRUE)
 d.edit <- aalist[ , grepl( "Mole." , names( aalist ) ) ]
 rm(aalist)
@@ -164,11 +141,8 @@ df <- c("access",
         "boman",
         "hydrophobicity",
         "hmoment")
+
 df <- as.data.frame(t(df))
 t<-as.data.frame(t(t))
 Final_table <- rbindlist(list(df,t))
-rm(df, t)
-print("[ M :::: Exporting ]")
 write.table(Final_table, args[2], sep="\t", col.names=FALSE, row.names=FALSE)
-print("[ M :::: Stop cluster ]")
-stopCluster(cluster)

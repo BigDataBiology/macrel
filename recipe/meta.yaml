@@ -16,7 +16,6 @@ requirements:
     - {{ compiler('c') }}
   run:
     - python
-    - sqlite
     - ngless
     - megahit
     - paladin
@@ -24,17 +23,14 @@ requirements:
     - eXpress
     - pigz
     - parallel
-    - matplotlib
-    - scikit-learn
     - pandas
-    - r-essentials
     - r-base
-    - r-randomforest
+    - r-essentials
     - r-caret
-    - r-dplyr
     - r-data.table
+    - r-dplyr
     - r-peptides
-    - r-doparallel
+    - r-randomforest
 
 about:
   home: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
