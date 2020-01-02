@@ -18,6 +18,7 @@ for f in \
         Predict_130819.R \
         AMP-features.py \
         r22_largeTraining.rds \
+        filter_smorfs.py \
         rf_dataset1.rds \
         trim.pe.ngl \
         trim.se.ngl \

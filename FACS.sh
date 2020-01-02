@@ -12,6 +12,13 @@
 ##################################################### Variables ############################################################
 Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+if [[ -d $Lib/envs/FACS_env/bin ]]
+then
+    export PATH=$Lib/envs/FACS_env/bin:$PATH
+fi
+
+
+
 # Default variables
 outfolder_DEFAULT="FACS_output"
 outfolder=$outfolder_DEFAULT
@@ -33,6 +40,8 @@ ep="0"
 
 log_DEFAULT="log.txt"
 log=log_DEFAULT
+
+BUG_URL="https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS/issues"
 
 # Help message
 show_help ()
@@ -160,22 +169,22 @@ fi
 sanity_check ()
 # Checking input variables
 {
-if [[ -n $mode ]]
-then
-    if [[ $mode == "r" ]]
-    then
-        
-        
-        
-        if [[ -n $read_1 ]]
+
+# TODO: Remove duplication in code below
+if [[ -z $mode ]]; then
+    >&2 echo "[ ERR010 - No FACS mode specified. Please review the command line]"
+    exit 1
+elif [[ $mode == "r" ]]; then
+    if [[ -z $read_1 ]]; then
+        >&2 echo "[ ERR010 - Reads file not specified "]
+        exit 1
+    fi
+    if [[ -n $read_2 ]]; then
+        if [[ -s $read_1 ]] || [[ -s $read_2 ]]
         then
-            if [[ -n $read_2 ]]
-            then
-                if [[ -s $read_1 ]] || [[ -s $read_2 ]]
-                then
-                    echo "[ M ::: FACS has found your reads files ($read_1/$read_2), starting work... ]"
-                    mode="pe"
-                    echo -e "[ M ::: Configuration ]
+            echo "[ FACS has found your reads files ($read_1/$read_2), starting work... ]"
+            mode="pe"
+            echo -e "[ Configuration ]
 Mode        $mode
 Threads     $j
 read_R1     $read_1
@@ -184,16 +193,16 @@ Folder      $outfolder
 Tag         $outtag
 Bucket      $block
 Log         $log"
-                else
-                    >&2 echo "[ ERR010 - FACS has not found your reads files. ]"
-                    exit 1
-                fi
-            elif [[ -s $read_1 ]]
-            then
-                echo "[ M ::: FACS mode has been assigned as single-end reads ]
-[ M ::: FACS has found your reads files, starting work... ]"
-                mode="se"
-                echo -e "[ M ::: Here we specify your variables ]
+        else
+            >&2 echo "[ ERR010 - FACS has not found your reads files. ]"
+            exit 1
+        fi
+    elif [[ -s $read_1 ]]
+    then
+        echo "[ FACS mode has been assigned as single-end reads ]
+[ FACS has found your reads files, starting work... ]"
+        mode="se"
+        echo -e "[ Here we specify your variables ]
 
 Mode        $mode
 Threads     $j
@@ -202,22 +211,17 @@ Folder      $outfolder
 Tag         $outtag
 Bucket      $block
 Log         $log"
-            else
-                >&2 echo "[ W ::: ERR010 - FACS has not found your reads file ($read_1). ]"
-                exit 1
-            fi
-        else
-            >&2 echo "[ W ::: ERR010 - FACS has not found your read files. ]"
-            exit 1
-        fi
-    elif    [[ $mode == "p" ]]
+    else
+        >&2 echo "[ ERR010 - FACS has not found your reads file ($read_1). ]"
+        exit 1
+    fi
+elif [[ $mode == "p" ]]; then
+    mode="pep"
+
+    if [ -s "$fasta" ]
     then
-        mode="pep"
-        
-        if [ -s "$fasta" ]
-        then
-            echo "[ M ::: FACS has found your peptides fasta file, starting work... ]"
-            echo -e "[ M ::: Configuration ]
+        echo "[ FACS has found your peptides fasta file, starting work... ]"
+        echo -e "[ Configuration ]
 
 Mode        p
 Threads     $j
@@ -226,18 +230,14 @@ Folder      $outfolder
 Tag         $outtag
 Bucket      $block
 Log         $log"
-        else
-            >&2 echo "[ ERR011 - Peptides file ($fasta) is not present ]"
-            exit 1
-        fi
-    elif    [[ $mode == "c" ]]
-    then
-        
-        if [ -s "$fasta" ]
-        then
-            echo "[ M ::: FACS has found your contigs file, starting work... ]"
-            echo -e "[ M ::: Here we specify your variables ]
-
+    else
+        >&2 echo "[ ERR011 - Peptides file ($fasta) is not present ]"
+        exit 1
+    fi
+elif [[ $mode == "c" ]]; then
+    if [[ -s "$fasta" ]]; then
+        echo "[ FACS has found your contigs file, starting work... ]"
+        echo -e "[ Here we specify your variables ]
 Mode        $mode
 Threads     $j
 Contigs     $fasta
@@ -245,124 +245,111 @@ Folder      $outfolder
 Tag         $outtag
 Bucket      $block
 Log         $log"
-        else
-            >&2 echo "[ W ::: ERR011 - Contigs file ($fasta) not found ]"
-            exit 1
-        fi
-    elif [[ $mode == "a" ]]
-    then
-        echo "[ M ::: FACS mode has been assigned as read mapper ]"
-        
-        
-        if [ -s "$reference" ]
-        then
-            RF="0"
-            if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
-            then
-                mode="mpe"
-                echo "[ M ::: FACS has found your reference data set, starting work... ]"
-                echo -e "[ M ::: Here we specify your variables ]
-
-** Mapper with paired-end reads
-Mode        $mode
-Threads     $j
-Reference   $reference
-R1          $read_1
-R2          $read_2
-Folder      $outfolder
-Tag         $outtag
-Bucket      $block
-Log         $log"
-            elif [[ -s "$read_1" ]]
-            then
-                mode="mse"
-                echo "[ M ::: FACS has found your reference data set, starting work... ]"
-                echo -e "[ M ::: Here we specify your variables ]
-
-** Mapper with single-end reads
-Mode        $mode
-Threads     $j
-Reference   $reference
-R1          $read_1
-Folder      $outfolder
-Tag         $outtag
-Bucket      $block
-Log         $log"
-            else
-                >&2 echo " [ W ::: ERR011 - FACS has not found your reads files ]"
-                exit 1
-            fi
-        elif [ -s "$fasta" ]
-        then
-            RF="1"
-            if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
-            then
-                mode="mpe"
-                echo "[ M ::: FACS has found your reference data set, starting work... ]"
-                echo -e "[ M ::: Here we specify your variables ]
-
-** Mapper with paired-end reads
-Mode        $mode
-Threads     $j
-Reference   $fasta
-R1          $read_1
-R2          $read_2
-Folder      $outfolder
-Tag         $outtag
-Bucket      $block
-Log         $log"
-            elif [[ -s "$read_1" ]]
-            then
-                mode="mse"
-                echo "[ M ::: FACS has found your reference data set, starting work... ]"
-                echo -e "[ M ::: Here we specify your variables ]
-
-** Mapper with single-end reads
-Mode        $mode
-Threads     $j
-Reference   $fasta
-R1          $read_1
-Folder      $outfolder
-Tag         $outtag
-Bucket      $block
-Log         $log"
-            else
-                >&2 echo "[ W ::: ERR011 - FACS has not found your reads files ]"
-                exit 1
-            fi
-        else
-            >&2 echo "[ W ::: ERR011.1 - FACS has not found your reference file ($reference) ]"
-            exit 1
-        fi
+    else
+        >&2 echo "[ W ::: ERR011 - Contigs file ($fasta) not found ]"
+        exit 1
     fi
-else
-    >&2 echo "[ W ::: ERR010 - The user needs to specify a valid FACS mode, please review the command line]"
-    exit 1
+elif [[ $mode == "a" ]]; then
+    echo "[ M ::: FACS mode has been assigned as read mapper ]"
+    if [ -s "$reference" ]
+    then
+        refmode="tsv"
+        if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
+        then
+            mode="mpe"
+            echo "[ FACS has found your reference data set, starting work... ]"
+            echo -e "[ Here we specify your variables ]
+
+** Mapper with paired-end reads
+Mode        $mode
+Threads     $j
+Reference   $reference
+R1          $read_1
+R2          $read_2
+Folder      $outfolder
+Tag         $outtag
+Bucket      $block
+Log         $log"
+        elif [[ -s "$read_1" ]]
+        then
+            mode="mse"
+            echo "[ FACS has found your reference data set, starting work... ]"
+            echo -e "[ Here we specify your variables ]
+
+** Mapper with single-end reads
+Mode        $mode
+Threads     $j
+Reference   $reference
+R1          $read_1
+Folder      $outfolder
+Tag         $outtag
+Bucket      $block
+Log         $log"
+        else
+            >&2 echo " [ W ::: ERR011 - FACS has not found your reads files ]"
+            exit 1
+        fi
+    elif [ -s "$fasta" ]
+    then
+        refmode="fasta"
+        if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
+        then
+            mode="mpe"
+            echo "[ FACS has found your reference data set, starting work... ]"
+            echo -e "[ Here we specify your variables ]
+
+** Mapper with paired-end reads
+Mode        $mode
+Threads     $j
+Reference   $fasta
+R1          $read_1
+R2          $read_2
+Folder      $outfolder
+Tag         $outtag
+Bucket      $block
+Log         $log"
+        elif [[ -s "$read_1" ]]
+        then
+            mode="mse"
+            echo "[ FACS has found your reference data set, starting work... ]"
+            echo -e "[ Here we specify your variables ]
+
+** Mapper with single-end reads
+Mode        $mode
+Threads     $j
+Reference   $fasta
+R1          $read_1
+Folder      $outfolder
+Tag         $outtag
+Bucket      $block
+Log         $log"
+        else
+            >&2 echo "[ ERR011 - FACS has not found your reads files ]"
+            exit 1
+        fi
+    else
+        >&2 echo "[ ERR011.1 - FACS has not found your reference file ($reference) ]"
+        exit 1
+    fi
 fi
 
 if [[ ! -e $tp ]]; then
     echo "[ Temporary folder ($tp) does not exist. Creating it... ]"
     mkdir -p $tp
     cd $tp
-elif [[ -d $tp ]]; then
-    cd $tp
-else
+elif [[ ! -d $tp ]]; then
     echo "[ Temporary folder ($tp) already exists but is not a directory ]" 1>&2
+    exit 1
 fi
+cd $tp
 export TMPDIR=$tp
 
-if [[ -n $outfolder ]]
-then
-    if [ -d "$outfolder" ]
-    then
-        echo ""
-    else
-        echo "[ W ::: Directory $outfolder does not exist.  Creating it... ]"
-        mkdir -p $outfolder || (>&2 echo "[ Error creating output folder ($outfolder) ]" ; exit 1)
-    fi
-else
+if [[ -z $outfolder ]]; then
     >&2 echo "[ No output folder specified ]"
     exit 1
+elif [[ ! -d "$outfolder" ]]; then
+    echo "[ Directory $outfolder does not exist.  Creating it... ]" >> "$log"
+    mkdir -p $outfolder || (>&2 echo "[ Error creating output folder ($outfolder) ]" ; exit 1)
 fi
 
 }
@@ -374,7 +361,6 @@ clean_temp ()
 }
 
 
-export PATH=$Lib:$PATH
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 ################################################    FUNCTIONS   ############################################################
@@ -415,7 +401,7 @@ then
     read_trimming "single"
     megahit_args="-r preproc.pair.1.fq.gz"
 else
-    >&2 echo "[ E ::: ERR222 - Internal Error: should never happen ]"
+    >&2 echo "[ ERR222 - Internal Error: should never happen. Please report a bug at $BUG_URL ]"
     cd ../
     rm -rf $tp
     exit 1
@@ -442,7 +428,6 @@ else
 fi
 }
 
-
 predict_smorfs ()
 {
 
@@ -456,14 +441,10 @@ then
     parallel -j $j --block $block --recstart '>' --pipe \
         prodigal_sm -c -m -n -p meta -f sco -a "callorfs/{#}.pred.smORFs.fa" \
         <contigs.fna >/dev/null
-
-    ls callorfs/*pred.smORFs.fa > t
-    if [ -s t ]
+    if [[ $? != 0 ]]
     then
-        rm -rf t
-    else
-        >&2 echo "[ W ::: ERR910 - Error in producing predictions ]"
-        cd ../; rm -rf $tp
+        >&2 echo "[ ERR910 - Error in prodigal_sm ]"
+        clean_temp
         exit 1
     fi
 
@@ -471,99 +452,87 @@ then
     then
         rm -rf contigs.fna
     else
-        mv contigs.fna $outfolder/$outtag.contigs.fna
-        pigz --best $outfolder/$outtag.contigs.fna
+        mv contigs.fna "$outfolder/$outtag.contigs.fna"
+        pigz --best "$outfolder/$outtag.contigs.fna" &
+        waitfor=$!
     fi
 
     echo "[ M ::: Filtering smORFs ]"
 
     for i in callorfs/*;
     do
-        awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' $i | \
-            awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' \
-            > $i.filtered
+        python "$Lib/filter_smorfs.py" "$i" >> pep.faa.tmp
         rm -rf $i
     done
 
-    cat callorfs/* > .pep.faa.tmp
     rm -rf callorfs/
-    rm -rf contigs.fna
+
+    if [[ -n $waitfor ]]; then
+        wait $waitfor
+        unset waitfor
+    fi
 else
-    awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' contigs.fna \
-        | awk '{y= i++ % 2 ; L[y]=$0; if(y==1 && length(L[1])<=100) {printf("%s\n%s\n",L[0],L[1]);}}' \
-        > .pep.faa.tmp
+    python "$Lib/filter_smorfs.py" contigs.fna > pep.faa.tmp
     rm -rf contigs.fna
 fi
 
-if [ -s ".pep.faa.tmp" ]
-then
-    if [[ $cls == 1 ]]
-    then
-
-        echo "[ M ::: Clustering peptides ]"
-
-        sed 's/ /_/g' .pep.faa.tmp | sed 's/;/|/g' \
-            | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' \
-            | awk '{print $2"\t"$1}' > .tmp
-
-        rm -rf .pep.faa.tmp
-        
-        echo "[ M ::: Sorting peptides list ]"
-        mkdir sorting_folder/
-        
-        cat .tmp | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null
-        rm -rf .tmp
-
-        for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
-
-        sort -S 80% --parallel="$j" -T . -k1,1 -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
-
-        perl -n -e "print unless /^$/" .sorted-huge-file \
-            | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' \
-            | sed 's/;;/\t/g' \
-            | sed 's/>//g' \
-            | sed 's/\*//g' \
-            > .tmp2
-
-        if [[ -s .tmp2 ]]
-        then
-            echo "[ M ::: Eliminated all duplicated sequences ]"
-            rm -rf .sorted-huge-file
-        else
-            >&2 echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
-            cd ../; rm -rf $tp
-            exit 1
-        fi
-
-        echo "[ M ::: Outputting genes lists ]"
-
-        awk '{print ">smORF_"NR"\t"$1"\t"$2}' .tmp2 | pigz --best > $outfolder/$outtag.ids.tsv.gz
-
-        echo "[ M ::: Outputting fastas ]"
-
-        awk '{print ">smORF_"NR"\n"$1}' .tmp2 > .pep.faa
-        rm -rf .tmp2
-        
-        echo "[ M ::: Collecting statistics ]"
-
-        tail -2 .pep.faa \
-            | head -1 \
-            | sed 's/|/\t/g' \
-            | cut -f2 \
-            | sed 's/>smORF_//g' \
-            > .all.nmb
-
-    else
-
-        echo "[ M ::: Skipping clustering ]"
-        mv .pep.faa.tmp .pep.faa
-        grep -c ">" .pep.faa > .all.nmb
-
-    fi
-else
-    >&2 echo "[ W ::: ERR122 - ORFs calling procedure failed ]"
-    cd ../; rm -rf $tp
+if [[ ! -s "pep.faa.tmp" ]]; then
+    >&2 echo "[ ERR122 - ORFs calling procedure failed ]"
+    clean_temp
     exit 1
+fi
+if [[ $cls == 1 ]]; then
+    echo "[ Clustering peptides ]"
+
+    mkdir sorting_folder/
+
+    sed 's/ /_/g' pep.faa.tmp | sed 's/;/|/g' \
+        | awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' \
+        | awk '{print $2"\t"$1}' \
+        | parallel --pipe  -j $j --block "$block" --recstart "\n" "cat > sorting_folder/small-chunk{#}" >/dev/null
+    rm -rf pep.faa.tmp
+
+    for X in $(ls sorting_folder/small-chunk*); do sort -S 80% --parallel="$j" -k1,1 -T . < "$X" > "$X".sorted; rm -rf "$X"; done
+
+    sort -S 80% --parallel="$j" -T . -k1,1 -m sorting_folder/small-chunk* > .sorted-huge-file; rm -rf sorting_folder/
+
+    perl -n -e "print unless /^$/" .sorted-huge-file \
+        | awk -F'\t' -v OFS=';' '{x=$1;$1="";a[x]=a[x]$0}END{for(x in a)print x,a[x]}' \
+        | sed 's/;;/\t/g' \
+        | sed 's/>//g' \
+        | sed 's/\*//g' \
+        > .tmp2
+
+    if [[ -s .tmp2 ]]
+    then
+        echo "[ M ::: Eliminated all duplicated sequences ]"
+        rm -rf .sorted-huge-file
+    else
+        >&2 echo "[ W ::: ERR510 - Memdev sorting stage has failed ]"
+        cd ../; rm -rf $tp
+        exit 1
+    fi
+
+    echo "[ M ::: Outputting genes lists ]"
+
+    awk '{print ">smORF_"NR"\t"$1"\t"$2}' .tmp2 | pigz --best > $outfolder/$outtag.ids.tsv.gz
+
+    echo "[ M ::: Outputting fastas ]"
+
+    awk '{print ">smORF_"NR"\n"$1}' .tmp2 > pep.faa
+    rm -rf .tmp2
+
+    echo "[ M ::: Collecting statistics ]"
+
+    number_of_peptides=$(tail -2 pep.faa \
+        | head -1 \
+        | sed 's/|/\t/g' \
+        | cut -f2 \
+        | sed 's/>smORF_//g')
+else
+    echo "[ M ::: Skipping clustering ]"
+    mv pep.faa.tmp pep.faa
+    number_of_peptides=$(grep -c ">" pep.faa)
 fi
 
 
@@ -576,80 +545,49 @@ descriptors ()
 {
 echo "[ M ::: Split input into chunks ]"
 mkdir splits/
-parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}" < .pep.faa >/dev/null
-rm -rf .pep.faa
+parallel --pipe  -j $j --block "$block" --recstart ">" "cat > splits/small-chunk{#}.faa" < pep.faa >/dev/null
+if [[ $? != 0 ]]; then
+    >&2 echo "[ Input splitting failed ]"
+    clean_temp
+    exit 1
+fi
+rm -rf pep.faa
 
-for i in splits/small-chunk*
-do
-    count=$(grep -c ">" $i)
-    echo -e "$i\t$count" >> counte.tsv
-    unset count
-
-    echo "Calling $Lib/AMP-features.py" >> "$log"
+for i in splits/small-chunk*.faa; do
+    echo "Calling $Lib/AMP-features.py $i" >> "$log"
     date >> "$log"
     echo >> "$log"
 
     python "$Lib/AMP-features.py" "$i" "$i.tabdesc.tsv"
     if [[ $? != 0 ]]; then
         >&2 echo "[ Features computation failed ]"
-        rm -rf "$i"
         clean_temp
         exit 1
     fi
+    rm -rf "$i"
 done
 }
 
-checkout()
-{
-
-for i in splits/small-chunk*
-do
-    colu=$(awk -F'\t' '{print NF}' $i | sort -nu | wc -l)
-    colv=$(awk -F'\t' '{print NF}' $i | sort -nu)
-    if [[ "$colu" == "1" ]] && [[ "$colv" == "25"  ]]
-    then
-        ce=$(grep -w "${i/.tabdesc.tsv/}" counte.tsv | awk '{print $2}')
-        coe=$(($ce+1))
-        rown=$(awk '{print NR}' $i | tail -1)
-        if [[ "$rown" == "$coe" ]]
-        then
-            touch $i
-        else
-            rm -rf $i
-            echo "[ W ::: Error in table of descriptors // Wrong row formatting -- ERR 89 ]
-[ ======> Erractic sample $i ]"
-        fi
-    else
-        echo "[ W ::: Error in table of descriptors // Wrong column formatting -- ERR 29 ]
-[ ======> Erractic sample $i ]"
-        rm -rf $i
-    fi
-    unset colv colu rown coe ce
-done
-}
-
-predicter()
+predict ()
 {
 if [ "$(ls -A splits/)" ]
 then
 
     for i in splits/small-chunk*
     do
-        echo "[ M ::: Predicting AMPs -- $i ]"
-        Rscript --vanilla $Lib/Predict_130819.R $i "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "${i/.tabdesc.tsv/.fin}" >"$log"
-        if [[ -s "${i/.tabdesc.tsv/.fin}" ]]
+        echo "[ M ::: Predicting AMPs -- $i ]" | tee -a "$log"
+        finfile="${i/.tabdesc.tsv/.fin}"
+        Rscript --vanilla $Lib/Predict_130819.R "$i" "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "$finfile" >"$log"
+        if [[ ! -s "$finfile" ]]
         then
-            touch "${i/.tabdesc.tsv/.fin}"
-            rm -rf "$i" "$Lib"/__pycache__/
-        else
-            echo "[ W ::: Sample ${i/.tabdesc.tsv/} did not return any AMP sequences ]"
-            rm -rf "$Lib"/__pycache__/ "$i"
+            echo "[ W ::: Sample $i did not return any AMP sequences ]"
         fi
+        rm -rf "$i" "$Lib"/__pycache__/
     done
 else
     cd ../
     rm -rf $tp
-    >&2 echo "[ W ::: There is not valid samples to be processed over pipeline, we are sorry -- ERR675 ]"
+    >&2 echo "[ There are no valid sequences to be processed over pipeline, we are sorry -- ERR675 ]"
     exit 1
 fi
 }
@@ -686,7 +624,7 @@ cat protein-sol.res.tsv | cut -f1,2,3 | sort -k1,1 > sol
 rm -rf protein-sol.res.tsv
 
 echo "[ W ::: Predicting antigenicity ]"
-$Lib/envs/FACS_env/bin/antigenic -sequence .tmp.fasta -sprotein1 Y -sformat1 FASTA -minlen 9 -outfile antigenic -rformat excel -rmaxseq2 1 -raccshow2 1 >/dev/null
+antigenic -sequence .tmp.fasta -sprotein1 Y -sformat1 FASTA -minlen 9 -outfile antigenic -rformat excel -rmaxseq2 1 -raccshow2 1 >/dev/null
 sed -i '/SeqName/d' antigenic
 echo -e "SeqName\tStart\tEnd\tScore\tStrand\tMax_score_pos" > header
 cat antigenic | cut -f1 | sort | uniq | awk '{print $1"\t""+"}' > antigen
@@ -706,7 +644,7 @@ awk '/^>/ {OUT=substr($0,2) ".seq";print " ">OUT}; OUT{print >OUT}' .tmp.fasta
 
 for i in *.seq;
 do
-    $Lib/envs/FACS_env/bin/epestfind -sequence $i  -window 9 -order score -outfile ${i/.seq/.epest} -graph none -nopoor -nomap >/dev/null
+    epestfind -sequence $i  -window 9 -order score -outfile ${i/.seq/.epest} -graph none -nopoor -nomap >/dev/null
     cat ${i/.seq/.epest} >> final
     rm -rf ${i/.seq/.epest} $i
 done
@@ -804,35 +742,32 @@ fi
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 #################################### 6. Generating abundance profiles ######################################################
 
-cleanmessy ()
+format_results ()
 {
 echo "[ M ::: Formatting results ]"
-tot=$(cat .all.nmb)
-rm -rf .all.nmb
 
-if [ "$(ls -A splits/)" ]
-then
-    cat splits/* > .out2.file
+if [[ "$(ls -A splits/)" ]]; then
+    cat splits/*  \
+        | sed 's/\"//g' \
+        > .out2.file
     rm -rf splits/
-    sed -i 's/\"//g' .out2.file
     AMP=$(cat .out2.file | wc -l | awk '{print $1}')
     echo "[ M ::: Calculating statistics ]"
     pepval=$(awk '{print $3"_"$5}' .out2.file | sort | uniq -c | awk '{ print $2"\t"$1 }')
     echo "[ M ::: Exporting results ]"
     if [[ $ep == "0" ]]
     then
-        echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability" > header
-        cat header .out2.file > "$outfolder"/"$outtag".tsv
-        rm -rf header .out2.file
+        (echo -e "Access\tSequence\tAMP_family\tAMP_probability\tHemolytic\tHemolytic_probability" ; cat .out2.file) > "$outfolder"/"$outtag".tsv
+        rm -rf .out2.file
     elif [[ $ep == "1" ]]
     then
         EXTRADATA
     fi
     pigz --best "$outfolder"/"$outtag".tsv
 else
-        echo "[ W ::: ERR585 - We are sorry to inform. Your procedure did not return any AMP sequence. We are closing now ]"
-        echo "[ W ::: We really tried. None of $tot called smORFs were assigned to a probability higher than 0.5 or survived until here ]"
-    cd ../;
+    echo "[ We are sorry to inform. Your procedure did not return any AMP sequence. We are closing now ]" | tee -a "$log"
+    echo "[ We really tried. However, none of $number_of_peptides tested peptides have a probability higher than 0.5 of being an AMP ]" | tee -a "$log"
+    cd ../
     rm -rf $tp
     exit 0
 fi
@@ -842,6 +777,7 @@ summary ()
 {
 echo "[ M ::: Generating log ]"
 
+# TODO Remove code duplication below:
 if [[ $mode == "r" ]]
 then
     ## Preparing report
@@ -860,7 +796,7 @@ Bucket      $block
 
 *** Deduplicated ORFs were called
 
-A total of $tot of smORFs were called.
+A total of $number_of_peptides of smORFs were called.
 
 These ORFs were then screened for AMPs.
 
@@ -895,7 +831,7 @@ Bucket      $block
 
 *** Deduplicated ORFs were called
 
-A total of $tot of smORFs were called.
+A total of $number_of_peptides of smORFs were called.
 
 These ORFs were then screened for AMPs.
 
@@ -928,39 +864,33 @@ cat "$outfolder"/.log | tee -a "$log"
 mapping ()
 {
 echo "[ M ::: Indexing references ]"
-if [[ "$RF" == "0" ]]
-then
+if [[ "$refmode" == "tsv" ]]; then
     pigz -dc "$reference" | sed '1,1d' | awk '{ print ">"$1"\n"$2 }' > .ref.fa
-elif [[ "$RF" == "1" ]]
-then
+elif [[ "$refmode" == "fasta" ]]; then
     if [[ "$fasta" =~ \.gz$ ]];
     then
         echo "[ M ::: Decompressing files ]"
         pigz -dc "$fasta" > .ref.fa
     else
-        ln -s $fasta .ref.fa
+        ln -s "$fasta" .ref.fa
     fi
 else
-    >&2 echo "[ W ::: ERR223 - FACS followed by a weird way ]"
+    >&2 echo "[ Internal error in FACS (refmode is $refmode). Please report a bug at $BUG_URL ]"
+    exit 1
 fi
 
 paladin index -r 3 .ref.fa
 
-if [ -s .ref.fa.amb ]
-then
-    if [[ $mode == "mse" ]]
-    then
-        touch .ref.fa
-    elif [[ $mode != "mpe" ]]
-    then
-        >&2 echo "[ W ::: ERR33 - Please review command line // INTERNAL ERROR SANITY CHECK FAIL ]"
-        cd ../; rm -rf $tp/
-        exit 1
-    fi
-else
+if [[ $? != 0 ]] || [[ ! -s .ref.fa.amb ]]; then
     rm -rf .ref.fa*
-    >&2 echo "[ W ::: ERR303 - Error in indexing ]"
-    cd ../; rm -rf $tp/
+    >&2 echo "[ ERR303 - Error in indexing ]"
+    clean_temp
+    exit 1
+fi
+
+if [[ $mode != "mse" ]] && [[ $mode != "mpe" ]]; then
+    >&2 echo "[ Internal sanity check failure (expected internal mode to be mse or mpe, is $mode). Please report a bug at $BUG_URL ]"
+    clean_temp
     exit 1
 fi
 
@@ -995,11 +925,6 @@ rm -rf .ref.* preproc.*.fq.gz .m*
 }
 
 
-if [[ -d $Lib/envs/FACS_env/bin ]]
-then
-    export PATH=$Lib/envs/FACS_env/bin:$PATH
-fi
-
 sanity_check
 
 if [[ $mode == "pe" || $mode == "se" ]]
@@ -1007,9 +932,8 @@ then
     assemble
     predict_smorfs
     descriptors
-    checkout
-    predicter
-    cleanmessy
+    predict
+    format_results
     mode="r"
     summary
 elif [[ $mode == "pep" ]]
@@ -1023,9 +947,8 @@ then
     fi
     predict_smorfs
     descriptors
-    checkout
-    predicter
-    cleanmessy
+    predict
+    format_results
     summary
 elif [[ $mode == "c" ]]
 then
@@ -1038,9 +961,8 @@ then
     fi
     predict_smorfs
     descriptors
-    checkout
-    predicter
-    cleanmessy
+    predict
+    format_results
     summary
 elif [[ $mode == "mse" || $mode == "mpe" ]]
 then
