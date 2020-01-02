@@ -13,12 +13,10 @@ cd ..
 
 cp $SRC_DIR/prodigal_modified/prodigal $outdir/envs/FACS_env/bin/prodigal_sm
 for f in \
-        CTDDClass.py \
         FACS.sh \
         LICENSE \
         Predict_130819.R \
-        features_130819.R \
-        features.sh \
+        AMP-features.py \
         r22_largeTraining.rds \
         rf_dataset1.rds \
         trim.pe.ngl \

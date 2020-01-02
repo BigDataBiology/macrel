@@ -584,8 +584,14 @@ do
     count=$(grep -c ">" $i)
     echo -e "$i\t$count" >> counte.tsv
     unset count
-    bash "$Lib/features.sh" "$i" "$Lib" "$log"
+
+    echo "Calling $Lib/AMP-features.py" >> "$log"
+    date >> "$log"
+    echo >> "$log"
+
+    python "$Lib/AMP-features.py" "$i" "$i.tabdesc.tsv"
     if [[ $? != 0 ]]; then
+        >&2 echo "[ Features computation failed ]"
         rm -rf "$i"
         clean_temp
         exit 1

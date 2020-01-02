@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# _*_coding:utf-8_*_
+
+import sys
 import pandas as pd
 import numpy as np
 import rpy2
@@ -7,6 +11,8 @@ numpy2ri.activate()
 r = rpy2.robjects.r
 r.library('Peptides')
 
+GROUPS_SA = ['ALFCGIVW', 'RKQEND', 'MSPTHY'] #solventaccess
+GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
 
 def fasta_iter(fname):
     header = None
@@ -23,19 +29,37 @@ def fasta_iter(fname):
         if header is not None:
             yield header, ''.join(chunks)
 
+def ctdd(sequence, groups):
+    code = []
+    for group in groups:
+        for i, aa in enumerate(sequence):
+            if aa in group:
+                code.append((i + 1)/len(sequence) * 100)
+                break
+        else:
+            code.append(0)
+    return code
+
+
 def main(args):
+    if len(args) < 3:
+        sys.stderr.write("This is an internal FACS script and is not meant to be used independently")
+        sys.exit(1)
+
     ifile = args[1]
     ofile = args[2]
 
+    groups = [set(g) for g in (GROUPS_SA+GROUPS_HB)]
     seqs = []
     headers = []
+    encodings = []
     for h,seq in fasta_iter(ifile):
         seqs.append(seq)
         headers.append(h)
+        encodings.append(ctdd(seq, groups))
 
     # We can do this inside the loop so that we are not forced to pre-load all
-    # the sequences into memory. However, the overhead is significant and it
-    # becomes much slower
+    # the sequences into memory. However, it becomes much slower
     rpy2.robjects.globalenv['seq'] = seqs
     aaComp = r('aaComp(seq)')
     rfeatures = r('''
@@ -51,8 +75,10 @@ def main(args):
     aaComp = np.array([np.array(v) for v in aaComp])
     aaComp = aaComp[:,:,1]
 
-    features = np.hstack([aaComp, rfeatures])
-    features = pd.DataFrame(features, index=headers, columns=["tinyAA",
+    features = np.hstack([aaComp, rfeatures, encodings])
+    # The column names must match those in the saved model
+    features = pd.DataFrame(features, index=headers, columns=[
+            "tinyAA",
             "smallAA",
             "aliphaticAA",
             "aromaticAA",
@@ -67,11 +93,17 @@ def main(args):
             "instaindex",
             "boman",
             "hydrophobicity",
-            "hmoment"])
+            "hmoment",
+            "SA.G1.residue0",
+            "SA.G2.residue0",
+            "SA.G3.residue0",
+            "hb.Group.1.residue0",
+            "hb.Group.2.residue0",
+            "hb.Group.3.residue0",
+            ])
     features.insert(0, 'group', 'Unk')
     features.insert(0, 'sequence', seqs)
-    features.to_csv(ofile, sep='\t')
+    features.to_csv(ofile, sep='\t', index_label='access')
 
 if __name__ == '__main__':
-    from sys import argv
-    main(argv)
+    main(sys.argv)
