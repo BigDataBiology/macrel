@@ -35,6 +35,9 @@ conda config --env --add channels conda-forge
 conda config --env --add channels r
 
 echo "# Installing conda packages"
+
+# tzlocal is necessary for rpy2-pandas integration
+# rpy2 must be 3.0.0 or later!
 conda install -y \
         ngless \
         megahit \
@@ -44,15 +47,12 @@ conda install -y \
         pigz \
         parallel \
         pandas \
-        rpy2 \
+        "rpy2 > 3" \
+        tzlocal \
         r-base \
         r-essentials \
-        r-caret \
-        r-data.table \
-        r-dplyr \
         r-peptides \
         r-randomforest \
-        r-stringi \
         --quiet
 
 echo "# Installing prodigal_modified"

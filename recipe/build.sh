@@ -15,8 +15,8 @@ cp $SRC_DIR/prodigal_modified/prodigal $outdir/envs/FACS_env/bin/prodigal_sm
 for f in \
         FACS.sh \
         LICENSE \
-        Predict_130819.R \
         AMP-features.py \
+        AMP-predict.py \
         r22_largeTraining.rds \
         filter_smorfs.py \
         rf_dataset1.rds \

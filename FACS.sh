@@ -577,7 +577,12 @@ then
     do
         echo "[ M ::: Predicting AMPs -- $i ]" | tee -a "$log"
         finfile="${i/.tabdesc.tsv/.fin}"
-        Rscript --vanilla $Lib/Predict_130819.R "$i" "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "$finfile" >"$log"
+        python "$Lib/AMP-predict.py" "$i" "$Lib"/r22_largeTraining.rds "$Lib"/rf_dataset1.rds "$finfile" >>"$log"
+        if [[ $? != 0 ]]; then
+            >&2 echo "[ Prediction failed ]"
+            clean_temp
+            exit 1
+        fi
         if [[ ! -s "$finfile" ]]
         then
             echo "[ W ::: Sample $i did not return any AMP sequences ]"

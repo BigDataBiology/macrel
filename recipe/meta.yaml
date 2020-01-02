@@ -24,11 +24,10 @@ requirements:
     - pigz
     - parallel
     - pandas
+    - rpy2
+    - tzlocal
     - r-base
     - r-essentials
-    - r-caret
-    - r-data.table
-    - r-dplyr
     - r-peptides
     - r-randomforest
 
