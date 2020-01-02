@@ -38,26 +38,20 @@ def main(args):
     # becomes much slower
     rpy2.robjects.globalenv['seq'] = seqs
     aaComp = r('aaComp(seq)')
-    charge = r('charge(seq=seq, pH=7, pKscale="EMBOSS")')
-    pI = r('pI(seq=seq, pKscale="EMBOSS")')
-    aindex = r('aIndex(seq=seq)')
-    instaIndex = r('instaIndex(seq=seq)')
-    boman = r('boman(seq=seq)')
-    hydrophobicity = r('hydrophobicity(seq=seq, scale="Eisenberg")')
-    hmoment = r('hmoment(seq=seq, angle=100, window=11)')
+    rfeatures = r('''
+    ch <- charge(seq=seq, pH=7, pKscale="EMBOSS")
+    pI <- pI(seq=seq, pKscale="EMBOSS")
+    aIndex <- aIndex(seq=seq)
+    instaIndex <- instaIndex(seq=seq)
+    boman <- boman(seq=seq)
+    hydrophobicity <- hydrophobicity(seq=seq, scale="Eisenberg")
+    hmoment <- hmoment(seq=seq, angle=100, window=11)
+    cbind(ch, pI, aIndex, instaIndex, boman, hydrophobicity, hmoment)
+    ''')
+    aaComp = np.array([np.array(v) for v in aaComp])
+    aaComp = aaComp[:,:,1]
 
-    aaComp_np = np.array([np.array(v) for v in aaComp])
-    aaComp_np = aaComp_np[:,:,1]
-
-    features = np.vstack([
-            aaComp_np.T,
-            np.array(charge),
-            np.array(pI),
-            np.array(aindex),
-            np.array(instaIndex),
-            np.array(boman),
-            np.array(hydrophobicity),
-            np.array(hmoment)]).T
+    features = np.hstack([aaComp, rfeatures])
     features = pd.DataFrame(features, index=headers, columns=["tinyAA",
             "smallAA",
             "aliphaticAA",
