@@ -7,24 +7,18 @@ log="$3"
 trap "rm -f $input" EXIT
 
 echo "[ Counting distribution using SA scale -- $input ]"
-python3 "$Lib"/CTDDClass.py "$input" CTDDC-SA-full.tsv 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
+python3 "$Lib"/features.py "$input" CTDDC-SA.tsv 'SA.G' 'ALFCGIVW' 'RKQEND' 'MSPTHY' #solventaccess
 if [[ $? != 0 ]]; then
     >&2 echo "[ CTDDClass failed ]"
     exit 1
 fi
-awk 'BEGIN { print "SA.G1.residue0\tSA.G2.residue0\tSA.G3.residue0" } (NR > 1) {print $2"\t"$7"\t"$12}' CTDDC-SA-full.tsv > CTDDC-SA.tsv
-
-rm -rf CTDDC-SA-full.tsv
 
 echo "[ Counting distribution using HB scale -- $input ]"
-python3 "$Lib"/CTDDClass.py "$input" CTDDC-HB-full.tsv 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
+python3 "$Lib"/features.py "$input" CTDDC-HB.tsv 'hb.Group.' 'ILVWAMGT' 'FYSQCN' 'PHKEDR' # HEIJNE&BLOMBERG1979
 if [[ $? != 0 ]]; then
     >&2 echo "[ CTDDClass failed ]"
     exit 1
 fi
-awk 'BEGIN { print "hb.Group.1.residue0\thb.Group.2.residue0\thb.Group.3.residue0" } (NR > 1) {print $2"\t"$7"\t"$12}' CTDDC-HB-full.tsv > CTDDC-HB.tsv;
-
-rm -rf CTDDC-HB-full.tsv
 
 if [[ ! -s CTDDC-SA.tsv ]] || [[ ! -s CTDDC-HB.tsv ]]
 then
@@ -33,12 +27,6 @@ then
 fi
 
 echo "[ Computing cheminformatics descriptors -- $input ]"
-echo -e "header\tseq\tgroup" > .tmp
-sed '/>/d' "$input" > .seqs
-grep '>' "$input" | sed 's/ .*//g' | sed 's/>//g' > .heade
-paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp
-rm -rf .heade .seqs
-
 echo "Calling $Lib/features_R.py" >> "$log"
 date >> "$log"
 echo >> "$log"
