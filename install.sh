@@ -44,6 +44,7 @@ conda install -y \
         pigz \
         parallel \
         pandas \
+        rpy2 \
         r-base \
         r-essentials \
         r-caret \

@@ -39,21 +39,19 @@ grep '>' "$input" | sed 's/ .*//g' | sed 's/>//g' > .heade
 paste -d'\t' .heade .seqs | awk '{print $1"\t"$2"\t""Unk"}' >> .tmp
 rm -rf .heade .seqs
 
-echo "Calling $Lib/features_130819.R" >> "$log"
+echo "Calling $Lib/features_R.py" >> "$log"
 date >> "$log"
 echo >> "$log"
-Rscript --vanilla $Lib/features_130819.R .tmp .out.file >>"$log"
+python3 "$Lib/features_R.py" "$input" Rfeatures.out.file >> "$log"
 if [[ $? != 0 ]]; then
-    >&2 echo "[ Calling features_130819.R failed ]"
+    >&2 echo "[ Calling features_R.py failed ]"
     exit 1
 fi
 
 
-rm -rf .tmp
-
-if [[ -s .out.file ]]; then
-    paste -d'\t' .out.file CTDDC-SA.tsv CTDDC-HB.tsv | sed 's/\"//g' > $input.tabdesc.tsv
-    rm -rf .out.file CTDDC-SA.tsv CTDDC-HB.tsv
+if [[ -s Rfeatures.out.file ]]; then
+    paste -d'\t' Rfeatures.out.file CTDDC-SA.tsv CTDDC-HB.tsv | sed 's/\"//g' > $input.tabdesc.tsv
+    rm -rf Rfeatures.out.file CTDDC-SA.tsv CTDDC-HB.tsv
 else
     >&2 echo "[ Error in predictors calculation during cheminformatics steps -- ERR 229 ]"
     rm -rf CTDDC-SA.tsv CTDDC-HB.tsv
