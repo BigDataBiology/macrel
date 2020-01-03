@@ -565,10 +565,8 @@ ___
 Also, before start installation make sure you know the needed third party softwares list:\
 \
 
-1. To quality trimming of reads and paired-end reads selection and sorting it is used [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)\
+1. To quality trimming of reads and paired-end reads selection and sorting, FACS uses [NGLess](https://ngless.embl.de)
 \
-      
-      - As complementary to working Trimmomatic needs openjdk-11-jdk-headless.
 
 2. To reads merging it is used [pandaseq](https://github.com/neufeld/pandaseq) software.\
 \
@@ -609,14 +607,6 @@ Also, before start installation make sure you know the needed third party softwa
 7. The [pigz](https://zlib.net/pigz/) software to speed up the compressing and decompressing of files.\
 \
 
-8. The following scripts from the project [iLearn](https://github.com/Superzchen/iLearn) to calculate some encodings of the sequences:\
-\
-  
- - CTDDClass.py
-
- - saveCode.py
-
- - readFasta.py
 
 &nbsp;
 &nbsp;
