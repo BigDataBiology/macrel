@@ -183,7 +183,7 @@ elif [[ $mode == "r" ]]; then
         if [[ -s $read_1 ]] || [[ -s $read_2 ]]
         then
             echo "[ FACS has found your reads files ($read_1/$read_2), starting work... ]"
-            mode="pe"
+            reads="paired"
             echo -e "[ Configuration ]
 Mode        $mode
 Threads     $j
@@ -201,7 +201,7 @@ Log         $log"
     then
         echo "[ FACS mode has been assigned as single-end reads ]
 [ FACS has found your reads files, starting work... ]"
-        mode="se"
+        reads="single"
         echo -e "[ Here we specify your variables ]
 
 Mode        $mode
@@ -216,8 +216,6 @@ Log         $log"
         exit 1
     fi
 elif [[ $mode == "p" ]]; then
-    mode="pep"
-
     if [ -s "$fasta" ]
     then
         echo "[ FACS has found your peptides fasta file, starting work... ]"
@@ -256,7 +254,7 @@ elif [[ $mode == "a" ]]; then
         refmode="tsv"
         if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
         then
-            mode="mpe"
+            reads="paired"
             echo "[ FACS has found your reference data set, starting work... ]"
             echo -e "[ Here we specify your variables ]
 
@@ -272,7 +270,7 @@ Bucket      $block
 Log         $log"
         elif [[ -s "$read_1" ]]
         then
-            mode="mse"
+            reads="single"
             echo "[ FACS has found your reference data set, starting work... ]"
             echo -e "[ Here we specify your variables ]
 
@@ -289,44 +287,30 @@ Log         $log"
             >&2 echo " [ W ::: ERR011 - FACS has not found your reads files ]"
             exit 1
         fi
-    elif [ -s "$fasta" ]
-    then
+    elif [[ -s "$fasta" ]]; then
         refmode="fasta"
         if [[ -s "$read_1" ]] && [[ -s "$read_2" ]]
         then
-            mode="mpe"
-            echo "[ FACS has found your reference data set, starting work... ]"
-            echo -e "[ Here we specify your variables ]
-
-** Mapper with paired-end reads
-Mode        $mode
-Threads     $j
-Reference   $fasta
-R1          $read_1
-R2          $read_2
-Folder      $outfolder
-Tag         $outtag
-Bucket      $block
-Log         $log"
+            reads="paired"
         elif [[ -s "$read_1" ]]
         then
-            mode="mse"
-            echo "[ FACS has found your reference data set, starting work... ]"
-            echo -e "[ Here we specify your variables ]
-
-** Mapper with single-end reads
-Mode        $mode
-Threads     $j
-Reference   $fasta
-R1          $read_1
-Folder      $outfolder
-Tag         $outtag
-Bucket      $block
-Log         $log"
+            reads="single"
         else
             >&2 echo "[ ERR011 - FACS has not found your reads files ]"
             exit 1
         fi
+        echo "[ FACS has found your reference data set, starting work... ]"
+        echo -e "[ Here we specify your variables ]
+
+** Mapper with $reads-end reads
+Mode        $mode
+Threads     $j
+Reference   $fasta
+R1          $read_1
+Folder      $outfolder
+Tag         $outtag
+Bucket      $block
+Log         $log"
     else
         >&2 echo "[ ERR011.1 - FACS has not found your reference file ($reference) ]"
         exit 1
@@ -370,8 +354,7 @@ clean_temp ()
 read_trimming ()
 {
 echo "[ M ::: Trimming low quality bases ]"
-if [[ $1 == "paired" ]]
-then
+if [[ $reads == "paired" ]]; then
     ngl=trim.pe.ngl
     files="$read_1 $read_2"
 else
@@ -379,12 +362,10 @@ else
     files="$read_1"
 fi
 
-ngless --no-create-report --quiet -j $j --temporary-directory $tp $Lib/$ngl $files
-if [[ $? != 0 ]]
-then
+ngless --no-create-report --quiet -j $j --temporary-directory $tp "$Lib/$ngl" $files >>"$log"
+if [[ $? != 0 ]]; then
     >&2 echo "[ W ::: ERR231 - Read trimming failed ]"
-    cd ../
-    rm -rf $tp
+    clean_temp
     exit 1
 fi
 }
@@ -392,13 +373,11 @@ fi
 assemble ()
 {
 echo "[ M ::: Assembly using MEGAHIT ]"
-if [[ $mode == "pe" ]]
-then
-    read_trimming "paired"
+read_trimming
+
+if [[ $reads == "paired" ]]; then
     megahit_args="-1 preproc.pair.1.fq.gz -2 preproc.pair.2.fq.gz"
-elif [[ $mode == "se" ]]
-then
-    read_trimming "single"
+elif [[ $reads == "single" ]]; then
     megahit_args="-r preproc.pair.1.fq.gz"
 else
     >&2 echo "[ ERR222 - Internal Error: should never happen. Please report a bug at $BUG_URL ]"
@@ -431,8 +410,7 @@ fi
 predict_smorfs ()
 {
 
-if [[ "$mode" != "pep" ]]
-then
+if [[ "$mode" != "p" ]]; then
     echo "[ M ::: Predicting ORFs ]"
 
     rm -rf callorfs/
@@ -893,8 +871,8 @@ if [[ $? != 0 ]] || [[ ! -s .ref.fa.amb ]]; then
     exit 1
 fi
 
-if [[ $mode != "mse" ]] && [[ $mode != "mpe" ]]; then
-    >&2 echo "[ Internal sanity check failure (expected internal mode to be mse or mpe, is $mode). Please report a bug at $BUG_URL ]"
+if [[ $reads != "paired" ]] && [[ $reads != "single" ]]; then
+    >&2 echo "[ Internal sanity check failure (expected internal variable reads to be 'single' or 'paired' , is $reads). Please report a bug at $BUG_URL ]"
     clean_temp
     exit 1
 fi
@@ -932,16 +910,14 @@ rm -rf .ref.* preproc.*.fq.gz .m*
 
 sanity_check
 
-if [[ $mode == "pe" || $mode == "se" ]]
-then
+if [[ $mode == "r" ]]; then
     assemble
     predict_smorfs
     descriptors
     predict
     format_results
-    mode="r"
     summary
-elif [[ $mode == "pep" ]]
+elif [[ $mode == "p" ]]
 then
     if [[ "$fasta" =~ \.gz$ ]];
     then
@@ -969,17 +945,12 @@ then
     predict
     format_results
     summary
-elif [[ $mode == "mse" || $mode == "mpe" ]]
-then
-    if [[ $mode == "mse" ]]
-    then
-        read_trimming "single"
-    elif [[ $mode == "mpe" ]]
-    then
-        echo "[ W ::: NOTE _ IMPORTANT ]"
-        echo "[ W ::: Abundance data is just inferred from R1 file ]"
-        read_trimming "paired"
+elif [[ $mode == "a" ]]; then
+    if [[ $reads == "paired" ]]; then
+        echo "[ IMPORTANT NOTE ]"
+        echo "[ Abundance data is just inferred from R1 file ]"
     fi
+    read_trimming
     mapping
     ab_profiling
 else
