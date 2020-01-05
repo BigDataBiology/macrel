@@ -529,6 +529,7 @@ if [[ $? != 0 ]]; then
     clean_temp
     exit 1
 fi
+pigz < pep.faa > "$outfolder/$outtag.smorfs.faa.gz"
 rm -rf pep.faa
 
 for i in splits/small-chunk*.faa; do
