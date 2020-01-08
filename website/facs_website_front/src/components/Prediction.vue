@@ -155,7 +155,7 @@
                                 if (response.status === 200){
                                     // 提交成功要执行的代码
                                     resultObject = response.data;
-                                    console.log("submit success");
+                                    window.console.log("submit success");
                                 }
                             }
                         ).catch( ()=> {

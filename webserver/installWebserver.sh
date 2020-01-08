@@ -52,7 +52,7 @@ echo "unzip nginx archive"
 ls *.tar.gz | xargs -n1 tar xzvf >/dev/null 2>&1
 
 cd $nginx_path/nginx-1.17.1
-echo 'configure nginx'
+echo 'configure nginx,please wait...'
 ./configure \
 --with-openssl=../openssl-1.0.2s \
 --with-pcre=../pcre-8.43 \
@@ -61,14 +61,16 @@ echo 'configure nginx'
 --with-http_ssl_module \
 --with-http_v2_module \
 >/dev/null 2>&1
+echo 'configure done'
 
-echo 'compile nginx'
+echo 'compile nginx,please wait...'
 make >/dev/null 2>&1
 make install >/dev/null 2>&1
+echo 'compile done'
 cd $nginx_path
 
 echo 'remove package file'
-ls *.tar.gz | xargs rm -rf
+#ls *.tar.gz | xargs rm -rf
 rm -rf nginx-1.17.1
 rm -rf openssl-1.0.2s
 rm -rf pcre-8.43
@@ -103,6 +105,8 @@ else
 		tar -zxvf $jdkName -C $java_path >/dev/null 2>&1
 		
 		echo "configure java environment."
+		mv ~/.bashrc ~/.bashrc.backup.mvn
+		cat ~/.bashrc.backup.mvn >> ~/.bashrc
 		echo "#java jdk" >> ~/.bashrc
 		echo "export JAVA_HOME=$java_path/jdk1.8.0_131" >> ~/.bashrc
 		echo "export JRE_HOME=\$JAVA_HOME/jre" >> ~/.bashrc
@@ -110,10 +114,11 @@ else
 		echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
 		
 		echo "installing java finish."
-		echo "you can use this command to activate it,or you can not use java."
+		echo "you can use this command to activate it."
 		echo "source ~/.bashrc"
+		source ~/.bashrc
 		
-		rm -rf $jdkName
+		#rm -rf $jdkName
 		
 	else
 		echo 'jdk file not exists,exit.'
@@ -157,8 +162,9 @@ else
 		echo "export PATH=\$MAVEN_HOME/bin:\$PATH" >> ~/.bashrc
 		echo "configure finish."
 		
-		echo "you can use this command to activate it,or you can not use mvn."
+		echo "you can use this command to activate it."
 		echo "source ~/.bashrc"
+		source ~/.bashrc
 		
 		rm -rf $mvnfile
 		
@@ -171,9 +177,70 @@ cd $workdir
 echo '=========================finish to install maven===================================='
 echo ''
 
-
-echo 'install webserver successfully.'
+echo '=============================finish to install webserver environment'
 echo "please use this command to activate environment:"
 echo "source ~/.bashrc"
 source ~/.bashrc
+echo ''
+
+
+echo '====================================webserver front============================================='
+cd $workdir
+cd ../website/facs_website_front
+
+echo '=================install node modules,please wait...===================='
+npm install >/dev/null 2>&1
+echo ''
+
+echo '==================build webserver front================='
+npm run build
+echo ''
+
+echo '=================deploy webserver front==================='
+mkdir -p $nginx_path/nginx/app
+/bin/cp -f $workdir/nginx.conf $nginx_path/nginx/conf/nginx.conf
+/bin/cp -r ./dist $nginx_path/nginx/app
+if [ $? -ne 0 ]
+then
+	echo 'fail to deploy webserver front.check file first.exit'
+	exit 1
+else
+	echo 'deploy successfully'
+fi
+
+rm -rf ./node_modules
+rm -rf ./dist
+echo '==========finish to deploy front========================'
+
+cd $workdir
+echo '====================================webserver front done=============================================='
+echo ''
+
+
+echo '==================================webserver end project start========================================='
+cd $workdir
+cd ../website/FACSWebsiteEnd
+
+echo '=============compile maven project,please wait==========='
+mvn clean >/dev/null 2>&1
+mvn compile >/dev/null 2>&1
+mvn package
+echo '=============compile finish==========='
+
+echo '=============deploy jar==========='
+jarName=$( ls ./target | grep ".jar$" )
+if [ -f ./target/$jarName ]
+then
+	cp -f ./target/$jarName $workdir/
+else
+	echo 'jar not found,exit'
+	exit 1
+fi
+mvn clean >/dev/null 2>&1
+echo '===========deploy finish========='
+
+cd $workdir
+echo '==================================webserver end project finish========================================='
+echo ''
+
 echo '===================================thanks for installing webserver==========================================='

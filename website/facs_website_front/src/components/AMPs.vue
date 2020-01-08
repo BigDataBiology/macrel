@@ -127,7 +127,7 @@
                 })
                 .catch( (e)=> {
                     this.$message.error('Access failed');
-                    console.log(e);
+                    window.console.log(e);
                 } );
             },
 
