@@ -16,18 +16,10 @@ def fasta_iter(fname):
                 chunks.append(line.strip())
         if header is not None:
             yield header, ''.join(chunks)
-def main(args):
-    if len(args) < 2:
-        import sys
-        sys.stderr.write("This is an internal FACS script and is not meant to be used independently")
-        sys.exit(1)
 
-    ifile = args[1]
+def filter_smorfs(ifile, ofile):
+    with open(ofile, 'wt') as output:
+        for h,seq in fasta_iter(ifile):
+            if len(seq) > 100: continue
+            output.write(">{}\n{}\n".format(h,seq))
 
-    for h,seq in fasta_iter(ifile):
-        if len(seq) > 100: continue
-        print(">{}\n{}".format(h,seq))
-
-if __name__ == '__main__':
-    from sys import argv
-    main(argv)

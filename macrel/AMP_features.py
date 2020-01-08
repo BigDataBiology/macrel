@@ -7,27 +7,13 @@ import numpy as np
 import rpy2
 import rpy2.robjects
 from rpy2.robjects import numpy2ri
+from .fasta import fasta_iter
 numpy2ri.activate()
 r = rpy2.robjects.r
 r.library('Peptides')
 
 GROUPS_SA = ['ALFCGIVW', 'RKQEND', 'MSPTHY'] #solventaccess
 GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
-
-def fasta_iter(fname):
-    header = None
-    chunks = []
-    with open(fname) as f:
-        for line in f:
-            if line[0] == '>':
-                if header is not None:
-                    yield header,''.join(chunks)
-                header = line[1:].strip().split()[0]
-                chunks = []
-            else:
-                chunks.append(line.strip())
-        if header is not None:
-            yield header, ''.join(chunks)
 
 def ctdd(sequence, groups):
     code = []
@@ -41,19 +27,14 @@ def ctdd(sequence, groups):
     return code
 
 
-def main(args):
-    if len(args) < 3:
-        sys.stderr.write("This is an internal FACS script and is not meant to be used independently")
-        sys.exit(1)
-
-    ifile = args[1]
-    ofile = args[2]
-
+def features(ifile):
     groups = [set(g) for g in (GROUPS_SA+GROUPS_HB)]
     seqs = []
     headers = []
     encodings = []
     for h,seq in fasta_iter(ifile):
+        if seq[-1] == '*':
+            seq = seq[:-1]
         seqs.append(seq)
         headers.append(h)
         encodings.append(ctdd(seq, groups))
@@ -103,6 +84,16 @@ def main(args):
             ])
     features.insert(0, 'group', 'Unk')
     features.insert(0, 'sequence', seqs)
+    return features
+
+def main(args):
+    if len(args) < 3:
+        sys.stderr.write("This is an internal FACS script and is not meant to be used independently")
+        sys.exit(1)
+
+    ifile = args[1]
+    ofile = args[2]
+    features = features(ifile)
     features.to_csv(ofile, sep='\t', index_label='access')
 
 if __name__ == '__main__':
