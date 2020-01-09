@@ -114,7 +114,10 @@ def do_assembly(args):
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
 
-def main(args):
+def main(args=None):
+    if args is None:
+        import sys
+        args = sys.argv
     args = parse_args(args)
     to_do = validate_args(args)
     if args.command == 'reads':
