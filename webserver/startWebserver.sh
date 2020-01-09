@@ -5,12 +5,6 @@
 #	description:start nginx.run jar file.
 #================================================================
 
-
-echo ''
-echo '************************************************************************************************************'
-echo "	Before starting webserver,please make sure that you hava installed nginx and java environment."
-echo "	This script needs sudo privilege,or it won't work well."
-echo '************************************************************************************************************'
 echo ''
 
 
@@ -20,6 +14,50 @@ pipelineHome=$(cd ..; pwd)
 logFile='website.log'
 #HOST_IP=$(ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:")
 HOST_IP=$(curl -s icanhazip.com)
+enableCustomizedSetting="false"
+
+
+usage ()
+{
+	echo '************************************************************************************************************'
+	echo "	Before starting webserver,please make sure that you hava installed nginx and java environment."
+	echo "	This script needs sudo privilege,or it won't work well."
+	echo '************************************************************************************************************'
+	echo ''
+	
+	echo "
+	usage: bash startWebserver.sh [-c/--customized true/false]
+	options:
+	-c	If you want to start webserver with your customized setting in application.properties file, your option should be:true.
+		Default:false
+	"
+}
+
+
+while [[ $# -gt 0 ]]
+do
+	case $1 in
+		-h|--help)
+            usage
+            exit 0
+        ;;
+		-c|--customized)
+			enableCustomizedSetting=${2}
+			if [ "$enableCustomizedSetting"x == "true"x ]
+			then
+				echo 'webserver will be started with customized setting.'
+			elif [ "$enableCustomizedSetting"x == "false"x ]
+			then
+				echo 'webserver will be started with default setting.'
+			else
+				echo "the parameter '-c' didn't get correct value,please check it first."
+				echo 'exit!'
+				exit 1
+			fi
+		;;
+	esac
+	shift
+done
 
 
 if [ -z $HOST_IP ]
@@ -87,7 +125,14 @@ else
 		echo 'jar file found.'
 		echo 'start websiteEnd service by daemon...'
 		
-		nohup java -jar $jarName --pipeline.home=$pipelineHome >$logFile &
+		if [ $enableCustomizedSetting == "true" ]
+		then
+			echo 'starting with customized setting...'
+			nohup java -jar $jarName >$logFile &
+		else
+			echo 'starting with default setting...'
+			nohup java -jar $jarName --pipeline.home=$pipelineHome >$logFile &
+		fi
 		
 		if [ $? -eq 0 ]
 		then
