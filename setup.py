@@ -32,8 +32,12 @@ except:
     long_description = open('README.md').read()
 
 
-extensions = {
-}
+package_dir = {
+        'macrel': 'macrel/',
+    }
+package_data = {
+        'macrel': ['data/*'],
+        }
 
 packages = setuptools.find_packages()
 
@@ -62,6 +66,9 @@ setuptools.setup(name = 'macrel',
       platforms = ['Any'],
       classifiers = classifiers,
       packages = packages,
+      package_dir = package_dir,
+      package_data = package_data,
+      zip_safe = False, # We want the RDS files to be installed as files
       entry_points={
           'console_scripts': [
               'macrel= macrel.main:main',

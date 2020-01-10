@@ -10,6 +10,11 @@ def error_exit(args, errmessage):
     sys.stderr.write(errmessage+'\n')
     sys.exit(1)
 
+def data_file(fname):
+    return path.join(path.dirname(__file__),
+                    'data',
+                    fname)
+
 
 def parse_args(args):
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
@@ -33,7 +38,8 @@ def parse_args(args):
     parser.add_argument('--mem', required=False, action='store', default='0.75', )
     parser.add_argument('--cluster', required=False, action='store_true')
     parser.add_argument('--force', required=False, action='store_true')
-    parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store')
+    parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store',
+            help='Temporary directory to use (default: $TMPDIR in the environment or /tmp)')
     return parser.parse_args()
 
 
@@ -89,7 +95,6 @@ def do_smorfs(args):
     args.fasta_file = peptide_file
 
 def do_abundance(args):
-    import os
     do_read_trimming(args)
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
         sam_file = path.join(tdir, 'paladin.out.sam')
@@ -191,7 +196,7 @@ def do_predict(args):
     from .AMP_features import features
     from .AMP_predict import predict
     fs = features(args.fasta_file)
-    prediction = predict("r22_largeTraining.rds", "rf_dataset1.rds", fs)
+    prediction = predict(data_file("r22_largeTraining.rds"), data_file("rf_dataset1.rds"), fs)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     prediction.to_csv(ofile, sep='\t')
 
