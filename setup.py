@@ -36,7 +36,7 @@ package_dir = {
         'macrel': 'macrel/',
     }
 package_data = {
-        'macrel': ['data/*'],
+        'macrel': ['data/*', 'data/scripts/*.ngl'],
         }
 
 packages = setuptools.find_packages()

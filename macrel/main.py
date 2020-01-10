@@ -161,10 +161,10 @@ def do_abundance(args):
 
 def do_read_trimming(args):
     if args.reads2:
-        ngl_file = 'trim.pe.ngl'
+        ngl_file = data_file('scripts/trim.pe.ngl')
         ngl_args = [args.reads1, args.reads2]
     else:
-        ngl_file = 'trim.se.ngl'
+        ngl_file = data_file('scripts/trim.se.ngl')
         ngl_args = [args.reads1]
     subprocess.check_call([
         'ngless',
