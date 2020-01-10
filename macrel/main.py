@@ -2,8 +2,6 @@ import argparse
 import subprocess
 import tempfile
 import gzip
-from .AMP_features import features
-from .AMP_predict import predict
 import logging
 from os import path, makedirs
 
@@ -188,6 +186,14 @@ def do_assembly(args):
         ] + megahit_args)
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
+def do_predict(args):
+    # These imports are slow
+    from .AMP_features import features
+    from .AMP_predict import predict
+    fs = features(args.fasta_file)
+    prediction = predict("r22_largeTraining.rds", "rf_dataset1.rds", fs)
+    ofile = path.join(args.output, args.outtag + '.prediction.gz')
+    prediction.to_csv(ofile, sep='\t')
 
 def main(args=None):
     if args is None:
@@ -200,10 +206,7 @@ def main(args=None):
     if args.command in ['reads', 'contigs']:
         do_smorfs(args)
     if args.command in ['reads', 'contigs', 'peptides']:
-        fs = features(args.fasta_file)
-        prediction = predict("r22_largeTraining.rds", "rf_dataset1.rds", fs)
-        ofile = path.join(args.output, args.outtag + '.prediction.gz')
-        prediction.to_csv(ofile, sep='\t')
+        do_predict(args)
     if args.command == 'abundance':
         do_abundance(args)
 
