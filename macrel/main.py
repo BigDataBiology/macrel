@@ -1,7 +1,10 @@
 import argparse
 import subprocess
+import tempfile
+import gzip
 from .AMP_features import features
 from .AMP_predict import predict
+import logging
 from os import path, makedirs
 
 def error_exit(args, errmessage):
@@ -32,6 +35,7 @@ def parse_args(args):
     parser.add_argument('--mem', required=False, action='store', default='0.75', )
     parser.add_argument('--cluster', required=False, action='store_true')
     parser.add_argument('--force', required=False, action='store_true')
+    parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store')
     return parser.parse_args()
 
 
@@ -86,16 +90,79 @@ def do_smorfs(args):
     filter_smorfs(all_peptide_file, peptide_file)
     args.fasta_file = peptide_file
 
-def do_assembly(args):
+def do_abundance(args):
+    import os
+    do_read_trimming(args)
+    with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
+        sam_file = path.join(tdir, 'paladin.out.sam')
+        fasta_file = path.join(tdir, 'paladin.faa')
+        if args.fasta_file.endswith('.gz'):
+            logging.debug('Uncompressing FASTA file ({})'.format(args.fasta_file))
+            with open(fasta_file, 'wb') as ofile:
+                with gzip.open(args.fasta_file, 'rb') as ifile:
+                    while True:
+                        chunk = ifile.read(32*1024)
+                        if not chunk:
+                            break
+                        ofile.write(chunk)
+        else:
+            os.symlink(args.fasta_file, fasta_file)
+
+        subprocess.check_call([
+            'paladin', 'index',
+
+            # -r<#>  Reference type:
+            #     1: Reference contains nucleotide sequences (requires corresponding .gff annotation)
+            #     2: Reference contains nucleotide sequences (coding only, eg curated transcriptome)
+            #     3: Reference contains protein sequences (UniProt or other source)
+            #     4: Development tests
+            '-r3',
+            fasta_file])
+        logging.debug('Mapping reads against references')
+        with open(sam_file, 'wb') as sout:
+            subprocess.check_call([
+                'paladin', 'align',
+
+                # -t INT        number of threads [1]
+                '-t', str(args.threads),
+
+                # -T INT        minimum score to output [15]
+                '-T', '20',
+
+                # -f INT        minimum ORF length accepted (as constant value) [250]
+                '-f', '10',
+
+                # -z INT[,...]  Genetic code used for translation (-z ? for full list) [1]
+                '-z', '11',
+
+                # -a            output all alignments for SE or unpaired PE
+                '-a',
+
+                #-V            output the reference FASTA header in the XR tag
+                '-V',
+
+                # -M            mark shorter split hits as secondary
+                '-M',
+                fasta_file,
+                'preproc.pair.1.fq.gz'],
+                stdout=sout)
+        subprocess.check_call([
+            'express',
+            '--no-bias-correct',
+            '-o', args.output,
+            fasta_file, sam_file])
+        os.rename(path.join(args.output, 'results.xprs'),
+                path.join(args.output, args.outtag+'.xprs'))
+        os.rename(path.join(args.output, 'params.xprs'),
+                path.join(args.output, args.outtag+'.params.xprs'))
+
+def do_read_trimming(args):
     if args.reads2:
         ngl_file = 'trim.pe.ngl'
         ngl_args = [args.reads1, args.reads2]
-        megahit_args = ['-1', 'preproc.pair.1.fq.gz', '-2', 'preproc.pair.2.fq.gz']
     else:
         ngl_file = 'trim.se.ngl'
         ngl_args = [args.reads1]
-        megahit_args = ['-r', 'preproc.pair.1.fq.gz']
-    megahit_output = path.join(args.output, args.outtag + '.megahit_output')
     subprocess.check_call([
         'ngless',
         '--no-create-report',
@@ -103,6 +170,14 @@ def do_assembly(args):
         '-j', str(args.threads),
         ngl_file,
         ] + ngl_args)
+
+def do_assembly(args):
+    if args.reads2:
+        megahit_args = ['-1', 'preproc.pair.1.fq.gz', '-2', 'preproc.pair.2.fq.gz']
+    else:
+        megahit_args = ['-r', 'preproc.pair.1.fq.gz']
+    megahit_output = path.join(args.output, args.outtag + '.megahit_output')
+    do_read_trimming(args)
     subprocess.check_call([
         'megahit',
         '--presets', 'meta-large',
@@ -119,7 +194,7 @@ def main(args=None):
         import sys
         args = sys.argv
     args = parse_args(args)
-    to_do = validate_args(args)
+    validate_args(args)
     if args.command == 'reads':
         do_assembly(args)
     if args.command in ['reads', 'contigs']:
@@ -129,6 +204,8 @@ def main(args=None):
         prediction = predict("r22_largeTraining.rds", "rf_dataset1.rds", fs)
         ofile = path.join(args.output, args.outtag + '.prediction.gz')
         prediction.to_csv(ofile, sep='\t')
+    if args.command == 'abundance':
+        do_abundance(args)
 
 if __name__ == '__main__':
     import sys
