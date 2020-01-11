@@ -1,3 +1,5 @@
 __pycache__/
 /build/
 /macrel.egg-info
+/dist/
+/envs/
