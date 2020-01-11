@@ -11,7 +11,11 @@ def fasta_iter(fname):
             if line[0] == '>':
                 if header is not None:
                     yield header,''.join(chunks)
-                header = line[1:].strip().split()[0]
+                line = line[1:].strip()
+                if not line:
+                    header = ''
+                else:
+                    header = line.split()[0]
                 chunks = []
             else:
                 chunks.append(line.strip())
