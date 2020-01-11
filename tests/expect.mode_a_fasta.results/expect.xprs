@@ -1,0 +1,4 @@
+bundle_id	target_id	length	eff_length	tot_counts	uniq_counts	est_counts	eff_counts	ambig_distr_alpha	ambig_distr_beta	fpkm	fpkm_conf_low	fpkm_conf_high	solvable	tpm
+1	smORF_9	22	0.000000	0	0	0.000000	0.000000	0.000000e+00	0.000000e+00	0.000000e+00	0.000000e+00	0.000000e+00	F	0.000000e+00
+2	smORF_10	24	0.000000	0	0	0.000000	0.000000	0.000000e+00	0.000000e+00	0.000000e+00	0.000000e+00	0.000000e+00	F	0.000000e+00
+3	smORF_1	44	44.000000	2	2	2.000000	2.000000	0.000000e+00	0.000000e+00	2.272727e+07	2.272727e+07	2.272727e+07	T	1.000000e+06
