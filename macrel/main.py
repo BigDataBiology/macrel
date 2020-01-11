@@ -71,7 +71,7 @@ def validate_args(args):
         error_exit(args, "Output folder [{}] already exists".format(args.output))
 
 
-def do_smorfs(args):
+def do_smorfs(args, tdir):
     from .filter_smorfs import filter_smorfs
     all_peptide_file = path.join(args.output, args.outtag+'.all_orfs.faa')
     peptide_file = path.join(args.output, args.outtag+'.smorfs.faa')
@@ -95,77 +95,77 @@ def do_smorfs(args):
     filter_smorfs(all_peptide_file, peptide_file)
     args.fasta_file = peptide_file
 
-def do_abundance(args):
-    do_read_trimming(args)
-    with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
-        sam_file = path.join(tdir, 'paladin.out.sam')
-        fasta_file = path.join(tdir, 'paladin.faa')
-        if args.fasta_file.endswith('.gz'):
-            logging.debug('Uncompressing FASTA file ({})'.format(args.fasta_file))
-            with open(fasta_file, 'wb') as ofile:
-                with gzip.open(args.fasta_file, 'rb') as ifile:
-                    while True:
-                        chunk = ifile.read(32*1024)
-                        if not chunk:
-                            break
-                        ofile.write(chunk)
-        else:
-            os.symlink(path.abspath(args.fasta_file), fasta_file)
+def do_abundance(args, tdir):
+    do_read_trimming(args, tdir)
+    sam_file = path.join(tdir, 'paladin.out.sam')
+    fasta_file = path.join(tdir, 'paladin.faa')
+    if args.fasta_file.endswith('.gz'):
+        logging.debug('Uncompressing FASTA file ({})'.format(args.fasta_file))
+        with open(fasta_file, 'wb') as ofile:
+            with gzip.open(args.fasta_file, 'rb') as ifile:
+                while True:
+                    chunk = ifile.read(32*1024)
+                    if not chunk:
+                        break
+                    ofile.write(chunk)
+    else:
+        os.symlink(path.abspath(args.fasta_file), fasta_file)
 
+    subprocess.check_call([
+        'paladin', 'index',
+
+        # -r<#>  Reference type:
+        #     1: Reference contains nucleotide sequences (requires corresponding .gff annotation)
+        #     2: Reference contains nucleotide sequences (coding only, eg curated transcriptome)
+        #     3: Reference contains protein sequences (UniProt or other source)
+        #     4: Development tests
+        '-r3',
+        fasta_file])
+    logging.debug('Mapping reads against references')
+    with open(sam_file, 'wb') as sout:
         subprocess.check_call([
-            'paladin', 'index',
+            'paladin', 'align',
 
-            # -r<#>  Reference type:
-            #     1: Reference contains nucleotide sequences (requires corresponding .gff annotation)
-            #     2: Reference contains nucleotide sequences (coding only, eg curated transcriptome)
-            #     3: Reference contains protein sequences (UniProt or other source)
-            #     4: Development tests
-            '-r3',
-            fasta_file])
-        logging.debug('Mapping reads against references')
-        with open(sam_file, 'wb') as sout:
-            subprocess.check_call([
-                'paladin', 'align',
+            # -t INT        number of threads [1]
+            '-t', str(args.threads),
 
-                # -t INT        number of threads [1]
-                '-t', str(args.threads),
+            # -T INT        minimum score to output [15]
+            '-T', '20',
 
-                # -T INT        minimum score to output [15]
-                '-T', '20',
+            # -f INT        minimum ORF length accepted (as constant value) [250]
+            '-f', '10',
 
-                # -f INT        minimum ORF length accepted (as constant value) [250]
-                '-f', '10',
+            # -z INT[,...]  Genetic code used for translation (-z ? for full list) [1]
+            '-z', '11',
 
-                # -z INT[,...]  Genetic code used for translation (-z ? for full list) [1]
-                '-z', '11',
+            # -a            output all alignments for SE or unpaired PE
+            '-a',
 
-                # -a            output all alignments for SE or unpaired PE
-                '-a',
+            #-V            output the reference FASTA header in the XR tag
+            '-V',
 
-                #-V            output the reference FASTA header in the XR tag
-                '-V',
+            # -M            mark shorter split hits as secondary
+            '-M',
+            fasta_file,
+            'preproc.pair.1.fq.gz'],
+            stdout=sout)
+    subprocess.check_call([
+        'ngless',
+        '--no-create-report',
+        '--quiet',
+        '-j', str(args.threads),
+        data_file('scripts/count.ngl'),
+        sam_file,
+        path.join(args.output, args.outtag + '.abundance.txt')])
 
-                # -M            mark shorter split hits as secondary
-                '-M',
-                fasta_file,
-                'preproc.pair.1.fq.gz'],
-                stdout=sout)
-        subprocess.check_call([
-            'ngless',
-            '--no-create-report',
-            '--quiet',
-            '-j', str(args.threads),
-            data_file('scripts/count.ngl'),
-            sam_file,
-            path.join(args.output, args.outtag + '.abundance.txt')])
-
-def do_read_trimming(args):
+def do_read_trimming(args, tdir):
+    ofile = path.join(tdir, 'preproc.fq.gz')
     if args.reads2:
         ngl_file = data_file('scripts/trim.pe.ngl')
-        ngl_args = [args.reads1, args.reads2]
+        ngl_args = [args.reads1, args.reads2, ofile]
     else:
         ngl_file = data_file('scripts/trim.se.ngl')
-        ngl_args = [args.reads1]
+        ngl_args = [args.reads1, ofile]
     subprocess.check_call([
         'ngless',
         '--no-create-report',
@@ -174,13 +174,14 @@ def do_read_trimming(args):
         ngl_file,
         ] + ngl_args)
 
-def do_assembly(args):
+def do_assembly(args, tdir):
     if args.reads2:
-        megahit_args = ['-1', 'preproc.pair.1.fq.gz', '-2', 'preproc.pair.2.fq.gz']
+        megahit_args = ['-1', path.join(tdir, 'preproc.pair.1.fq.gz'),
+                        '-2', path.join(tdir, 'preproc.pair.2.fq.gz')]
     else:
-        megahit_args = ['-r', 'preproc.pair.1.fq.gz']
+        megahit_args = ['-r', path.join(tdir, 'preproc.pair.1.fq.gz')]
     megahit_output = path.join(args.output, args.outtag + '.megahit_output')
-    do_read_trimming(args)
+    do_read_trimming(args, tdir)
     subprocess.check_call([
         'megahit',
         '--presets', 'meta-large',
@@ -191,7 +192,7 @@ def do_assembly(args):
         ] + megahit_args)
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
-def do_predict(args):
+def do_predict(args, tdir):
     # These imports are slow
     from .AMP_features import features
     from .AMP_predict import predict
@@ -206,14 +207,15 @@ def main(args=None):
         args = sys.argv
     args = parse_args(args)
     validate_args(args)
-    if args.command == 'reads':
-        do_assembly(args)
-    if args.command in ['reads', 'contigs']:
-        do_smorfs(args)
-    if args.command in ['reads', 'contigs', 'peptides']:
-        do_predict(args)
-    if args.command == 'abundance':
-        do_abundance(args)
+    with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
+        if args.command == 'reads':
+            do_assembly(args, tdir)
+        if args.command in ['reads', 'contigs']:
+            do_smorfs(args, tdir)
+        if args.command in ['reads', 'contigs', 'peptides']:
+            do_predict(args, tdir)
+        if args.command == 'abundance':
+            do_abundance(args, tdir)
 
 if __name__ == '__main__':
     import sys

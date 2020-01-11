@@ -8,4 +8,4 @@ preproc = preprocess(input, keep_singles=False) using |r|:
     if len(r) < 75:
         discard
 
-write(preproc, ofile="preproc.pair.1.fq.gz")
+write(preproc, ofile=ARGV[2])
