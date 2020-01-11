@@ -1,4 +1,4 @@
-{% set name = "facs" %}
+{% set name = "macrel" %}
 {% set version = "0.1" %}
 
 package:
@@ -6,7 +6,7 @@ package:
   version: {{ version }}
   
 source:
-  git_url: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
+  git_url: https://github.com/BigDataBiology/macrel
 
 build:
   number: 0
@@ -19,10 +19,6 @@ requirements:
     - ngless
     - megahit
     - paladin
-    - samtools
-    - eXpress
-    - pigz
-    - parallel
     - pandas
     - rpy2
     - tzlocal
@@ -32,12 +28,12 @@ requirements:
     - r-randomforest
 
 about:
-  home: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
+  home: https://github.com/BigDataBiology/macrel
   license: MIT
   summary: "a module for AMP (antimicrobial peptide) prediction"
   description: |
-    amp prediction
-  dev_url: https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS
+    Used for the prediction of AMPs in (meta)genomes.
+  dev_url: https://github.com/BigDataBiology/macrel
   
 extra:
   recipe-maintainers:

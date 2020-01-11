@@ -27,7 +27,6 @@ source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
-conda config --env --add channels r
 
 echo "# Installing conda packages"
 
@@ -62,5 +61,5 @@ celio.diasjunior@gmail.com
 
 or
 
-https://github.com/FACS-Antimicrobial-Peptides-Prospection/FACS/issues
+https://github.com/BigDataBiology/macrel/issues
 "
