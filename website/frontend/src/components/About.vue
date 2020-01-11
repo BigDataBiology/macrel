@@ -1,14 +1,14 @@
 <template>
     <div class="about-container">
         <el-row type="flex" class="row-bg" justify="space-around">
-            <el-col :span="2"><div class="grid-content"></div></el-col>
-            <el-col :span="14">
+            <el-col :span="1"><div class="grid-content"></div></el-col>
+            <el-col :span="18">
                 <div class="content">
                     <div class="content-header">
                         <h3 style="margin: 0">About Macrel</h3>
                     </div>
                     <div class="content-body">
-                        <p>Macrelis developed at the Institute of Science and
+                        <p>Macrel is developed at the Institute of Science and
                         Technology for Brain-inspired Intelligence (ISTBI) at
                         Fudan University, Shanghai (China).</p>
 
@@ -38,7 +38,7 @@
 
                 </div>
             </el-col>
-            <el-col :span="2"><div class="grid-content"></div></el-col>
+            <el-col :span="1"><div class="grid-content"></div></el-col>
         </el-row>
     </div>
 </template>
@@ -53,7 +53,6 @@
     .about-container{
         height: 100%;
         margin-top: 2em;
-        /*background-color: greenyellow;*/
     }
 
     .content{

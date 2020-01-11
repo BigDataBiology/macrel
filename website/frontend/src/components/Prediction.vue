@@ -3,28 +3,31 @@
     <div class="prediction_container">
 
         <el-row type="flex" class="row-bg" justify="space-around">
-            <el-col :span="2"><div class="grid-content"></div></el-col>
-            <el-col :span="14">
+            <el-col :span="1"><div class="grid-content"></div></el-col>
+            <el-col :span="18">
                 <div class="grid-content formArea">
-                    <div class="form-head">This is Antimicrobial peptides prediction.</div>
+                    <div class="form-head">Antimicrobial activity prediction</div>
                     <div class="form-body">
                         <el-form ref="pFormRef" :model="pFormModel" :rules="pFormRules" size="medium" class="prediction_form">
-                            <h4 style="margin-top: 0.4em;margin-bottom: 0.2em">You can paste peptides or contigs sequence(less than 500 rows) with <span style="color: red">FASTA/FA</span> format into the field below:</h4>
+                            <div style="float: left; width: 60%">
+                            <h4 style="margin-top: 0.4em;margin-bottom: 0.2em">You can paste peptides or contigs sequence in <span style="color: red">FASTA</span> format into the field below:</h4>
 
                             <el-form-item prop="textData" style="margin-bottom: 0.1em">
                                 <el-input type="textarea" :rows="8" v-model="pFormModel.textData" placeholder="input your sequence here"></el-input>
                             </el-form-item>
-                            <br/>
+                            <p style="text-align: right; margin-top: 0px; padding-top: 0px; font-size: small"><a href="#" @click="doExample('peptides')">Peptides example</a> || <a href="#" @click="doExample('contigs')">Contigs example</a></p>
 
-                            <h4 style="margin-top: 0.5em;margin-bottom: 0.2em">Or submit a file(less than 500KB) in FASTA format:</h4>
+                            </div>
+                            <div style="float: right; width: 35%">
+                            <h4 style="margin-top: 0.4em;margin-bottom: 0.2em">Or submit a file in FASTA format:</h4>
 
                             <el-form-item>
                                 <!--
-                                加冒号的，说明后面的是一个变量或者表达式；没加冒号的后面就是对应的字符串字面量！
-                                :auto-upload=false  // 取消自动上传
-                                :limit=1 // 限制只能上传一张，
-                                drag // 设置这个让可以把图片拖进来上传
-                                action="" // 暂时不设置上传地址，因为我们是要拦截在form中上传
+                                A colon is added to indicate that a variable or expression follows; without a colon is a corresponding string literal!
+                                :auto-upload=false  // No automatic upload
+                                :limit=1
+                                drag
+                                action="" // Do not set the upload address for the time being, because we want to intercept the upload in the form
                                 -->
                                 <el-upload
                                         ref="upload"
@@ -40,17 +43,19 @@
                                         :limit="1"
                                         >
                                     <i class="el-icon-upload"></i>
-                                    <div class="el-upload__text">Drag files here，or <em>Click upload</em></div>
-                                    <div class="el-upload__tip" slot="tip">only FASTA/FA file ，and no more than 500KB</div>
+                                    <div class="el-upload__text">Drag or click here to upload</div>
+                                    <div class="el-upload__tip">(FASTA format, limited to 500KB)</div>
                                 </el-upload>
                             </el-form-item>
+                            </div>
+
+                            <div style="clear: both" />
 
                             <el-divider><i class="el-icon-more-outline"></i></el-divider>
-                            <el-form-item label="Data Type" required prop="dataType" style="margin-bottom: 0.3em">
-                                <br/>
+                            <el-form-item label="Data Type: " required prop="dataType" style="margin-bottom: 0.3em">
                                 <el-radio-group v-model="pFormModel.dataType">
-                                    <el-radio label="peptides"></el-radio>
-                                    <el-radio label="contigs"></el-radio>
+                                    <el-radio label="peptides">Peptides</el-radio>
+                                    <el-radio label="contigs">Contigs (nucleotide)</el-radio>
                                 </el-radio-group>
                             </el-form-item>
 
@@ -58,7 +63,6 @@
                             <el-form-item class="btns">
                                 <el-button type="primary" @click="onSubmit('pFormRef')">Submit</el-button>
                                 <el-button type="danger" @click="resetForm('pFormRef')">Clear Form</el-button>
-                                <el-button type="info" @click="onExample('pFormRef')">Example</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -108,7 +112,7 @@
                     </ul>
                 </div>
             </el-col>
-            <el-col :span="2"><div class="grid-content"></div></el-col>
+            <el-col :span="1"><div class="grid-content"></div></el-col>
         </el-row>
     </div>
 
@@ -200,13 +204,19 @@
             },
 
             handleExceed() {
-                this.$message.warning({message:'Only one file can be uploaded at a time',duration:5000});
+                this.$message.warning({message:'Only one file can be uploaded at a time', duration:5000});
             },
 
 
             resetForm(formRef) {
                 this.$refs['upload'].clearFiles();
                 this.$refs[formRef].resetFields();
+            },
+
+            doExample(etype) {
+                window.console.log("doExample");
+                this.pFormModel.dataType = etype;
+                this.onExample('pFormRef');
             },
 
             onExample(refName){
@@ -308,7 +318,6 @@
 </script>
 
 <style scoped lang="less">
-
     .prediction_container{
         height: 100%;
     }
