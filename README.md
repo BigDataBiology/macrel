@@ -14,15 +14,6 @@ soon).
 should be correct, we are still working on making Macrel easier to install and
 use.
 
-Fast AMP Classification System pipeline is a system created by Celio Dias
-Santos Jr. and Luis Pedro Coelho, from Fudan University (Shanghai). It is
-distributed under MIT license and represents a new way to prospect AMPs in
-natural environments using metagenomic data or genomic data to generate large
-datasets of antimicrobial peptides.
-
-(A modified version of the Prodigal software is distributed with Macrel under
-the GPL license)
-
 ## Applications
 
 Macrel can be used in a wide-ranging of scenarios, such as screening for novel
@@ -37,85 +28,71 @@ The preferred installation method uses _conda_ (in particular, using
 [conda-forge](https://conda-forge.org/)) to install all dependencies in a
 Macrel-private environment, so that should be available on your system.
 
-If it is, the installation should be simply a matter of getting the source code:
+If it is, the installation should be simply a matter of getting the source
+code:
 
-`$ git clone https://github.com/BigDataBiology/Macrel
+```bash
+git clone https://github.com/BigDataBiology/Macrel
+cd macrel
+./install.sh
+conda activate envs/Macrel_env
+```
 
-And executing the installation script:
-
-`$ bash install.sh`
+Henceforth, to use macrel, activate this environment.
 
 ### Examples
 
+> Macrel uses a _subcommand interface_. You run `macrel COMMAND ...` with the
+> COMMAND specifying which components of the pipeline you want to use.
 
-> Macrel supports gzipped inputs
-
-To run Macrel on peptides:
+To run Macrel on peptides, use the `peptides` subcommand:
 
 ```bash
-    macrel peptides
-        --fasta example_seqs/expep.faa.gz \
-        --output out_peptides \
-        --outtag example
+macrel peptides \
+    --fasta example_seqs/expep.faa.gz \
+    --output out_peptides \
+    -t 4
 ```
 
-In this case, we use `example_seqs/expep.faa.gz` as input sequence. This should be an amino-acid FASTA file.
-The outputs will be written into a folder called `out_peptides`, and Macrel will
-4 threads. Adapt as needed and see the full list of arguments below.
+In this case, we use `example_seqs/expep.faa.gz` as input sequence. This should
+be an amino-acid FASTA file. The outputs will be written into a folder called
+`out_peptides`, and Macrel will 4 threads.
 
-To run Macrel on contigs, use:
+To run Macrel on contigs, use the `contigs` subcommand:
 
 ```bash
-    macrel contigs
-        --fasta example_seqs/excontigs.fna.gz \
-        --output out_contigs \
-        --outtag out_contigs \
-        -t 4
+macrel contigs \
+    --fasta example_seqs/excontigs.fna.gz \
+    --output out_contigs
 ```
 
 In this example, we use the example file `excontigs.fna.gz` which is a FASTA
 file with nucleotide sequences, writing the output to `out_contigs`.
 
-To run Macrel on paired-end reads, use:
+To run Macrel on paired-end reads, use the `reads` subcommand:
 
 ```bash
-    macrel reads
-        -1 example_seqs/R1.fq.gz \
-        -2 example_seqs/R2.fq.gz \
-        --output out_metag \
-        --outtag example_metag \
+macrel reads \
+    -1 example_seqs/R1.fq.gz \
+    -2 example_seqs/R2.fq.gz \
+    --output out_metag \
+    --outtag example_metag
 ```
 
 The paired-end reads are given as paired files (here, `example_seqs/R1.fq.gz`
 and `example_seqs/R2.fq.gz`). If you only have single-end reads, you can omit
-the `--rev` argument.
+the `-2` argument.
 
-To run Macrel to get abundance profiles, you only need the forward reads file
-and a reference with peptide sequences. You can run abundance mode using two
-different types of references:
+To run Macrel to get abundance profiles, you only need the short reads file
+and a reference with peptide sequences. Use the `abundance` subcommand:
 
-1. Fasta file with peptide sequences:
 
 ```bash
-    macrel abundance
-        -1 example_seqs/R1.fq.gz \
-        --fasta example_seqs/ref.faa.gz \
-        --output out_abundance \
-        --outtag example_abundance \
-```
-
-2. Macrel output with predicted AMPs, it will be the `$outtag.tsv.gz` file
-   generated. To use this file containing the peptide sequences and the
-   probabilities associated to the prediction, you can run the following
-   commmand:
-
-```bash
-    bash FACS.sh --mode a \
-        --fwd example_seqs/R1.fq.gz \
-        --ref out_metag/example_metag.tsv.gz
-        --output out_abundance_pred
-        --outtag example_abundance_pred
-        -t 4
+macrel abundance \
+    -1 example_seqs/R1.fq.gz \
+    --fasta example_seqs/ref.faa.gz \
+    --output out_abundance \
+    --outtag example_abundance
 ```
 
 ## Pipeline overview
