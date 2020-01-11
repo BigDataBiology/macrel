@@ -3,15 +3,10 @@
 set -e
 
 echo "
-#####################################################
-###     FACS - Fast AMP Classification System     ###
-#####################################################
-###                    Authors                    ###
-###                                               ###
-###  Célio Dias Santos Júnior, Luis Pedro Coelho  ###
-#$###################################################
-###  ISTBI - FUDAN University / Shanghai - China  ###
-##$##################################################
+# Macrel - (Meta)genomic AMP Classification and Retrieval
+
+AUTHORS: Célio Dias Santos Júnior, Luis Pedro Coelho
+
 "
 
 if ! which conda > /dev/null; then
@@ -23,12 +18,12 @@ fi
 
 eval "$(conda shell.bash hook)"
 
-Lib="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-echo "# Creating new environment for FACS"
+echo "# Creating new environment for Macrel"
 mkdir -p envs
-conda create --yes -p $Lib/envs/FACS_env python=3.7
-source activate $Lib/envs/FACS_env
+conda create --yes -p $BASEDIR/envs/Macrel_env python=3.7
+source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
@@ -42,8 +37,6 @@ conda install -y \
         ngless \
         megahit \
         paladin \
-        samtools \
-        pigz \
         pandas \
         "rpy2 > 3" \
         tzlocal \
@@ -53,17 +46,17 @@ conda install -y \
         r-randomforest \
         --quiet
 
-echo "# Installing prodigal_modified"
+echo "# Installing modified version of prodigal (prodigal_sm)"
 cd prodigal_modified
 make CC=$GCC --quiet # conda will add $GCC to environment
-mv prodigal ../envs/FACS_env/bin/prodigal_sm
-
-source deactivate
-
+cp -pir prodigal ../envs/Macrel_env/bin/prodigal_sm
 cd ..
 
+python setup.py install
+
+
 echo "############ Installation procedures finished
-****** Thank you for installing FACS ********
+****** Thank you for installing Macrel ********
 --- Please submit bugreports/comments to
 celio.diasjunior@gmail.com
 
