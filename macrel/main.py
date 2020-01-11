@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import gzip
 import logging
+import os
 from os import path, makedirs
 
 def error_exit(args, errmessage):
@@ -109,7 +110,7 @@ def do_abundance(args):
                             break
                         ofile.write(chunk)
         else:
-            os.symlink(args.fasta_file, fasta_file)
+            os.symlink(path.abspath(args.fasta_file), fasta_file)
 
         subprocess.check_call([
             'paladin', 'index',
@@ -150,14 +151,13 @@ def do_abundance(args):
                 'preproc.pair.1.fq.gz'],
                 stdout=sout)
         subprocess.check_call([
-            'express',
-            '--no-bias-correct',
-            '-o', args.output,
-            fasta_file, sam_file])
-        os.rename(path.join(args.output, 'results.xprs'),
-                path.join(args.output, args.outtag+'.xprs'))
-        os.rename(path.join(args.output, 'params.xprs'),
-                path.join(args.output, args.outtag+'.params.xprs'))
+            'ngless',
+            '--no-create-report',
+            '--quiet',
+            '-j', str(args.threads),
+            data_file('scripts/count.ngl'),
+            sam_file,
+            path.join(args.output, args.outtag + '.abundance.txt')])
 
 def do_read_trimming(args):
     if args.reads2:

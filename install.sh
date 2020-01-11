@@ -43,9 +43,7 @@ conda install -y \
         megahit \
         paladin \
         samtools \
-        eXpress \
         pigz \
-        parallel \
         pandas \
         "rpy2 > 3" \
         tzlocal \
