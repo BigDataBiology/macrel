@@ -3,7 +3,7 @@
     <el-container class="home-container">
         <!--页面头部区-->
         <el-header style="height: 3.6em">
-            <div><h2>FACS</h2></div>
+            <div><h2>Macrel</h2></div>
 
             <div>
                 <el-menu :default-active="activeIndex" class="home-el-menu" mode="horizontal" @select="handleSelect" text-color="#ffffff" active-text-color="#20A0FF" background-color=transparent router >

@@ -30,27 +30,27 @@
                                 <el-table-column
                                         sortable
                                         prop="access"
-                                        label="access">
+                                        label="Peptide ID">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
                                         prop="amp_family"
-                                        label="amp_family">
+                                        label="Family">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="amp_probability"
-                                        label="amp_probability">
+                                        prop="amp_prob"
+                                        label="Probability">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="hemolytic"
-                                        label="hemolytic">
+                                        prop="is_hemo"
+                                        label="Is hemolytic">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="hemolytic_probability"
-                                        label="hemolytic_probability">
+                                        prop="hemo_prob"
+                                        label="Is hemolytic (probability)">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
@@ -77,13 +77,11 @@
 
         data(){
             return {
-                filePath:'',
                 ampList:[],
                 loading: true,
             }
         },
 
-        // 页面创建时，要进行的操作
         created() {
             this.loadResultObject();
             this.loading = false;
@@ -98,7 +96,7 @@
                 }
 
                 this.ampList = resultObject.data.objects;
-                this.filePath = resultObject.data.filePath;
+                this.rawdata = resultObject.rawdata;
             },
 
             indexMethod(index) {
@@ -111,41 +109,17 @@
                     return;
                 }
 
-                await this.$http({
-                    method:'get',
-                    url:'/file/download',
-                    params:{
-                        filePath:this.filePath,
-                    },
-                    headers:{
-                        'Content-Type':'application/x-download;charset=utf-8',
-                    },
-                    responseType:'blob',
-                })
-                .then( response => {
-                    this.download(response);
-                })
-                .catch( (e)=> {
-                    this.$message.error('Access failed');
-                    window.console.log(e);
-                } );
-            },
-
-            async download(response){
-                if (!response) {
-                    return this.$message.error('file not exits.');
-                }
-                let url = window.URL.createObjectURL(new Blob([response.data]));
+                // The code below simulates a download
+                let url = window.URL.createObjectURL(new Blob([this.rawdata]));
                 let link = document.createElement('a');
                 link.style.display = 'none';
                 link.href = url;
-                link.setAttribute('download',response.headers['filename']);
+                link.setAttribute('download', 'macrel.out.tsv');
 
                 document.body.appendChild(link);
                 link.click();
-
-                document.body.removeChild(link); //下载完成移除元素
-                window.URL.revokeObjectURL(url); //释放掉blob对象
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
             },
 
         },

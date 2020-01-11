@@ -10,12 +10,13 @@
                     <div class="form-body">
                         <el-form ref="pFormRef" :model="pFormModel" :rules="pFormRules" size="medium" class="prediction_form">
                             <h4 style="margin-top: 0.4em;margin-bottom: 0.2em">You can paste peptides or contigs sequence(less than 500 rows) with <span style="color: red">FASTA/FA</span> format into the field below:</h4>
+
                             <el-form-item prop="textData" style="margin-bottom: 0.1em">
                                 <el-input type="textarea" :rows="8" v-model="pFormModel.textData" placeholder="input your sequence here"></el-input>
                             </el-form-item>
                             <br/>
 
-                            <h4 style="margin-top: 0.5em;margin-bottom: 0.2em">Or submit a file(less than 500KB) in FASTA/FA format directly from your disk:</h4>
+                            <h4 style="margin-top: 0.5em;margin-bottom: 0.2em">Or submit a file(less than 500KB) in FASTA format:</h4>
 
                             <el-form-item>
                                 <!--
@@ -32,9 +33,8 @@
                                         show-file-list
                                         drag
                                         action=""
-                                        accept=".fasta,.fa"
+                                        accept=".fasta,.fa,.faa,.fna"
                                         :on-success="onsuccess"
-                                        :before-upload="beforeFASTAUpload"
                                         :on-exceed="handleExceed"
                                         :multiple="false"
                                         :limit="1"
@@ -64,10 +64,37 @@
                     </div>
                 </div>
                 <div class="introducion">
-                    <p>Antimicrobial peptides (AMPs) are small proteins (10–100 amino acids) that can either cause lysis or generally interferre with cell growth.The rapid growth of antibiotic-resistant microorganisms in the last years became a world health problem. Thus, AMPs could represent a source of new antibiotic treatments. Recently, more and more genomic and metagenomic sequences have become publicly available. The Fast AMPs Classification System (FACS) is a pipeline that overcomes most of the problems associated to the prospection of AMPs in high throughput data sets analyzing diverse types of inputs (reads, contigs, protein sequences). The protein sequences predicted as AMPs by FACS are, usually, specific and accurate, what can reduce the cost of experiments.</p>
-                    <p>FACS uses machine learning to select peptides with high probability of being an AMP. Furthermore, FACS is also capable to perform the classification of AMPs into hemolytic and non-hemolytic peptides. This allows researchers to select the most interesting peptides for further testing <i>in vitro</i>.</p>
-                    <p>Peptides submitted to the FACS prediction should consist of 20 canonical amino acids and their length should range from 10 to 100 amino acids. Please avoid contigs containing non-canonical bases, such as N, R or Y.</p>
-                    <p>This prediction system will output a table containing the predicted AMP sequence, its probability to be an AMP and the family it belongs, as well as the predictions relative to the hemolytic activity.</p>
+                    <p>Antimicrobial peptides (AMPs) are small proteins (10–100
+                    amino acids) that can either cause lysis or generally
+                    interfere with cell growth.The rapid growth of
+                    antibiotic-resistant microorganisms in the last years
+                    became a world health problem. Thus, AMPs could represent a
+                    source of new antibiotic treatments. Recently, more and
+                    more genomic and metagenomic sequences have become publicly
+                    available. Macrel is pipeline that overcomes most of the
+                    problems associated to the prospection of AMPs in high
+                    throughput data sets analyzing diverse types of inputs
+                    (reads, contigs, protein sequences). The protein sequences
+                    predicted as AMPs by Macrel are, usually, specific and
+                    accurate, what can reduce the cost of experiments.</p>
+
+                    <p>Macrel uses machine learning to select peptides with
+                    high probability of being an AMP. Furthermore, Macrel is
+                    also capable to perform the classification of AMPs into
+                    hemolytic and non-hemolytic peptides. This allows
+                    researchers to select the most interesting peptides for
+                    further testing <i>in vitro</i>.</p>
+
+                    <p>Peptides submitted to the Macrel prediction should
+                    consist of 20 canonical amino acids and their length should
+                    range from 10 to 100 amino acids. Please avoid contigs
+                    containing non-canonical bases, such as N, R or Y.</p>
+
+                    <p>This prediction system will output a table containing
+                    the predicted AMP sequence, its probability to be an AMP
+                    and the family it belongs, as well as the predictions
+                    relative to the hemolytic activity.</p>
+
                 </div>
                 <div class="glossary">
                     <h3>Glossary:</h3>
@@ -136,24 +163,18 @@
                         }
                     };
 
-                    // 开始显示加载效果
                     const loading = this.$loading({
                         lock: true,
-                        text: 'Analyzing,please wait',
+                        text: 'Analyzing, please wait',
                         spinner: 'el-icon-loading',
                         background: 'rgba(0, 0, 0, 0.5)',
                     });
-                    // setTimeout(() => {
-                    //     loading.close();
-                    // }, 2000);
 
-                    // 将返回数据中服务器返回的data取出来命名为resultObject
-                    let resultObject;
-                    await this.$http.post('/facs/prediction',formData,config)
+                    let resultObject; // This will hold the result
+                    await this.$http.post('http://localhost:5000/predict', formData, config)
                         .then(
                             response => {
                                 if (response.status === 200){
-                                    // 提交成功要执行的代码
                                     resultObject = response.data;
                                     window.console.log("submit success");
                                 }
@@ -164,20 +185,16 @@
                         })
                     ;
 
+                    loading.close();
                     if (resultObject.code !==1){
-                        loading.close();
                         this.$message.error(resultObject.msg);
                         return ;
                     }
 
-                    // 将结果对象转为字符串，然后保存在浏览器会话中
+                    // Turn the resulting object into a string and save it in a browser session
                     let resultObjectStr = JSON.stringify(resultObject);
                     window.sessionStorage.setItem('resultObjectStr',resultObjectStr);
 
-                    // 关闭加载效果
-                    loading.close();
-
-                    //跳转页面
                     this.$router.push({path:"/prediction/amps"});
                 });
             },
@@ -186,17 +203,6 @@
                 this.$message.warning({message:'Only one file can be uploaded at a time',duration:5000});
             },
 
-            beforeFASTAUpload(file){
-                var extension = file.name.substring(file.name.lastIndexOf('.')+1);
-                const isFASTA = extension === 'fasta';
-                const isFA = extension === 'fa';
-
-                if (!isFA){
-                    this.$message.error({message:'not FASTA/FA file!',duration:5000});
-                }
-
-                return (isFASTA || isFA);
-            },
 
             resetForm(formRef) {
                 this.$refs['upload'].clearFiles();

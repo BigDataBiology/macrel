@@ -1,4 +1,4 @@
-# facs_website_front02
+# Macrel website
 
 ## Project setup
 ```

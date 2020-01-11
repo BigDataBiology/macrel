@@ -25,7 +25,7 @@ const routes = [
       name: 'home',
       component: Home,
       meta:{
-        title:'FACS',
+        title:'Macrel',
       },
       redirect: '/prediction',
 
