@@ -199,7 +199,7 @@
                     let resultObjectStr = JSON.stringify(resultObject);
                     window.sessionStorage.setItem('resultObjectStr',resultObjectStr);
 
-                    this.$router.push({path:"/prediction/amps"});
+                    this.$router.push({name: "amps"});
                 });
             },
 
