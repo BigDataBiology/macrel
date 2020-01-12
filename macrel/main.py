@@ -150,7 +150,7 @@ def do_abundance(args, tdir):
             # -M            mark shorter split hits as secondary
             '-M',
             fasta_file,
-            'preproc.pair.1.fq.gz'],
+            path.join(tdir, 'preproc.pair.1.fq.gz')],
             stdout=sout)
     subprocess.check_call([
         'ngless',
