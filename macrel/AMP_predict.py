@@ -26,16 +26,16 @@ def predict(model1, model2, data):
     is_hemo = r('predict(model2, data)')
     hemo_prob = r('predict(model2, data, type="prob")[,1]')
 
-    final = pd.DataFrame({'sequence': data['sequence'],
-                'group':
+    final = pd.DataFrame({'Sequence': data['sequence'],
+                'AMP_family':
                     (np.where(data.eval("acidicAA > basicAA"),
                          np.where(data['sequence'].map(lambda s: ('C' in s)), 'ADP', 'ALP'),
                          np.where(data['sequence'].map(lambda s: ('C' in s)), 'CDP', 'CLP'))),
-                'is_amp': is_amp,
-                'amp_prob' : amp_prob,
-                'is_hemo': is_hemo,
-                'hemo_prob': hemo_prob})
-    rfinal = final.query('is_amp == "AMP"').drop('is_amp', axis=1)
+                'is_AMP': is_amp,
+                'AMP_probability' : amp_prob,
+                'Hemolytic': is_hemo,
+                'Hemolytic_probability': hemo_prob})
+    rfinal = final.query('is_AMP == "AMP"').drop('is_AMP', axis=1)
     return rfinal
 
 

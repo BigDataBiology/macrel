@@ -202,7 +202,7 @@ def do_predict(args, tdir):
     fs = features(args.fasta_file)
     prediction = predict(data_file("r22_largeTraining.rds"), data_file("rf_dataset1.rds"), fs)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
-    prediction.to_csv(ofile, sep='\t')
+    prediction.to_csv(ofile, sep='\t', index_label='Access')
 
 def main(args=None):
     if args is None:
