@@ -11,4 +11,6 @@ install:
   - export PATH=$HOME/miniconda3/bin:$PATH
   - bash install.sh
 script:
-  - bash ./tests/automatedTest.sh
+  - eval "$(conda shell.bash hook)"
+  - conda activate ./envs/Macrel_env
+  - ./run-tests.sh
