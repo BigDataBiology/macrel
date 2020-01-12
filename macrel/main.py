@@ -18,6 +18,7 @@ def data_file(fname):
 
 
 def parse_args(args):
+    from .macrel_version import __version__
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
                                      description='macrel')
 
@@ -41,6 +42,8 @@ def parse_args(args):
     parser.add_argument('--force', required=False, action='store_true')
     parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store',
             help='Temporary directory to use (default: $TMPDIR in the environment or /tmp)')
+    parser.add_argument('--version', '-v', action='version',
+                    version='%(prog)s {version}'.format(version=__version__))
     return parser.parse_args()
 
 
