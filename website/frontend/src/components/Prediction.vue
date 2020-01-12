@@ -135,7 +135,7 @@
                 pFormRules: {
 
                     dataType: [
-                        { required: true, message: 'please select data type', trigger: 'change' },
+                        { required: true, message: 'Please select data type', trigger: 'change' },
                     ],
                 },
 

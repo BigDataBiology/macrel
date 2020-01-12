@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <!--路由占位符-->
+        <!-- placeholder for router -->
         <router-view />
     </div>
 </template>

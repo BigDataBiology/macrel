@@ -1,19 +1,15 @@
-// 配置路由相关信息
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
-// 1.通过Vue.use(插件)，安装插件
 Vue.use(VueRouter);
 
-// 懒加载
+// Lazy loading
 const About = () => import('../components/About.vue');
 const Prediction = () => import('../components/Prediction.vue');
 const AMPs = () => import('../components/AMPs.vue');
 
-// 配置路径和组件之间的关系
 const routes = [
-
     {
       path: '/',
       name: 'index',
@@ -35,7 +31,7 @@ const routes = [
           name:'prediction',
           component:Prediction,
           meta:{
-            title:'prediction',
+            title:'AMP prediction',
           },
         },
 
@@ -44,7 +40,7 @@ const routes = [
           name:'amps',
           component:AMPs,
           meta:{
-            title:'results',
+            title:'Results',
           },
         },
 
@@ -53,7 +49,7 @@ const routes = [
           name:'about',
           component:About,
           meta:{
-            title:'about',
+            title:'About',
           },
         },
 
@@ -63,11 +59,11 @@ const routes = [
 
 ];
 
-// 2.创建路由对象
 const router = new VueRouter({
-  routes,
-  mode: 'history'
+    routes,
+    mode: 'history',
+    base: '/software/macrel/',
+
 });
 
-// 3.将router对象传入到Vue实例中
 export default router
