@@ -191,7 +191,7 @@
 
                     loading.close();
                     if (resultObject.code !==1){
-                        this.$message.error(resultObject.msg);
+                        this.$message.error(resultObject.message);
                         return ;
                     }
 

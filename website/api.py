@@ -32,23 +32,29 @@ def predict():
             '--fasta', ifname,
             '--output', tdir + '/macrel.out',
             ])
-        subprocess.check_call(args)
-        tfile = path.join(tdir, 'macrel.out', 'macrel.out.prediction.gz')
-        data = pd.read_table(tfile)
-        data.rename(inplace=True, columns={
-            'Unnamed: 0': 'access',
-            'group': 'amp_family',})
+        try:
+            subprocess.check_call(args)
+            tfile = path.join(tdir, 'macrel.out', 'macrel.out.prediction.gz')
+            data = pd.read_table(tfile)
+            data.rename(inplace=True, columns={
+                'Unnamed: 0': 'access',
+                'group': 'amp_family',})
 
-        r = flask.jsonify({
-            'code': 1,
-            'message': 'Macrel OK',
-            'rawdata': gzip.open(tfile, 'rt').read(),
-            'data': {
-                'objects': [
-                    data.iloc[i].to_dict()
-                        for i in range(len(data))]
-                },
-            })
+            r = flask.jsonify({
+                'code': 1,
+                'message': 'Macrel OK',
+                'rawdata': gzip.open(tfile, 'rt').read(),
+                'data': {
+                    'objects': [
+                        data.iloc[i].to_dict()
+                            for i in range(len(data))]
+                    },
+                })
+        except:
+            r = flask.jsonify({
+                'code': 0,
+                'message': 'Error running Macrel',
+                })
         r.headers.add('Access-Control-Allow-Origin', '*')
         r.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         r.headers.add('Access-Control-Allow-Methods', 'GET,POST')
