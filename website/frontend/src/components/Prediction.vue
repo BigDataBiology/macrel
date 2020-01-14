@@ -66,6 +66,11 @@
                             </el-form-item>
                         </el-form>
                     </div>
+
+                    <p>For large inputs (>500KB or >1,000 sequences), please <a
+                    href="https://github.com/BigDataBiology/macrel/">download
+                    the tool</a> and run it locally.</p>
+
                 </div>
                 <div class="introducion">
                     <p>Antimicrobial peptides (AMPs) are small proteins (10–100
@@ -148,7 +153,7 @@
             beforeupload(file) {
                 const isLimit = file.size / 1024  < 500;
                 if (!isLimit) {
-                    this.$message.error({message:'file size exceeds 500KB',duration:5000});
+                    this.$message.error({message: 'File size exceeds 500KB. Please download the tool and run locally for large inputs', duration:5000});
                     return false;
                 }
             },
@@ -159,7 +164,7 @@
                     if (!valid) return;
 
                     if (!this.pFormModel.textData && this.fileList.length===0) {
-                        this.$message.error({message:'Sequence is emtpy and no file found',duration:5000});
+                        this.$message.error({message: 'Sequence is empty and no file uploaded', duration:5000});
                         return false;
                     }
 
@@ -167,26 +172,11 @@
                         var array=this.pFormModel.textData.split("\n");
                         var firstLine=array[0];
                         var dataTypeTmp=this.pFormModel.dataType;
-                        const reg = /["|"]/;
 
                         var sequenceLength=array.length;
                         if (sequenceLength > 1000){
-                            this.$message.error({message:'Sequence exceeds 1000 rows',duration:3000})
+                            this.$message.error({message: 'Sequence exceeds 1000 rows. Please download the tool and run locally for large inputs', duration:3000})
                             return false;
-                        }
-
-                        if (dataTypeTmp==='peptides'){
-                            if (!reg.test(firstLine)) {
-                                this.$message.error({message:'The sequence is not peptides.',duration:3000})
-                                return false;
-                            }
-                        }
-
-                        if (dataTypeTmp==='contigs'){
-                            if (reg.test(firstLine)) {
-                                this.$message.error({message:'The sequence is not contigs.',duration:3000})
-                                return false;
-                            }
                         }
                     }
 
@@ -219,7 +209,7 @@
                             }
                         ).catch( ()=> {
                             loading.close();
-                            this.$message.error({message:'The server is under maintenance,please try again later',duration:5000});
+                            this.$message.error({message: 'No response from API server. Please try again later',duration:5000});
                         })
                     ;
 
@@ -238,7 +228,7 @@
             },
 
             handleExceed() {
-                this.$message.warning({message:'Only one file can be uploaded at a time', duration:5000});
+                this.$message.warning({message: 'Only one file can be uploaded at a time', duration:5000});
             },
 
 
