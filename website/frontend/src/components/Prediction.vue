@@ -4,7 +4,7 @@
 
         <el-row type="flex" class="row-bg" justify="space-around">
             <el-col :span="1"><div class="grid-content"></div></el-col>
-            <el-col :span="18">
+            <el-col :span="18" class="el-col-form">
                 <div class="grid-content formArea">
                     <div class="form-head">Antimicrobial activity prediction</div>
                     <div class="form-body">
@@ -37,7 +37,7 @@
                                         drag
                                         action=""
                                         accept=".fasta,.fa,.faa,.fna"
-                                        :on-success="onsuccess"
+                                        :before-upload="beforeupload"
                                         :on-exceed="handleExceed"
                                         :multiple="false"
                                         :limit="1"
@@ -137,24 +137,58 @@
                     dataType: [
                         { required: true, message: 'Please select data type', trigger: 'change' },
                     ],
-                },
 
+                },
 
             };
         },
 
         methods: {
 
-            //阻止upload的自己上传，进行再操作
-            // eslint-disable-next-line no-unused-vars
-            onsuccess(file,fileList) {
-                //重新写一个表单上传的方法
+            beforeupload(file) {
+                const isLimit = file.size / 1024  < 500;
+                if (!isLimit) {
+                    this.$message.error({message:'file size exceeds 500KB',duration:5000});
+                    return false;
+                }
             },
 
             onSubmit(formRef) {
 
                 this.$refs[formRef].validate(async valid => {
                     if (!valid) return;
+
+                    if (!this.pFormModel.textData && this.fileList.length===0) {
+                        this.$message.error({message:'Sequence is emtpy and no file found',duration:5000});
+                        return false;
+                    }
+
+                    if(this.pFormModel.textData){
+                        var array=this.pFormModel.textData.split("\n");
+                        var firstLine=array[0];
+                        var dataTypeTmp=this.pFormModel.dataType;
+                        const reg = /["|"]/;
+
+                        var sequenceLength=array.length;
+                        if (sequenceLength > 1000){
+                            this.$message.error({message:'Sequence exceeds 1000 rows',duration:3000})
+                            return false;
+                        }
+
+                        if (dataTypeTmp==='peptides'){
+                            if (!reg.test(firstLine)) {
+                                this.$message.error({message:'The sequence is not peptides.',duration:3000})
+                                return false;
+                            }
+                        }
+
+                        if (dataTypeTmp==='contigs'){
+                            if (reg.test(firstLine)) {
+                                this.$message.error({message:'The sequence is not contigs.',duration:3000})
+                                return false;
+                            }
+                        }
+                    }
 
                     let pForm = this.$refs[formRef].$el;
                     let formData = new FormData(pForm);
@@ -340,6 +374,10 @@
 
     .form-body{
         padding: 1em 0;
+    }
+
+    .el-upload-dragger{
+        width: 200px;
     }
 
     .prediction_form{
