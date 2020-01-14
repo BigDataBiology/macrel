@@ -1,5 +1,10 @@
 # MACREL: Meta(genomic) AMP Classification and Retrieval
 
+Pipeline to mine antimicrobial peptides (AMPs) from (meta)genomes.
+
+[![Build Status](https://travis-ci.com/BigDataBiology/macrel.svg?branch=master)](https://travis-ci.com/BigDataBiology/macrel)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE)
+
 If you use this software in a publication please cite
 
 >   FACS: antimicrobial peptide screening in genomes and metagenomes
