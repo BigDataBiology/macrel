@@ -78,6 +78,9 @@ def do_smorfs(args, tdir):
     from .filter_smorfs import filter_smorfs
     all_peptide_file = path.join(args.output, args.outtag+'.all_orfs.faa')
     peptide_file = path.join(args.output, args.outtag+'.smorfs.faa')
+    fasta_file = link_or_uncompress_fasta_file(
+                    args.fasta_file,
+                    path.join(tdir, 'contigs.fna'))
     subprocess.check_call(
             ['prodigal_sm',
                 '-c', # Closed ends.  Do not allow genes to run off edges.
@@ -93,26 +96,34 @@ def do_smorfs(args, tdir):
                 '-a', all_peptide_file,
 
                 # input file
-                '-i', args.fasta_file],
+                '-i', fasta_file],
             )
     filter_smorfs(all_peptide_file, peptide_file)
     args.fasta_file = peptide_file
 
-def do_abundance(args, tdir):
-    do_read_trimming(args, tdir)
-    sam_file = path.join(tdir, 'paladin.out.sam')
-    fasta_file = path.join(tdir, 'paladin.faa')
-    if args.fasta_file.endswith('.gz'):
-        logging.debug('Uncompressing FASTA file ({})'.format(args.fasta_file))
-        with open(fasta_file, 'wb') as ofile:
-            with gzip.open(args.fasta_file, 'rb') as ifile:
+def link_or_uncompress_fasta_file(orig, dest):
+    '''
+    If the input is compress, uncompress it. Otherwise, link it to `dest`
+    '''
+    if orig.endswith('.gz'):
+        logging.debug('Uncompressing FASTA file ({})'.format(orig))
+        with open(dest, 'wb') as ofile:
+            with gzip.open(orig, 'rb') as ifile:
                 while True:
                     chunk = ifile.read(32*1024)
                     if not chunk:
                         break
                     ofile.write(chunk)
     else:
-        os.symlink(path.abspath(args.fasta_file), fasta_file)
+        os.symlink(path.abspath(orig), dest)
+    return dest
+
+def do_abundance(args, tdir):
+    do_read_trimming(args, tdir)
+    sam_file = path.join(tdir, 'paladin.out.sam')
+    fasta_file = link_or_uncompress_fasta_file(
+                        args.fasta_file,
+                        path.join(tdir, 'paladin.faa'))
 
     subprocess.check_call([
         'paladin', 'index',
