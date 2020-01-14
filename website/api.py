@@ -23,7 +23,9 @@ def predict():
             with open(ifname, 'wt') as out:
                 out.write(request.form.get('textData'))
         else:
-            ifname = path.join(tdir, request.files['file'].filename)
+            # The input filename is never used, also can be security
+            # vulnerability, so use "input.fa":
+            ifname = path.join(tdir, 'input.fa')
             request.files['file'].save(ifname)
 
         args.extend([
@@ -52,4 +54,5 @@ def predict():
         r.headers.add('Access-Control-Allow-Methods', 'GET,POST')
         return r
 
-app.run()
+if __name__ == '__main__':
+    app.run()
