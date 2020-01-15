@@ -4,12 +4,12 @@ set -e
 
 mkdir -p $PREFIX/bin
 
-# compile c
 cd prodigal_modified
-make
+make CC=$CC --quiet # conda will add $CC to environment
 chmod +x prodigal
 cd ..
 
 cp $SRC_DIR/prodigal_modified/prodigal $PREFIX/bin/prodigal_sm
-python setup.py install
+
+$PYTHON -m pip install --disable-pip-version-check --no-cache-dir --ignore-installed --no-deps -vv .
 
