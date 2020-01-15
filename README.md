@@ -4,6 +4,8 @@ Pipeline to mine antimicrobial peptides (AMPs) from (meta)genomes.
 
 [![Build Status](https://travis-ci.com/BigDataBiology/macrel.svg?branch=master)](https://travis-ci.com/BigDataBiology/macrel)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE)
+[![Install with Bioconda](https://anaconda.org/bioconda/macrel/badges/installer/conda.svg)](https://anaconda.org/bioconda/macrel)
+[![Install with Bioconda](https://anaconda.org/bioconda/macrel/badges/downloads.svg)](https://anaconda.org/bioconda/macrel)
 
 If you use this software in a publication please cite
 
@@ -28,13 +30,20 @@ conditions or presence of diseases.
 
 ## Install
 
-The preferred installation method uses _conda_ (in particular, using
+The recommended method of installation is through
+[bioconda](https://anaconda.org/bioconda/macrel):
+
+```bash
+conda install -c bioconda macrel
+```
+
+## Install from source
+
+If you want to use an unreleased version from Github, for example, we provide a
+script which _conda_ (in particular, using
 [bioconda](https://bioconda.github.io/) and
 [conda-forge](https://conda-forge.org/)) to install all dependencies in a
-Macrel-private environment, so that should be available on your system.
-
-If it is, the installation should be simply a matter of getting the source
-code:
+Macrel-private environment:
 
 ```bash
 git clone https://github.com/BigDataBiology/Macrel
