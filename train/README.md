@@ -60,15 +60,15 @@ You should have 8 files in the end (inside the `data/` subdirectory):
 Training the models is a two-step process:
 
 1. Generate the feature tables
-2. Build the models & validation
+2. Build the models & testing
 
 Note that `macrel` needs to be installed as the Python scripts import it
 
 ```bash
 python build-AMP-table.py
-Rscript train.R data/AMP.train.tsv data/AMP.validation.tsv data/AMP.model.rds
+Rscript train.R data/AMP.train.tsv data/AMP.testing.tsv data/AMP.model.rds
 
 python build-Hemo-table.py
-Rscript train.R data/Hemo.train.tsv data/Hemo.validation.tsv data/Hemo.model.rds
+Rscript train.R data/Hemo.train.tsv data/Hemo.testing.tsv data/Hemo.model.rds
 ```
 
