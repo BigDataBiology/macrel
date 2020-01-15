@@ -39,7 +39,7 @@ def parse_args(args):
             default=None, dest='reads2')
     parser.add_argument('--mem', required=False, action='store', default='0.75', )
     parser.add_argument('--cluster', required=False, action='store_true', default=False, dest='cluster',
-            help='Whether to pre-cluster the smORFs (at 100% identity) to avoid repeats')
+            help='Whether to pre-cluster the smORFs (at 100%% identity) to avoid repeats')
     parser.add_argument('--force', required=False, action='store_true')
     parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store',
             help='Temporary directory to use (default: $TMPDIR in the environment or /tmp)')
