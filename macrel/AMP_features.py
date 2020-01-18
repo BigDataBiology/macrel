@@ -15,6 +15,38 @@ r.library('Peptides')
 GROUPS_SA = ['ALFCGIVW', 'RKQEND', 'MSPTHY'] #solventaccess
 GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
 
+
+#' # http://emboss.bioinformatics.nl/cgi-bin/emboss/pepstats
+#' # Property      Residues              Number  Mole%
+#' # Tiny          (A+C+G+S+T)             4   19.048
+#' # Small         (A+B+C+D+G+N+P+S+T+V)   4   19.048
+#' # Aliphatic     (A+I+L+V)               5   23.810
+#' # Aromatic      (F+H+W+Y)               5   23.810
+#' # Non-polar     (A+C+F+G+I+L+M+P+V+W+Y) 11  52.381
+#' # Polar         (D+E+H+K+N+Q+R+S+T+Z)   9   42.857
+#' # Charged       (B+D+E+H+K+R+Z)         8   38.095
+#' # Basic         (H+K+R)                 8   38.095
+#' # Acidic        (B+D+E+Z)               0   00.000
+
+_aa_groups = [
+    set('ACGST'),          # Tiny      
+    set('ABCDGNPSTV'),     # Small     
+    set('AILV'),           # Aliphatic 
+    set('FHWY'),           # Aromatic  
+    set('ACFGILMPVWY'),    # Nonpolar  
+    set('DEHKNQRSTZ'),     # Polar     
+    set('BDEHKRZ'),        # Charged   
+    set('HKR'),            # Basic     
+    set('BDEZ'),           # Acidic    
+]
+
+def amino_acid_composition(seq):
+    '''amino_acid_composition: return AA composition fractions'''
+    # See groups above
+    return np.array(
+            [sum(map(g.__contains__, seq)) for g in _aa_groups],
+            dtype=float)/len(seq)
+
 def ctdd(sequence, groups):
     code = []
     for group in groups:
@@ -32,17 +64,18 @@ def features(ifile):
     seqs = []
     headers = []
     encodings = []
+    aaComp = []
     for h,seq in fasta_iter(ifile):
         if seq[-1] == '*':
             seq = seq[:-1]
         seqs.append(seq)
         headers.append(h)
         encodings.append(ctdd(seq, groups))
+        aaComp.append(amino_acid_composition(seq))
 
     # We can do this inside the loop so that we are not forced to pre-load all
     # the sequences into memory. However, it becomes much slower
     rpy2.robjects.globalenv['seq'] = seqs
-    aaComp = r('aaComp(seq)')
     rfeatures = r('''
     ch <- charge(seq=seq, pH=7, pKscale="EMBOSS")
     pI <- pI(seq=seq, pKscale="EMBOSS")
@@ -53,8 +86,6 @@ def features(ifile):
     hmoment <- hmoment(seq=seq, angle=100, window=11)
     cbind(ch, pI, aIndex, instaIndex, boman, hydrophobicity, hmoment)
     ''')
-    aaComp = np.array([np.array(v) for v in aaComp])
-    aaComp = aaComp[:,:,1]
 
     features = np.hstack([aaComp, rfeatures, encodings])
     # The column names must match those in the saved model
