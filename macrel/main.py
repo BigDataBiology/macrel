@@ -212,9 +212,12 @@ def do_predict(args, tdir):
     from .AMP_features import features
     from .AMP_predict import predict
     fs = features(args.fasta_file)
-    prediction = predict(data_file("r22_largeTraining.rds"), data_file("rf_dataset1.rds"), fs)
+    prediction = predict(
+                    data_file("models/AMP.pkl.gz"),
+                    data_file("models/Hemo.pkl.gz"),
+                    fs)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
-    prediction.to_csv(ofile, sep='\t', index_label='Access')
+    prediction.to_csv(ofile, sep='\t', index_label='Access', float_format="%.3f")
 
 def main(args=None):
     if args is None:

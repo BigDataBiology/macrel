@@ -37,12 +37,14 @@ wget -O hemo.validation.pos.faa https://webs.iiitd.edu.in/raghava/hemopi/data/He
 wget -O hemo.validation.neg.faa https://webs.iiitd.edu.in/raghava/hemopi/data/HemoPI_1_dataset/validation/neg.fa
 
 
+wget http://www.jci-bioinfo.cn/iAMP/Supp-S1.pdf
 wget http://www.jci-bioinfo.cn/iAMP/Supp-S2.pdf
 ```
 
-Then you must **extract the dataset from `Supp-S2.pdf`** and save it as two
-FASTA files: `Supp-S2_AMP.faa` and `Supp-S2_NAMP.faa` (`pdftotext` can
-partially automate this, but it still requires a bit of manual labour).
+Then you must **extract the dataset from `Supp-S1.pdf` and `Supp-S2.pdf`** and
+save it as four FASTA files: `Supp-S[12]_AMP.faa` and `Supp-S[12]_NAMP.faa`
+(`pdftotext` can partially automate this, but it still requires a bit of manual
+labour).
 
 You should have 8 files in the end (inside the `data/` subdirectory):
 
@@ -66,9 +68,12 @@ Note that `macrel` needs to be installed as the Python scripts import it
 
 ```bash
 python build-AMP-table.py
-Rscript train.R data/AMP.train.tsv data/AMP.testing.tsv data/AMP.model.rds
-
 python build-Hemo-table.py
-Rscript train.R data/Hemo.train.tsv data/Hemo.testing.tsv data/Hemo.model.rds
+
+python train-models.py
 ```
+
+The `train-models.py` script will also perform testing. In the case of the AMP
+tests, it does it in a careful way as it needs to avoid having the same
+sequences in the training and testing sets.
 

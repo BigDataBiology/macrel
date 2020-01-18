@@ -23,7 +23,18 @@ with open(normalized_fname_test, 'wt') as output:
         output.write(f">AMP_{i}\n{seq}\n")
     for i, (_, seq) in enumerate(fasta_iter('data/Supp-S2_NAMP.faa')):
         output.write(f">NAMP_{i}\n{seq}\n")
-        
-fs_v = features(normalized_fname_test)
-fs_v['group'] = fs_v.index.map(lambda ix: ix.split('_')[0])
-fs_v.to_csv('data/AMP.test.tsv', sep='\t')
+
+fs_t = features(normalized_fname_test)
+fs_t['group'] = fs_t.index.map(lambda ix: ix.split('_')[0])
+fs_t.to_csv('data/AMP.test.tsv', sep='\t')
+
+normalized_fname_test = 'data/AMP_NAMP.train.bench.faa'
+with open(normalized_fname_test, 'wt') as output:
+    for i, (_, seq) in enumerate(fasta_iter('data/Supp-S1_AMP.faa')):
+        output.write(f">AMP_{i}\n{seq}\n")
+    for i, (_, seq) in enumerate(fasta_iter('data/Supp-S1_NAMP.faa')):
+        output.write(f">NAMP_{i}\n{seq}\n")
+
+fs_bench = features(normalized_fname_test)
+fs_bench['group'] = fs_bench.index.map(lambda ix: ix.split('_')[0])
+fs_bench.to_csv('data/AMP.train_bench.tsv', sep='\t')

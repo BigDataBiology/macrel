@@ -37,6 +37,7 @@ conda install -y \
         megahit \
         paladin \
         pandas \
+        scikit-learn \
         "rpy2 > 3" \
         tzlocal \
         r-base \

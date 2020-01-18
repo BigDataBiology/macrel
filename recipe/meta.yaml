@@ -27,6 +27,7 @@ requirements:
     - megahit
     - paladin
     - pandas
+    - scikit-learn
     - rpy2
     - tzlocal
     - r-base

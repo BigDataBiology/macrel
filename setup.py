@@ -36,7 +36,7 @@ package_dir = {
         'macrel': 'macrel/',
     }
 package_data = {
-        'macrel': ['data/*', 'data/scripts/*.ngl'],
+        'macrel': ['data/*', 'data/scripts/*.ngl', 'data/models/*.pkl.gz'],
         }
 
 packages = setuptools.find_packages()
@@ -68,7 +68,7 @@ setuptools.setup(name = 'macrel',
       packages = packages,
       package_dir = package_dir,
       package_data = package_data,
-      zip_safe = False, # We want the RDS files to be installed as files
+      zip_safe = False, # We want the model files to be installed as files
       entry_points={
           'console_scripts': [
               'macrel= macrel.main:main',
