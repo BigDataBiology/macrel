@@ -17,8 +17,8 @@ def report(name, y_true, y_pred):
     print(metrics.classification_report(y_true, y_pred, digits=3))
     print("\n")
 
-ampep_train = pd.read_table('data/AMP.train.tsv', index_col=0)
-xiao_test = pd.read_table('data/AMP.test.tsv', index_col=0)
+ampep_train = pd.read_table('preproc/AMP.train.tsv', index_col=0)
+xiao_test = pd.read_table('preproc/AMP.test.tsv', index_col=0)
 
 rf_w_oob = ensemble.RandomForestClassifier(
         n_estimators=101,
@@ -53,13 +53,13 @@ pred = xiao_test.sequence.map(lambda seq: oob_pred.get(seq, xiao_pred[seq]))
 
 report('AMP (unbalanced training)', xiao_test['group'], pred)
 
-xiao_train = pd.read_table('data/AMP.train_bench.tsv', index_col=0)
+xiao_train = pd.read_table('preproc/AMP.train_bench.tsv', index_col=0)
 rf_wout_oob.fit(xiao_train.iloc[:,3:], xiao_train['group'])
 xiao_pred = rf_wout_oob.predict(xiao_test.iloc[:, 3:])
 report('AMP (benchmark training)', xiao_test['group'], xiao_pred)
 
-hemo_train = pd.read_table('data/Hemo.train.tsv', index_col=0)
-hemo_test = pd.read_table('data/Hemo.test.tsv', index_col=0)
+hemo_train = pd.read_table('preproc/Hemo.train.tsv', index_col=0)
+hemo_test = pd.read_table('preproc/Hemo.test.tsv', index_col=0)
 rf_w_oob.fit(hemo_train.iloc[:,3:], hemo_train['group'])
 rf_wout_oob.fit(hemo_train.iloc[:,3:], hemo_train['group'])
 pickle.dump(rf_wout_oob, gzip.open('models/Hemo.pkl.gz', 'wb'))
