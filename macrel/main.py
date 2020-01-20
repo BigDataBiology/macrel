@@ -27,8 +27,10 @@ def parse_args(args):
     parser.add_argument('-t', '--threads', required=False, action='store',
             help='Number of threads to use',
             default='1', dest='threads')
-    parser.add_argument('-o', '--output', required=True,
+    parser.add_argument('-o', '--output', required=False, default=None,
             help='path to the output directory', dest='output')
+    parser.add_argument('--file-output', required=False, default=None,
+            help='path to the output file', dest='output_file')
     parser.add_argument('--tag', required=False, default='macrel.out',
             help='Set output tag', dest='outtag')
     parser.add_argument('-f', '--fasta', required=False,
@@ -64,21 +66,35 @@ def validate_args(args):
             error_exit(args, "FQ file is necessary for 'abundance' command.")
         if not args.fasta_file:
             error_exit(args, "Fasta file is necessary for 'abundance' command.")
+    elif args.command == 'get-smorfs':
+        if not args.fasta_file:
+            error_exit(args, "Fasta file is necessary for 'get-smorfs' command.")
     else:
         error_exit(args, "Unknown command {}".format(args.command))
-    if not path.exists(args.output):
-        makedirs(args.output, exist_ok=True)
-    elif args.force:
-        import sys
-        sys.stderr("Output folder already exists, but --force flag was used")
-    else:
-        error_exit(args, "Output folder [{}] already exists".format(args.output))
+    if not args.output and not args.output_file:
+        error_exit(args, "Either --output or --file-output argument must be used")
+
+    args.output_dir = args.output
+    if args.output_dir:
+        if not path.exists(args.output_dir):
+            makedirs(args.output, exist_ok=True)
+        elif args.force:
+            import sys
+            sys.stderr("Output folder already exists, but --force flag was used")
+        else:
+            error_exit(args, "Output folder [{}] already exists".format(args.output_dir))
+    elif args.command != 'get-smorfs':
+        error_exit(args, '--file-output is only possible for `get-smorfs` command')
 
 
 def do_smorfs(args, tdir):
     from .filter_smorfs import filter_smorfs
-    all_peptide_file = path.join(args.output, args.outtag+'.all_orfs.faa')
-    peptide_file = path.join(args.output, args.outtag+'.smorfs.faa')
+    if args.output_dir:
+        all_peptide_file = path.join(args.output, args.outtag+'.all_orfs.faa')
+        peptide_file = path.join(args.output, args.outtag+'.smorfs.faa')
+    else:
+        all_peptide_file = path.join(tdir, 'all_orfs.faa')
+        peptide_file = (args.output_file if args.output_file != '-' else '/dev/stdout')
     fasta_file = link_or_uncompress_fasta_file(
                     args.fasta_file,
                     path.join(tdir, 'contigs.fna'))
@@ -228,7 +244,7 @@ def main(args=None):
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
         if args.command == 'reads':
             do_assembly(args, tdir)
-        if args.command in ['reads', 'contigs']:
+        if args.command in ['reads', 'contigs', 'get-smorfs']:
             do_smorfs(args, tdir)
         if args.command in ['reads', 'contigs', 'peptides']:
             do_predict(args, tdir)
