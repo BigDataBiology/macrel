@@ -5,6 +5,8 @@ date: "2019-07-03"
 output: pdf_document
 ---
 
+> This documentation is out-of-date and will be updated soon.
+
 ## Brief
 
 
