@@ -1,4 +1,4 @@
-def fasta_iter(fname):
+def fasta_iter(fname, full_header=False):
     header = None
     chunks = []
     if fname.endswith('.gz'):
@@ -14,6 +14,8 @@ def fasta_iter(fname):
                 line = line[1:].strip()
                 if not line:
                     header = ''
+                elif full_header:
+                    header = line.strip()
                 else:
                     header = line.split()[0]
                 chunks = []

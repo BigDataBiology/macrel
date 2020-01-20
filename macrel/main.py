@@ -43,6 +43,8 @@ def parse_args(args):
     parser.add_argument('--cluster', required=False, action='store_true', default=False, dest='cluster',
             help='Whether to pre-cluster the smORFs (at 100%% identity) to avoid repeats')
     parser.add_argument('--force', required=False, action='store_true')
+    parser.add_argument('--keep-fasta-headers', required=False, action='store_true', default=False, dest='keep_fasta_headers',
+            help='Keep complete FASTA headers [get-smorfs command]')
     parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store',
             help='Temporary directory to use (default: $TMPDIR in the environment or /tmp)')
     parser.add_argument('--version', '-v', action='version',
@@ -73,6 +75,9 @@ def validate_args(args):
         error_exit(args, "Unknown command {}".format(args.command))
     if not args.output and not args.output_file:
         error_exit(args, "Either --output or --file-output argument must be used")
+
+    if args.keep_fasta_headers and args.command != 'get-smorfs':
+        error_exit(args, '--keep-fasta-headers is only available for get-smorfs command')
 
     args.output_dir = args.output
     if args.output_dir:
@@ -115,7 +120,7 @@ def do_smorfs(args, tdir):
                 # input file
                 '-i', fasta_file],
             )
-    filter_smorfs(all_peptide_file, peptide_file, args.cluster)
+    filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
 
 def link_or_uncompress_fasta_file(orig, dest):
