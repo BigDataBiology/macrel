@@ -7,7 +7,7 @@ output: pdf_document
 
 ## Brief
 
-Macrel stands for Meta(genomic) AMPs Classification and REtrievaL. It can be used in a wide-ranging of scenarios, such as screening for novel AMPs, generating candidates to further testing and patenting, as well as, determination of _microbiome quorum sensing_ mechanisms linking AMPs to health conditions or presence of diseases. While Macrel as a whole is **GPL v3** licensed (to comply with it being used in some of its dependencies, namely Peptides, Prodigal, Megahit, PALADIN and Scikit-Learn), the macrel-specific code is also licensed under the **MIT** license. Macrel represents a joint effort of Celio Dias Santos Jr.; Shaojun Pan; Xing-Ming Zhao and Luis Pedro Coelho from the _Institute of Science and Technology for Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
+Macrel stands for Meta(genomic) AMPs Classification and REtrievaL. It can be used in a wide-ranging of scenarios, such as screening for novel AMPs, generating candidates to further testing and patenting, as well as, determination of _microbiome quorum sensing_ mechanisms linking AMPs to health conditions or presence of diseases. While Macrel as a whole is **GPL v3** licensed (to comply with it being used in some of its dependencies, namely Peptides, Prodigal, Megahit), the macrel-specific code is also licensed under the **MIT** license. Macrel represents a joint effort of Celio Dias Santos Jr.; Shaojun Pan; Xing-Ming Zhao and Luis Pedro Coelho from the _Institute of Science and Technology for Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
 
 If you use this software in a publication please cite
 
