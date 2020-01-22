@@ -18,9 +18,17 @@ If you use this software in a publication please cite
 (The preprint still uses the old name of the tool, _FACS_ and will be updated
 soon).
 
-**NOTE**: This is still a _work in progress_ and, while the results of the tool
-should be correct, we are still working on making Macrel easier to install and
+**NOTES**:
+
+This is still a _work in progress_ and, while the results of the tool
+should be correct, we continuously work on making Macrel easier to install and
 use.
+
+While Macrel as a whole is **GPL v3** licensed (to comply with it being used in
+some of its dependencies, namely Peptides, Prodigal, Megahit, PALADIN and Scikit-Learn),
+the macrel-specific code is also licensed under the **MIT** license.
+
+---
 
 ## Applications
 
