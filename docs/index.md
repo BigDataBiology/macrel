@@ -23,6 +23,9 @@ soon).
 should be correct, we are still working on making Macrel easier to install and
 use.
 
+**IMPORTANT**: Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel),
+please pay a visit to us.
+
 ## Background
 
 Antimicrobial peptides (AMPs) are peptides with a huge variety of biological activities (such as anticancer, antibacterial, antifungal and insecticidal), and their sequences are key to that activity. Microbes producing AMPs can limit the growth of other microorganisms and should be considered another normal source of them. Microbial AMPs are quite distinct from eukaryotic ones, since they can be obtained from nonribosomal synthesis. Thus, nonribosomal peptides can adopt different structures, such as cyclic or branched structures, and carry modifications like N-methyl and N-formyl groups, glycosylations, acylations, halogenation, or hydroxylation. Some examples of commercial microbial AMPs include polymyxin B and vancomycin, both FDA-approved antibiotics (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)).
