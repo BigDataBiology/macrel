@@ -25,10 +25,8 @@ should be correct, we continuously work on making Macrel easier to install and
 use.
 
 While Macrel as a whole is **GPL v3** licensed (to comply with it being used in
-some of its dependencies, namely Peptides, Prodigal, Megahit, PALADIN and Scikit-Learn),
+some of its dependencies, namely Peptides, Prodigal, Megahit),
 the macrel-specific code is also licensed under the **MIT** license.
-
----
 
 ## Applications
 
