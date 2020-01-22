@@ -7,7 +7,7 @@ output: pdf_document
 
 ## Brief
 
-Macrel stands for Meta(genomic) AMPs Classification and REtrievaL. It can be used in a wide-ranging of scenarios, such as screening for novel AMPs, generating candidates to further testing and patenting, as well as, determination of _microbiome quorum sensing_ mechanisms linking AMPs to health conditions or presence of diseases. The application is distributed under **GPL v3** license and represents a joint effort of Celio Dias Santos Jr.; Shaojun Pan; Xing-Ming Zhao and Luis Pedro Coelho from the _Institute of Science and Technology for Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
+Macrel stands for Meta(genomic) AMPs Classification and REtrievaL. It can be used in a wide-ranging of scenarios, such as screening for novel AMPs, generating candidates to further testing and patenting, as well as, determination of _microbiome quorum sensing_ mechanisms linking AMPs to health conditions or presence of diseases. While Macrel as a whole is **GPL v3** licensed (to comply with it being used in some of its dependencies, namely Peptides, Prodigal, Megahit, PALADIN and Scikit-Learn), the macrel-specific code is also licensed under the **MIT** license. Macrel represents a joint effort of Celio Dias Santos Jr.; Shaojun Pan; Xing-Ming Zhao and Luis Pedro Coelho from the _Institute of Science and Technology for Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
 
 If you use this software in a publication please cite
 
@@ -112,7 +112,7 @@ Benchmark procedures showed that Macrel models are efficient in retrieving AMPs 
 
 | **Method** | **Acc.**    | **Sp.**     | **Sn.**     | **Pr.**     | **MCC**  | **Refererence** |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| AmPEP | **0.961**   | -   | -    | -   | **0.92** | doi:10.1038/s41598-018-19752-w   |
+| AmPEP | **0.981**   | -   | -    | -   | **0.92** | doi:10.1038/s41598-018-19752-w   |
 | MACREL 1:3 | 0.953   | 0.972   | 0.935   | 0.971   | 0.91 | This study |
 | iAMP-2L | 0.947   | 0.92    | 0.974   | 0.924   | 0.90 | doi: 10.1038/srep42362  |
 | MACREL 1:50 | 0.946   | **0.998**   | 0.895   | **0.998**   | 0.90 | This study |
