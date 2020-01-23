@@ -1,5 +1,7 @@
 Version 0.3.0 unreleasead
+	* Add get-examples command
 	* Add get-smorfs command
+	* Convert to scikit-learn
 	* Updated training sets
 
 Version 0.2.0 2020-01-14
