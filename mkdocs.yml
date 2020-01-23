@@ -1,1 +1,9 @@
-site_name: "MACREL: Meta(genomic) AMP Classification and Retrieval"
+site_name: "MACREL"
+repo_url: "https://github.com/BigDataBiology/macrel"
+
+nav:
+    - 'Macrel': index.md
+    - 'Install': install.md
+    - 'Usage': usage.md
+    - 'Cite': cite.md
+

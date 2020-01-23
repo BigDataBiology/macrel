@@ -28,13 +28,6 @@ While Macrel as a whole is **GPL v3** licensed (to comply with it being used in
 some of its dependencies, namely Peptides, Prodigal, Megahit),
 the macrel-specific code is also licensed under the **MIT** license.
 
-## Applications
-
-Macrel can be used in a wide-ranging of scenarios, such as screening for novel
-AMPs, generating candidates to further testing and patenting, as well as,
-determination of microbiome quorum sensing mechanisms linking AMPs to health
-conditions or presence of diseases.
-
 ## Install
 
 The recommended method of installation is through
@@ -44,22 +37,8 @@ The recommended method of installation is through
 conda install -c bioconda macrel
 ```
 
-## Install from source
-
-If you want to use an unreleased version from Github, for example, we provide a
-script which _conda_ (in particular, using
-[bioconda](https://bioconda.github.io/) and
-[conda-forge](https://conda-forge.org/)) to install all dependencies in a
-Macrel-private environment:
-
-```bash
-git clone https://github.com/BigDataBiology/Macrel
-cd macrel
-./install.sh
-conda activate envs/Macrel_env
-```
-
-Henceforth, to use macrel, activate this environment.
+To install from source, [read the
+docs](https://macrel.readthedocs.io/en/latest/install)
 
 ### Examples
 
