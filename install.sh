@@ -33,6 +33,7 @@ echo "# Installing conda packages"
 # tzlocal is necessary for rpy2-pandas integration
 # rpy2 must be 3.0.0 or later!
 conda install -y \
+        pip \
         ngless \
         megahit \
         paladin \
@@ -43,17 +44,15 @@ conda install -y \
         r-base \
         r-essentials \
         r-peptides \
-        r-randomforest \
         --quiet
 
-echo "# Installing modified version of prodigal (prodigal_sm)"
-cd prodigal_modified
-make CC=$GCC --quiet # conda will add $GCC to environment
-cp -pir prodigal ../envs/Macrel_env/bin/prodigal_sm
-cd ..
-
-python setup.py install
-
+# env forwards the current environment and sets some extra variables needed by
+# ./recipe/build.sh
+env \
+        PYTHON=$(which python) \
+        SRC_DIR=$PWD \
+        PREFIX=$CONDA_PREFIX \
+        ./recipe/build.sh
 
 echo "############ Installation procedures finished
 ****** Thank you for installing Macrel ********

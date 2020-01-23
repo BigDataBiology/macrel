@@ -33,7 +33,6 @@ requirements:
     - r-base
     - r-essentials
     - r-peptides
-    - r-randomforest
 
 test:
   imports:
