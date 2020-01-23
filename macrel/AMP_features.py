@@ -88,7 +88,6 @@ def features(ifile):
     ''')
 
     features = np.hstack([aaComp, rfeatures, encodings])
-    # The column names must match those in the saved model
     features = pd.DataFrame(features, index=headers, columns=[
             "tinyAA",
             "smallAA",
@@ -106,12 +105,12 @@ def features(ifile):
             "boman",
             "hydrophobicity",
             "hmoment",
-            "SA.G1.residue0",
-            "SA.G2.residue0",
-            "SA.G3.residue0",
-            "hb.Group.1.residue0",
-            "hb.Group.2.residue0",
-            "hb.Group.3.residue0",
+            "SA.Group1.residue0",
+            "SA.Group2.residue0",
+            "SA.Group3.residue0",
+            "HB.Group1.residue0",
+            "HB.Group2.residue0",
+            "HB.Group3.residue0",
             ])
     features.insert(0, 'group', 'Unk')
     features.insert(0, 'sequence', seqs)
