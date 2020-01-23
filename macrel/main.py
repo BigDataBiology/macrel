@@ -260,7 +260,7 @@ def do_get_examples(args):
         error_exit(args, 'example_seqs/ directory already exists')
     makedirs('example_seqs', exist_ok=True)
     for f in DATA_FILES:
-        print(f'Retrieving {f}...')
+        print('Retrieving {}...'.format(f))
         urlretrieve(BASEURL + f, 'example_seqs/'+f)
 
 
