@@ -54,6 +54,8 @@ def parse_args(args):
 
 def validate_args(args):
     from os import path
+    if args.command == 'get-examples':
+        return
     if args.command == 'peptides':
         if not args.fasta_file:
             error_exit(args, "PEPTIDE File is necessary for 'peptides' command.")
@@ -240,12 +242,37 @@ def do_predict(args, tdir):
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     prediction.to_csv(ofile, sep='\t', index_label='Access', float_format="%.3f")
 
+def do_get_examples(args):
+    try:
+        from urllib.request import urlretrieve
+    except:
+        from urllib2 import urlretrieve
+
+    DATA_FILES = [
+        'excontigs.fna.gz',
+        'expep.faa.gz',
+        'R1.fq.gz',
+        'R2.fq.gz',
+        'ref.faa.gz',
+        ]
+    BASEURL = 'https://github.com/BigDataBiology/macrel/raw/master/example_seqs/'
+    if path.exists('example_seqs') and not args.force:
+        error_exit(args, 'example_seqs/ directory already exists')
+    makedirs('example_seqs', exist_ok=True)
+    for f in DATA_FILES:
+        print(f'Retrieving {f}...')
+        urlretrieve(BASEURL + f, 'example_seqs/'+f)
+
+
 def main(args=None):
     if args is None:
         import sys
         args = sys.argv
     args = parse_args(args)
     validate_args(args)
+    if args.command == 'get-examples':
+        do_get_examples(args)
+        return
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
         if args.command == 'reads':
             do_assembly(args, tdir)

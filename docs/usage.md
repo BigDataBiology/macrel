@@ -1,8 +1,9 @@
 # Manual
 
+If you have not yet installed macrel, see [install](install).
+
 > Macrel uses a _subcommand interface_. You run `macrel COMMAND ...` with the
 > COMMAND specifying which components of the pipeline you want to use.
-
 
 ## Subcommands
 
@@ -38,6 +39,15 @@ Also, `macrel --version` will show the version of macrel installed.
 
 
 ### Examples
+
+To run these examples, first download the example sequences from
+[github](https://github.com/BigDataBiology/macrel/tree/master/example_seqs), or
+by running:
+
+```bash
+macrel get-examples
+```
+
 
 To run Macrel on peptides, use the `peptides` subcommand:
 
