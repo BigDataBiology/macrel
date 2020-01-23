@@ -39,7 +39,6 @@ echo "# Installing conda packages"
 # tzlocal is necessary for rpy2-pandas integration
 # rpy2 must be 3.0.0 or later!
 conda install -y \
-        pip \
         ngless \
         megahit \
         paladin \
