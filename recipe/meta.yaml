@@ -42,8 +42,8 @@ test:
 
 about:
   home: https://github.com/BigDataBiology/macrel
-  license: MIT
-  summary: "A module for AMP (antimicrobial peptide) prediction"
+  license: GPLv3
+  summary: "A pipeline for AMP (antimicrobial peptide) prediction"
   description: |
     Used for the prediction of AMPs in (meta)genomes.
   dev_url: https://github.com/BigDataBiology/macrel

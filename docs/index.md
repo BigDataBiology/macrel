@@ -1,6 +1,13 @@
 # Macrel
 
-Macrel stands for Meta(genomic) AMPs Classification and REtrievaL. It can be used in a wide-ranging of scenarios, such as screening for novel AMPs, generating candidates to further testing and patenting, as well as, determination of _microbiome quorum sensing_ mechanisms linking AMPs to health conditions or presence of diseases. While Macrel as a whole is **GPL v3** licensed (to comply with it being used in some of its dependencies, namely Peptides, Prodigal, Megahit), the macrel-specific code is also licensed under the **MIT** license. Macrel represents a joint effort of Celio Dias Santos Jr.; Shaojun Pan; Xing-Ming Zhao and Luis Pedro Coelho from the _Institute of Science and Technology for Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
+Macrel is a computational pipeline which can
+
+1. classify peptides into antimicrobial/non-antimicrobial,
+2. classify peptides into hemolytic/non-hemolytic,
+3. predict peptides from genomes (provided as contigs) or metagenomes (provided
+   as short-reads) and output all the predicted anti-microbial peptides found.
+
+See the [usage section](usage) for more information.
 
 If you use this software in a publication please cite
 
@@ -19,6 +26,12 @@ use.
 **IMPORTANT**: Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel),
 please pay a visit to us.
 
+Macrel represents a joint effort of Celio Dias Santos Jr., Shaojun Pan,
+[Xing-Ming Zhao](http://comp-sysbio.org/members/intro_zxm.html), and [Luis Pedro
+Coelho](http://luispedro.org) from the _Institute of Science and Technology for
+Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
+
+
 ## Background
 
 Antimicrobial peptides (AMPs) are peptides with a huge variety of biological activities (such as anticancer, antibacterial, antifungal and insecticidal), and their sequences are key to that activity. Microbes producing AMPs can limit the growth of other microorganisms and should be considered another normal source of them. Microbial AMPs are quite distinct from eukaryotic ones, since they can be obtained from nonribosomal synthesis. Thus, nonribosomal peptides can adopt different structures, such as cyclic or branched structures, and carry modifications like N-methyl and N-formyl groups, glycosylations, acylations, halogenation, or hydroxylation. Some examples of commercial microbial AMPs include polymyxin B and vancomycin, both FDA-approved antibiotics (Zhang and Gallo, [2016](https://www.sciencedirect.com/science/article/pii/S0960982215014098)).
@@ -29,6 +42,7 @@ The genomic era was constrasted by the reality of hundreds of available bacteria
 
 Current methods to small genes prediction tipically lead to high rates of false positives (Hyatt et al., [2010](https://www.ncbi.nlm.nih.gov/pubmed/20211023)). Recent smORFs surveys demonstrated that these methods followed by a filtering of false-positives can lead to biologically active smORFs (Miravet-Verde et al., [2019](https://www.ncbi.nlm.nih.gov/pubmed/30796087); Sberro et al., [2019](https://www.ncbi.nlm.nih.gov/pubmed/31402174)). Furthermore, the prediction of AMP activity demands techniques other than homology-based methods, due to the degeneration of searches at smaller sequences. Several machine learning-based methods demonstrated high accuracy in predicting antimicrobial activity in peptides (Xiao et al., [2013](https://www.ncbi.nlm.nih.gov/pubmed/23395824); Meher et al., [2017](https://www.ncbi.nlm.nih.gov/pubmed/28205576); Bhadra et al., [2018](https://www.ncbi.nlm.nih.gov/pubmed/29374199)), although, none of them represented a full pipeline to extract AMPs from genomic data and filter off mispredictions. Our main goal with Macrel is a highthroughput screening system of AMPs, through machine learning, able to retrieve AMP sequences with high confidence from meta(genomic) reads.
 
+Macrel can be used in a wide-ranging of scenarios, such as screening for novel AMPs, generating candidates to further testing and patenting, as well as, determination of _microbiome quorum sensing_ mechanisms linking AMPs to health conditions or presence of diseases.
 
 ## Pipeline overview
 
