@@ -23,7 +23,7 @@
                         <el-divider></el-divider>
                         <p>If you use Macrel results in a publication, please cite:</p>
                         <p>Santos-Junior, C.D., Pan, S.J., Zhao, X.M., Coelho,
-                        L.P. 2019. FACS: antimicrobial peptide screening in
+                        L.P. 2019. MACREL: antimicrobial peptide screening in
                         genomes and metagenomes. BioRxiv <a
                         href="https://doi.org/10.1101/2019.12.17.880385">DOI:10.1101/2019.12.17.880385</a></p>
 

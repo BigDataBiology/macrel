@@ -11,13 +11,10 @@ See the [usage section](usage) for more information.
 
 If you use this software in a publication please cite
 
->   FACS: antimicrobial peptide screening in genomes and metagenomes
+>   MACREL: antimicrobial peptide screening in genomes and metagenomes
 >   Celio Dias Santos-Junior, Shaojun Pan, Xing-Ming Zhao, Luis Pedro Coelho
 >   bioRxiv 2019.12.17.880385; doi:
 >   [https://doi.org/10.1101/2019.12.17.880385](https://doi.org/10.1101/2019.12.17.880385)
-
-(The preprint still uses the old name of the tool, _FACS_, and will be updated
-soon).
 
 **NOTE**: This is still a _work in progress_ and, while the results of the tool
 should be correct, we are still working on making Macrel easier to install and

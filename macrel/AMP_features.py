@@ -118,13 +118,13 @@ def features(ifile):
 
 def main(args):
     if len(args) < 3:
-        sys.stderr.write("This is an internal FACS script and is not meant to be used independently")
+        sys.stderr.write("This is an internal MACREL script and is not meant to be used independently")
         sys.exit(1)
 
     ifile = args[1]
     ofile = args[2]
     features = features(ifile)
-    features.to_csv(ofile, sep='\t', index_label='access')
+    features.to_csv(ofile, sep='\t', index_label='Access')
 
 if __name__ == '__main__':
     main(sys.argv)
