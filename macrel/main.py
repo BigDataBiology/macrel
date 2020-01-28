@@ -4,7 +4,18 @@ import tempfile
 import gzip
 import logging
 import os
-from os import path, makedirs
+from os import path
+
+def makedirs(dname, exist_ok=False):
+    '''Reimplement os.makedirs for Python 2 compatibility'''
+    import os
+    import sys
+    if sys.version_info.major >= 3:
+        return os.makedirs(dname, exist_ok=exist_ok)
+    if exist_ok and path.exists(dname):
+        return
+    os.makedirs(dname)
+
 
 def error_exit(args, errmessage):
     import sys
