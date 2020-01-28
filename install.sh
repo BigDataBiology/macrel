@@ -36,15 +36,13 @@ conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
 
-# tzlocal is necessary for rpy2-pandas integration
-# rpy2 must be 3.0.0 or later!
 conda install -y \
         ngless \
         megahit \
         paladin \
         pandas \
         scikit-learn \
-        "rpy2 > 3" \
+        rpy2 \
         tzlocal \
         r-base \
         r-essentials \
