@@ -1,6 +1,6 @@
 {% set name = "macrel" %}
-{% set version = "0.3" %}
-{% set sha256 = "481a0cc266d0f8c07bb491b45cdff51765ebd77dc060fdbf3d82df4685ca3a70" %}
+{% set version = "0.3.1" %}
+{% set sha256 = "b96e9906860472da58af72cb7851fd2af07e75dc673f9d198d66e999908b9e70" %}
 
 package:
   name: {{ name }}
@@ -12,6 +12,8 @@ source:
 
 build:
   number: 0
+  # ngless is unavailable on osx
+  skip: True # [osx]
   entry_points:
     - macrel= macrel.main:main
 
