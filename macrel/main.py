@@ -30,11 +30,11 @@ def data_file(fname):
 
 def parse_args(args):
     from .macrel_version import __version__
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
-                                     description='macrel')
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                     description='macrel v{}'.format(__version__))
 
-    parser.add_argument('command', nargs='?',
-            help='command')
+    parser.add_argument('command', nargs=1,
+            help='Macrel command to execute (see documentation)')
     parser.add_argument('-t', '--threads', required=False, action='store',
             help='Number of threads to use',
             default='1', dest='threads')
@@ -65,6 +65,9 @@ def parse_args(args):
 
 def validate_args(args):
     from os import path
+    if len(args.command) != 1:
+        error_exit(args, 'Could not parse argument list (multiple commands given?)')
+    [args.command] = args.command
     if args.command == 'get-examples':
         return
     if args.command == 'peptides':

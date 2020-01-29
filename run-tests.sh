@@ -41,7 +41,8 @@ for testdir in tests/*; do
                 echo "Error non-zero exit in test: $testdir"
                 echo "STDOUT:"
                 cat stdout.txt
-                printf -e "\nSTDERR:"
+                echo
+                echo "STDERR:"
                 cat stderr.txt
                 cur_ok=no
             fi
