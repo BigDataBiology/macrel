@@ -4,7 +4,8 @@
             <el-col :span="2"><div class="grid-content"></div></el-col>
             <el-col :span="14">
                 <div class="grid-content amps-head">
-                    <h3>result of AMP prediction</h3>
+                    <h3>Result of AMP prediction</h3>
+                    <p><strong>Note that only predicted AMPs are displayed.</strong></p>
                     <el-divider></el-divider>
 
                     <div class="resultArea">
@@ -24,37 +25,37 @@
                                     max-height="300"
                                     stripe
                                     empty-text = "empty"
-                                    :default-sort = "{prop: 'access', order: 'descending'}"
+                                    :default-sort = "{prop: 'Access', order: 'descending'}"
                             >
                                 <el-table-column type="index" :index="indexMethod"></el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="access"
+                                        prop="Access"
                                         label="Peptide ID">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="amp_family"
+                                        prop="AMP_family"
                                         label="Family">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="amp_prob"
+                                        prop="AMP_probability"
                                         label="Probability">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="is_hemo"
+                                        prop="Hemolytic"
                                         label="Is hemolytic">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="hemo_prob"
+                                        prop="Hemolytic_probability"
                                         label="Is hemolytic (probability)">
                                 </el-table-column>
                                 <el-table-column
                                         sortable
-                                        prop="sequence"
+                                        prop="Sequence"
                                         label="sequence">
                                 </el-table-column>
                             </el-table>
@@ -63,6 +64,7 @@
                             <h3>{{ampList.length}}&nbsp;AMPs</h3>
                         </div>
                     </div>
+                    <p>Results with macrel version <i>{{macrel_version}}</i></p>
                 </div>
             </el-col>
             <el-col :span="2"><div class="grid-content"></div></el-col>
@@ -78,6 +80,7 @@
         data(){
             return {
                 ampList:[],
+                macrel_version: '?',
                 loading: true,
             }
         },
@@ -96,6 +99,7 @@
                 }
 
                 this.ampList = resultObject.data.objects;
+                this.macrel_version = resultObject.macrel_version;
                 this.rawdata = resultObject.rawdata;
             },
 

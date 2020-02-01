@@ -170,8 +170,6 @@
 
                     if(this.pFormModel.textData){
                         var array=this.pFormModel.textData.split("\n");
-                        var firstLine=array[0];
-                        var dataTypeTmp=this.pFormModel.dataType;
 
                         var sequenceLength=array.length;
                         if (sequenceLength > 1000){

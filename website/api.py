@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import pandas as pd
 from os import path
+from macrel.macrel_version import __version__ as macrel_version
 import gzip
 
 app = flask.Flask('Macrel')
@@ -44,6 +45,7 @@ def predict():
                 'code': 1,
                 'message': 'Macrel OK',
                 'rawdata': gzip.open(tfile, 'rt').read(),
+                'macrel_version': macrel_version,
                 'data': {
                     'objects': [
                         data.iloc[i].to_dict()
