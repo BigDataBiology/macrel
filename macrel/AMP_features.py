@@ -88,6 +88,13 @@ def features(ifile):
     ''')
 
     features = np.hstack([aaComp, rfeatures, encodings])
+
+    # This is arguably a Pandas bug (at least inconsistency), but
+    # pd.DataFrame([], ...) works, while pd.DataFrame(np.array([]), ...) does
+    # not:
+    if len(features) == 0:
+        features = []
+
     features = pd.DataFrame(features, index=headers, columns=[
             "tinyAA",
             "smallAA",

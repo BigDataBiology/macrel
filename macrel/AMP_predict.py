@@ -9,10 +9,15 @@ def predict(model1, model2, data):
 
     features = data.iloc[:, 3:]
 
-    is_amp = model1.predict(features)
-    amp_prob = model1.predict_proba(features).T[0]
-    is_hemo = model2.predict(features)
-    hemo_prob = model2.predict_proba(features).T[0]
+    # predict_proba will raise an Exception if passed empty arguments
+    if len(features):
+        amp_prob = model1.predict_proba(features).T[0]
+        hemo_prob = model2.predict_proba(features).T[0]
+    else:
+        amp_prob = np.array([])
+        hemo_prob = np.array([])
+    is_amp = np.where(amp_prob > .5, model1.classes_[0], model1.classes_[1])
+    is_hemo = np.where(hemo_prob > .5, model2.classes_[0], model2.classes_[1])
 
     final = pd.DataFrame({'Sequence': data['sequence'],
                 'AMP_family':
