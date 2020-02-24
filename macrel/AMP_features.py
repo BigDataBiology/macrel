@@ -68,6 +68,8 @@ def features(ifile):
     for h,seq in fasta_iter(ifile):
         if seq[-1] == '*':
             seq = seq[:-1]
+        if seq[0] == 'M':
+            seq = seq[1:]
         seqs.append(seq)
         headers.append(h)
         encodings.append(ctdd(seq, groups))

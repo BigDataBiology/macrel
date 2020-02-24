@@ -1,4 +1,5 @@
 Version 0.3.1+
+	* Remove Methionine from N-terminus
 	* Fix for when no smORFs are present
 
 Version 0.3.1 2020-01-24
