@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import gzip
+import logging
 
 def predict(model1, model2, data, keep_negatives=False):
     '''
@@ -22,6 +23,12 @@ def predict(model1, model2, data, keep_negatives=False):
     model1 = pickle.load(gzip.open(model1, 'rb'))
     model2 = pickle.load(gzip.open(model2, 'rb'))
 
+    # limit should be 100, but let's give the user 10% leeway before we warn them
+    if data.sequence.map(len).max() >= 110:
+        logger = logging.getLogger('macrel')
+        logger.warning('Warning: some input sequences are longer than 100 amino-acids.'
+                ' Macrel models were developed and tested for short peptides (<100 amino-acids).'
+                ' Applying them on longer ones will return a result, but these should be considered less reliable.')
     features = data.iloc[:, 3:]
 
     # predict_proba will raise an Exception if passed empty arguments
