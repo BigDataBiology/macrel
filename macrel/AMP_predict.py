@@ -3,7 +3,22 @@ import numpy as np
 import pickle
 import gzip
 
-def predict(model1, model2, data):
+def predict(model1, model2, data, keep_negatives=False):
+    '''
+    Run prediction models
+
+    Parameters
+    ----------
+    model1: filepath
+    model2: filepath
+    data: pandas DataFrame
+    keep_negatives: boolean, optional (default: False)
+        whether to keep negative results
+
+    Returns
+    -------
+    Table with prediction labels
+    '''
     model1 = pickle.load(gzip.open(model1, 'rb'))
     model2 = pickle.load(gzip.open(model2, 'rb'))
 
@@ -17,6 +32,7 @@ def predict(model1, model2, data):
         amp_prob = np.array([])
         hemo_prob = np.array([])
     is_amp = np.where(amp_prob > .5, model1.classes_[0], model1.classes_[1])
+    is_amp = (is_amp == "AMP")
     is_hemo = np.where(hemo_prob > .5, model2.classes_[0], model2.classes_[1])
 
     final = pd.DataFrame({'Sequence': data['sequence'],
@@ -28,6 +44,7 @@ def predict(model1, model2, data):
                 'AMP_probability' : amp_prob,
                 'Hemolytic': is_hemo,
                 'Hemolytic_probability': hemo_prob})
-    rfinal = final.query('is_AMP == "AMP"').drop('is_AMP', axis=1)
-    return rfinal
+    if not keep_negatives:
+        final = final.query('is_AMP').drop('is_AMP', axis=1)
+    return final
 

@@ -58,6 +58,8 @@ def parse_args(args):
             help='Keep complete FASTA headers [get-smorfs command]')
     parser.add_argument('--tmpdir', required=False, default=None, dest='tmpdir', action='store',
             help='Temporary directory to use (default: $TMPDIR in the environment or /tmp)')
+    parser.add_argument('--keep-negatives', required=False, default=False, dest='keep_negatives', action='store_true',
+            help='Whether to keep non-AMPs in the output')
     parser.add_argument('--version', '-v', action='version',
                     version='%(prog)s {version}'.format(version=__version__))
     return parser.parse_args()
@@ -245,14 +247,15 @@ def do_assembly(args, tdir):
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
 def do_predict(args, tdir):
-    # These imports are slow
+    # These imports are slow, so we do them inside the functions
     from .AMP_features import features
     from .AMP_predict import predict
     fs = features(args.fasta_file)
     prediction = predict(
                     data_file("models/AMP.pkl.gz"),
                     data_file("models/Hemo.pkl.gz"),
-                    fs)
+                    fs,
+                    args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     prediction.to_csv(ofile, sep='\t', index_label='Access', float_format="%.3f")
 

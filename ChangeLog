@@ -1,6 +1,7 @@
 Version 0.3.1+
 	* Remove Methionine from N-terminus
 	* Fix for when no smORFs are present
+	* Add --keep-negatives flag
 
 Version 0.3.1 2020-01-24
 	* Fix for Python 2.7
