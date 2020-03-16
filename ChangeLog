@@ -1,4 +1,4 @@
-Version 0.3.1+
+Version 0.4.0 2020-03-16
 	* Remove Methionine from N-terminus
 	* Fix for when no smORFs are present
 	* Add --keep-negatives flag
