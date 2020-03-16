@@ -34,6 +34,7 @@ If you have not yet installed macrel, see [install](install).
 - `--tmpdir`: Temporary directory to use (default: `$TMPDIR` in the environment or /tmp)
 - `--force`: Potentially over-write existing output files
 - `--keep-fasta-headers`: Keep complete FASTA headers [get-smorfs command]
+- `--keep-negatives`: Output a table with **all** sequences (default is to only output putative AMPs)
 
 Also, `macrel --version` will show the version of macrel installed.
 
