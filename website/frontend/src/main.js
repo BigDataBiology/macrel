@@ -17,7 +17,7 @@ router.beforeEach( (to,from,next) =>{
 Vue.config.productionTip = false;
 
 // 配置请求的根路径
-axios.defaults.baseURL='http://' + require('os').hostname()+ ':8080';
+//axios.defaults.baseURL='http://' + require('os').hostname()+ ':5000';
 // 定义成全局变量，所有vue组件都可以用
 Vue.prototype.$http = axios;
 

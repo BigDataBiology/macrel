@@ -31,14 +31,14 @@
                                 -->
                                 <el-upload
                                         ref="upload"
-                                        class="file-upload"
-                                        :auto-upload="false"
-                                        show-file-list
-                                        drag
                                         action=""
+                                        show-file-list
+                                        class="file-upload"
+                                        drag
+                                        :auto-upload="false"
                                         accept=".fasta,.fa,.faa,.fna"
-                                        :before-upload="beforeupload"
                                         :on-exceed="handleExceed"
+                                        :on-remove="handleRemove"
                                         :multiple="false"
                                         :limit="1"
                                         >
@@ -135,8 +135,6 @@
                     dataType: '',
                 },
 
-                fileList:[],
-
                 pFormRules: {
 
                     dataType: [
@@ -150,24 +148,39 @@
 
         methods: {
 
-            beforeupload(file) {
-                const isLimit = file.size / 1024  < 500;
-                if (!isLimit) {
-                    this.$message.error({message: 'File size exceeds 500KB. Please download the tool and run locally for large inputs', duration:5000});
-                    return false;
-                }
+            handleRemove(){
+                console.log("handleRemove");
+                //refresh the browser to clear file cache.
+                this.$router.go(0);
             },
 
             onSubmit(formRef) {
 
                 this.$refs[formRef].validate(async valid => {
-                    if (!valid) return;
 
-                    if (!this.pFormModel.textData && this.fileList.length===0) {
-                        this.$message.error({message: 'Sequence is empty and no file uploaded', duration:5000});
+                    if (!valid) return false;
+
+                    let pForm = this.$refs[formRef].$el;
+                    let formData = new FormData(pForm);
+                    //console.log(formData.get("file"));
+
+                    //check whether textData and file both are null.
+                    let fileSize=formData.get("file").size;
+                    if (!this.pFormModel.textData && fileSize===0) {
+                        this.$message.error({message: 'Sequence is empty and no file uploaded!', duration:5000});
                         return false;
                     }
 
+                    //limit size of uploaded file
+                    if(fileSize>0){
+                        const isLimit = fileSize / 1024  < 500;
+                        if (!isLimit) {
+                            this.$message.error({message: 'File size exceeds 500KB. Please download the tool and run locally for large inputs', duration:5000});
+                            return false;
+                        }
+                    }
+
+                    //limit textData rows
                     if(this.pFormModel.textData){
                         var array=this.pFormModel.textData.split("\n");
 
@@ -178,8 +191,6 @@
                         }
                     }
 
-                    let pForm = this.$refs[formRef].$el;
-                    let formData = new FormData(pForm);
                     formData.append('textData', this.pFormModel.textData);
                     formData.append('dataType', this.pFormModel.dataType);
 
@@ -221,7 +232,7 @@
                     let resultObjectStr = JSON.stringify(resultObject);
                     window.sessionStorage.setItem('resultObjectStr',resultObjectStr);
 
-                    this.$router.push({name: "amps"});
+                    await this.$router.push({name: "amps"});
                 });
             },
 
@@ -229,10 +240,18 @@
                 this.$message.warning({message: 'Only one file can be uploaded at a time', duration:5000});
             },
 
-
             resetForm(formRef) {
-                this.$refs['upload'].clearFiles();
-                this.$refs[formRef].resetFields();
+
+                let pForm = this.$refs[formRef].$el;
+                let formData = new FormData(pForm);
+
+                if(formData.get("file").size>0){
+                    //refresh the browser to clear file cache.
+                    this.$router.go(0);
+                }else{
+                    this.$refs['upload'].clearFiles();
+                    this.$refs[formRef].resetFields();
+                }
             },
 
             doExample(etype) {
