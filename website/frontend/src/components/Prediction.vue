@@ -5,17 +5,26 @@
         <el-row type="flex" class="row-bg" justify="space-around">
             <el-col :span="1"><div class="grid-content"></div></el-col>
             <el-col :span="18" class="el-col-form">
+
                 <div class="grid-content formArea">
                     <div class="form-head">Antimicrobial activity prediction</div>
+                    <div class="form-tabs">
+                        <template>
+                            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+                                <el-tab-pane label="DNA" name="DNA"></el-tab-pane>
+                                <el-tab-pane label="Peptides" name="Peptides"></el-tab-pane>
+                            </el-tabs>
+                        </template>
+                    </div>
                     <div class="form-body">
-                        <el-form ref="pFormRef" :model="pFormModel" :rules="pFormRules" size="medium" class="prediction_form">
+                        <el-form ref="pFormRef" :model="pFormModel" size="medium" class="prediction_form">
                             <div style="float: left; width: 60%">
-                            <h4 style="margin-top: 0.4em;margin-bottom: 0.2em">You can paste peptides or contigs sequence in <span style="color: red">FASTA</span> format into the field below:</h4>
+                            <h4 style="margin-top: 0.4em;margin-bottom: 0.2em">You can paste sequence in <span style="color: red">FASTA</span> format into the field below:</h4>
 
                             <el-form-item prop="textData" style="margin-bottom: 0.1em">
                                 <el-input type="textarea" :rows="8" v-model="pFormModel.textData" placeholder="input your sequence here"></el-input>
                             </el-form-item>
-                            <p style="text-align: right; margin-top: 0px; padding-top: 0px; font-size: small"><a href="#" @click="doExample('peptides')">Peptides example</a> || <a href="#" @click="doExample('contigs')">Contigs example</a></p>
+                            <p style="text-align: right; margin-top: 0px; padding-top: 0px; font-size: small"><a href="#" @click="doExample()">example</a></p>
 
                             </div>
                             <div style="float: right; width: 35%">
@@ -52,17 +61,11 @@
                             <div style="clear: both" />
 
                             <el-divider><i class="el-icon-more-outline"></i></el-divider>
-                            <el-form-item label="Data Type: " required prop="dataType" style="margin-bottom: 0.3em">
-                                <el-radio-group v-model="pFormModel.dataType">
-                                    <el-radio label="peptides">Peptides</el-radio>
-                                    <el-radio label="contigs">Contigs (nucleotide)</el-radio>
-                                </el-radio-group>
-                            </el-form-item>
 
                             <br/>
                             <el-form-item class="btns">
                                 <el-button type="primary" @click="onSubmit('pFormRef')">Submit</el-button>
-                                <el-button type="danger" @click="resetForm('pFormRef')">Clear Form</el-button>
+                                <el-button type="danger" @click="resetForm()">Clear Form</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -132,18 +135,31 @@
 
                 pFormModel: {
                     textData: '',
-                    dataType: '',
                 },
 
-                pFormRules: {
+                activeName:'',
 
-                    dataType: [
-                        { required: true, message: 'Please select data type', trigger: 'change' },
-                    ],
-
-                },
+                dataType:"",
 
             };
+        },
+
+        created() {
+            var dataType=this.$route.params.dataType;
+            if(dataType==null){
+                this.activeName='DNA';
+                this.dataType='contigs';
+            }else if(dataType=='peptides') {
+                this.activeName='Peptides';
+                this.dataType='peptides';
+            }else if(dataType=='contigs'){
+                this.activeName='DNA';
+                this.dataType='contigs';
+            }else{
+                this.activeName='Peptides';
+                this.dataType='peptides';
+            }
+
         },
 
         methods: {
@@ -154,13 +170,22 @@
                 this.$router.go(0);
             },
 
-            onSubmit(formRef) {
+            handleClick(tab){
+               this.resetForm();
+               if(tab.name=='DNA'){
+                   this.dataType='contigs';
+               }else if(tab.name=='Peptides'){
+                   this.dataType='peptides';
+               }
+            },
 
-                this.$refs[formRef].validate(async valid => {
+            onSubmit() {
+
+                this.$refs['pFormRef'].validate(async valid => {
 
                     if (!valid) return false;
 
-                    let pForm = this.$refs[formRef].$el;
+                    let pForm = this.$refs['pFormRef'].$el;
                     let formData = new FormData(pForm);
                     //console.log(formData.get("file"));
 
@@ -192,7 +217,8 @@
                     }
 
                     formData.append('textData', this.pFormModel.textData);
-                    formData.append('dataType', this.pFormModel.dataType);
+                    console.log(this.dataType);
+                    formData.append('dataType', this.dataType);
 
                     let config = {
                         headers: {
@@ -208,7 +234,7 @@
                     });
 
                     let resultObject; // This will hold the result
-                    await this.$http.post('http://localhost:5000/predict', formData, config)
+                    await this.$http.post('predict', formData, config)
                         .then(
                             response => {
                                 if (response.status === 200){
@@ -240,9 +266,9 @@
                 this.$message.warning({message: 'Only one file can be uploaded at a time', duration:5000});
             },
 
-            resetForm(formRef) {
+            resetForm() {
 
-                let pForm = this.$refs[formRef].$el;
+                let pForm = this.$refs['pFormRef'].$el;
                 let formData = new FormData(pForm);
 
                 if(formData.get("file").size>0){
@@ -250,20 +276,19 @@
                     this.$router.go(0);
                 }else{
                     this.$refs['upload'].clearFiles();
-                    this.$refs[formRef].resetFields();
+                    this.$refs['pFormRef'].resetFields();
                 }
             },
 
-            doExample(etype) {
+            doExample() {
                 window.console.log("doExample");
-                this.pFormModel.dataType = etype;
                 this.onExample('pFormRef');
             },
 
             onExample(refName){
                 this.$refs[refName].validate(valid => {
                     if(!valid) return;
-                    var dataType = this.pFormModel.dataType;
+                    var dataType = this.dataType;
                     // console.log(dataType);
                     if (dataType === 'peptides'){
                         this.pFormModel.textData = ">AP00002|AMP\n" +
@@ -379,7 +404,12 @@
         padding: 1em 2em;
     }
 
+    .form-tabs{
+        padding-top: 2em;
+    }
+
     .form-body{
+        display: flex;
         padding: 1em 0;
     }
 
