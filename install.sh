@@ -2,6 +2,11 @@
 
 set -e
 
+# This is set in travis
+if [[ x$PYTHON_VERSION == x ]]; then
+    PYTHON_VERSION=3.7
+fi
+
 echo "
 # Macrel - (Meta)genomic AMP Classification and Retrieval
 
@@ -20,9 +25,10 @@ eval "$(conda shell.bash hook)"
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+
 echo "# Creating new environment for Macrel"
 mkdir -p envs
-conda create --yes -p $BASEDIR/envs/Macrel_env python=3.7
+conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION
 source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
@@ -30,16 +36,13 @@ conda config --env --add channels conda-forge
 
 echo "# Installing conda packages"
 
-# tzlocal is necessary for rpy2-pandas integration
-# rpy2 must be 3.0.0 or later!
 conda install -y \
-        pip \
         ngless \
         megahit \
         paladin \
         pandas \
         scikit-learn \
-        "rpy2 > 3" \
+        rpy2 \
         tzlocal \
         r-base \
         r-essentials \
