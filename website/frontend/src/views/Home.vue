@@ -14,7 +14,6 @@
                     <el-menu-item index="/prediction"><span>Prediction</span></el-menu-item>
                     <el-menu-item index="#"><a href="https://github.com/BigDataBiology/macrel" target="_blank">Download (Github)</a></el-menu-item>
                     <el-menu-item index="/about"><span>About</span></el-menu-item>
-                    <el-menu-item index="/choice" hidden><span>choice</span></el-menu-item>
                 </el-menu>
             </div>
 
