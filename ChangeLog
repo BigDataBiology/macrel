@@ -1,3 +1,6 @@
+Version 0.4.0+
+	* Fix bug with using --force and existing directories
+
 Version 0.4.0 2020-03-16
 	* Remove Methionine from N-terminus
 	* Fix for when no smORFs are present
