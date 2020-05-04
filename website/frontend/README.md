@@ -2,23 +2,16 @@
 
 ## Project setup
 ```
-npm install
+elm init
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+elm reactor
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+elm make src/Prediction.elm --optimize
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
