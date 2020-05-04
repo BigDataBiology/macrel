@@ -141,9 +141,9 @@ viewModel : Model -> Html Msg
 viewModel model =
     let
         buttonStyle who active = case active of
-            Nothing -> [ Button.info , Button.onClick (SelectOp who)]
+            Nothing -> [ Button.primary , Button.onClick (SelectOp who)]
             Just p -> if who == p
-                        then [ Button.primary, Button.onClick (SelectOp who) ]
+                        then [ Button.info, Button.onClick (SelectOp who) ]
                         else [ Button.outlineSecondary , Button.onClick (SelectOp who)]
         placeholderText = case model.optype of
             Nothing -> "Select input type above..."
