@@ -24,6 +24,7 @@ import File.Download as Download
 
 import Json.Decode as D
 import Browser
+import Browser.Navigation as Nav
 
 type OperationType = Contigs | Peptides
 
@@ -55,6 +56,7 @@ type Msg
     | SubmitData
     | ResultsData (Result Http.Error APIResult)
     | DownloadResults
+    | ReloadPage
     | SetShowAll Bool
 
 
@@ -168,6 +170,7 @@ update msg model =
         DownloadResults -> case model of
             Results (APIResultOK r) _ -> ( model, Download.string "macrel.out.tsv" "application/x-gzip" r.rawdata)
             _ -> ( model, Cmd.none )
+        ReloadPage -> ( model, Nav.reload )
         SetShowAll f -> case model of
             Results r _ -> ( Results r f, Cmd.none )
             _ -> ( model, Cmd.none )
@@ -338,7 +341,12 @@ viewResults r showAll = case r of
                                             else List.filter (\e -> (e.amp_probability >= 0.5)) ok.data)
                     }
             , Html.p [] [ Html.text "Prediction with ", Html.em [] [Html.text <| "macrel v"++ok.macrelVersion], Html.text "." ]
-            , Button.button [ Button.primary, Button.onClick DownloadResults ] [ Html.text "Download results table" ]
+            , Grid.simpleRow
+                [ Grid.col []
+                    [ Button.button [ Button.primary, Button.onClick DownloadResults ] [ Html.text "Download results table" ] ]
+                , Grid.col [ Col.textAlign Text.alignXsRight ]
+                    [ Button.button [ Button.warning, Button.onClick ReloadPage ] [ Html.text "Restart prediction (discards results)" ] ]
+                ]
             ]
 
 viewQueryModel : QueryModel -> Html Msg
