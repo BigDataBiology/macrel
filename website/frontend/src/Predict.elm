@@ -178,29 +178,44 @@ submitData model = Http.post
     , expect = Http.expectJson ResultsData decodeAPIResult
     }
 
-validateFasta : OperationType -> String -> Maybe String
+validateFasta : OperationType -> String -> Maybe (Html Msg)
 validateFasta p fa =
     if
         String.length fa > 50200
         -- 200 is a little margin
     then
-        Just "Input is too large! Only the first 50,000 characters will be analyzed. Run the tool locally to remove any limitations"
+        Just <| Html.p [] [ Html.strong [] [ Html.text "Input is too large! " ]
+                          , Html.text "Only the first 50,000 characters will be analyzed. Run the tool locally to remove any limitations"]
 
     else if
         nrSeqs fa > 1004
         -- 4 is a little margin
     then
-        Just "Too many sequences. Only the first 1,000 sequences will will be analyzed. Run the tool locally to remove any limitations"
+        Just <| Html.p [] [ Html.strong [] [ Html.text "Too many sequences! " ]
+                          , Html.text "Only the first 1,000 sequences will will be analyzed. Run the tool locally to remove any limitations" ]
 
     else
-        case p of
+        let
+            lines = List.filter (\ell -> not (String.startsWith ">" ell)) <| String.split "\n" fa
+            totalLen = List.sum <| List.map String.length lines
+            isOnlyNucleotides = List.all (\ell -> String.all isNuc ell) lines
+            isNuc c = (c == 'A' || c == 'C' || c == 'T' || c == 'G'
+                        || c == 'a' || c == 'c' || c == 'g' || c == 'g'
+                        || c == 'n' || c == 'N')
+        in case p of
             Peptides ->
-                Nothing
+                if isOnlyNucleotides && totalLen > 100
+                    then Just <| Html.div []
+                                    [Html.p [] [Html.text "These sequences look suspiciously like DNA. "]
+                                    ,Html.p [] [Html.text "Are you sure you want to run macrel in peptides mode?" ]]
+                    else Nothing
 
             Contigs ->
-                Nothing
-                -- TODO
-                -- validate that it's not AAs
+                if (not isOnlyNucleotides) && totalLen > 100
+                    then Just <| Html.div []
+                                    [Html.p [] [Html.text "These sequences do not look like DNA." ]
+                                    ,Html.p [] [Html.text "Are you sure you want to run macrel in contigs mode?"]]
+                    else Nothing
 
 
 nrSeqs : String -> Int
@@ -369,7 +384,7 @@ viewQueryModel model =
                     Html.text ""
 
                 Just err ->
-                    Alert.simpleWarning [] [ Html.text err ]
+                    Alert.simpleWarning [] [ err ]
             , case model.optype of
                 Nothing ->
                     Html.text ""
