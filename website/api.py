@@ -32,6 +32,7 @@ def predict():
         args.extend([
             '--fasta', ifname,
             '--output', tdir + '/macrel.out',
+            '--keep-negatives',
             ])
         try:
             subprocess.check_call(args)
@@ -40,6 +41,11 @@ def predict():
             data.rename(inplace=True, columns={
                 'Unnamed: 0': 'access',
                 'group': 'amp_family',})
+
+            # is_AMP is a boolean, but is of type bool_ which is not JSON
+            # serializable. Since it's redundant with AMP_probability, we can
+            # drop it
+            data.drop(['is_AMP'], axis=1, inplace=True)
 
             r = flask.jsonify({
                 'code': 1,
@@ -52,7 +58,8 @@ def predict():
                             for i in range(len(data))]
                     },
                 })
-        except:
+        except Exception as e:
+            print(e)
             r = flask.jsonify({
                 'code': 0,
                 'message': 'Error running Macrel',

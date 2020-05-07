@@ -4,6 +4,7 @@ import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
 import Bootstrap.Form as Form
+import Bootstrap.Form.Checkbox as Checkbox
 import Bootstrap.Form.Textarea as Textarea
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
@@ -43,8 +44,7 @@ type alias QueryModel =
 type Model =
         Query QueryModel
         | Loading
-        | Results APIResult
-
+        | Results APIResult Bool
 
 type Msg
     = NoMsg
@@ -55,6 +55,7 @@ type Msg
     | SubmitData
     | ResultsData (Result Http.Error APIResult)
     | DownloadResults
+    | SetShowAll Bool
 
 
 type APIResult =
@@ -155,17 +156,20 @@ update msg model =
         SubmitData -> case model of -- We cannot using ifQuery because we want to return Loading
             Loading -> ( model, Cmd.none )
             Query qmodel -> (Loading , submitData qmodel )
-            Results _ -> ( model, Cmd.none )
+            Results _ _ -> ( model, Cmd.none )
         ResultsData r -> case r of
-            Ok v -> ( Results v, Cmd.none )
+            Ok v -> ( Results v True, Cmd.none )
             Err err -> case err of
-                Http.BadUrl s -> (Results (APIError ("Bad URL: "++ s)), Cmd.none)
-                Http.Timeout  -> (Results (APIError "Timeout"), Cmd.none)
-                Http.NetworkError -> (Results (APIError "Network error"), Cmd.none)
-                Http.BadStatus s -> (Results (APIError ("Bad status: " ++ String.fromInt s)), Cmd.none)
-                Http.BadBody s -> (Results (APIError ("Bad body: " ++ s)), Cmd.none)
+                Http.BadUrl s -> (Results (APIError ("Bad URL: "++ s)) True, Cmd.none)
+                Http.Timeout  -> (Results (APIError "Timeout") True, Cmd.none)
+                Http.NetworkError -> (Results (APIError "Network error") True, Cmd.none)
+                Http.BadStatus s -> (Results (APIError ("Bad status: " ++ String.fromInt s)) True, Cmd.none)
+                Http.BadBody s -> (Results (APIError ("Bad body: " ++ s)) True, Cmd.none)
         DownloadResults -> case model of
-            Results (APIResultOK r) -> ( model, Download.string "macrel.out.tsv" "application/x-gzip" r.rawdata)
+            Results (APIResultOK r) _ -> ( model, Download.string "macrel.out.tsv" "application/x-gzip" r.rawdata)
+            _ -> ( model, Cmd.none )
+        SetShowAll f -> case model of
+            Results r _ -> ( Results r f, Cmd.none )
             _ -> ( model, Cmd.none )
 
 submitData : QueryModel -> Cmd Msg
@@ -300,9 +304,9 @@ viewModel model = case model of
                         ]
                     ]
     Query qm -> viewQueryModel qm
-    Results r -> viewResults r
+    Results r showAll -> viewResults r showAll
 
-viewResults r = case r of
+viewResults r showAll = case r of
     APIError err ->
         Alert.simpleDanger []
             [ Html.p [] [ Html.text "Call to the macrel server failed" ]
@@ -310,12 +314,15 @@ viewResults r = case r of
                 [ Html.p [] [ Html.text err ] ]
             ]
     APIResultOK ok -> Html.div []
-            [Table.table
+            [ Html.h2 [] [ Html.text "Results" ]
+            , Checkbox.advancedCheckbox [ Checkbox.checked showAll, Checkbox.onCheck SetShowAll ] <| Checkbox.label [] [ Html.text "Show all results (not only AMPs)" ]
+            , Table.table
                     { options = [ Table.striped, Table.hover ]
                     , thead =  Table.simpleThead
                         [ Table.th [] [ Html.text "Sequence name" ]
                         , Table.th [] [ Html.text "Sequence" ]
                         , Table.th [] [ Html.text "AMP probability" ]
+                        , Table.th [] [ Html.text "Hemolytic class" ]
                         ]
                     , tbody = Table.tbody []
                             (List.map (\e ->
@@ -323,11 +330,15 @@ viewResults r = case r of
                                     [ Table.td [] [ Html.text e.access ]
                                     , Table.td [] [ Html.text e.sequence ]
                                     , Table.td [] [ Html.text <| String.fromFloat e.amp_probability ]
-                                    ]) ok.data)
+                                    , Table.td [] [ Html.text (if e.amp_probability >= 0.5
+                                                                    then e.hemolytic
+                                                                    else "-") ]
+                                    ]) <| if showAll
+                                            then ok.data
+                                            else List.filter (\e -> (e.amp_probability >= 0.5)) ok.data)
                     }
-            ,Html.p [] [ Html.text <| "Prediction with macrel v"++ok.macrelVersion++"." ]
-            ,Html.p [] [ Html.text <| "Note that only positive sequences (AMPs) are output."]
-            ,Button.button [ Button.primary, Button.onClick DownloadResults ] [ Html.text "Download results table" ]
+            , Html.p [] [ Html.text "Prediction with ", Html.em [] [Html.text <| "macrel v"++ok.macrelVersion], Html.text "." ]
+            , Button.button [ Button.primary, Button.onClick DownloadResults ] [ Html.text "Download results table" ]
             ]
 
 viewQueryModel : QueryModel -> Html Msg
