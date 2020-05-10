@@ -1,4 +1,5 @@
 Version 0.4.0+
+	* Fix bug with Prodigal by changing internal parameters
 	* Fix bug with using --force and existing directories
 
 Version 0.4.0 2020-03-16

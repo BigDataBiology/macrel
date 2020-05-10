@@ -26,11 +26,11 @@
 #include "sequence.h"
 #include "training.h"
 
-#define STT_NOD 100000
+#define STT_NOD 1000000
 #define MIN_GENE 30
-#define MIN_EDGE_GENE 60
-#define MAX_SAM_OVLP 60
-#define ST_WINDOW 60
+#define MIN_EDGE_GENE 30
+#define MAX_SAM_OVLP 15
+#define ST_WINDOW 30
 #define OPER_DIST 60
 #define EDGE_BONUS 0.74
 #define EDGE_UPS -1.00

@@ -26,7 +26,7 @@
 #include "sequence.h"
 #include "node.h"
 
-#define MAX_SAM_OVLP 60
+#define MAX_SAM_OVLP 15
 #define MAX_OPP_OVLP 200
 #define MAX_NODE_DIST 500
 
