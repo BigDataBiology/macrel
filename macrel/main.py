@@ -55,6 +55,10 @@ def parse_args(args):
 
 
 def validate_args(args):
+    '''Checks that args are consistent
+
+    Exits with an error message if not the case
+    '''
     from os import path
     if len(args.command) != 1:
         error_exit(args, 'Could not parse argument list (multiple commands given?)')
@@ -107,6 +111,8 @@ def do_smorfs(args, tdir):
     else:
         all_peptide_file = path.join(tdir, 'all_orfs.faa')
         peptide_file = (args.output_file if args.output_file != '-' else '/dev/stdout')
+
+    # prodigal does not accept compressed input files!
     fasta_file = link_or_uncompress_fasta_file(
                     args.fasta_file,
                     path.join(tdir, 'contigs.fna'))
@@ -239,6 +245,7 @@ def do_predict(args, tdir):
     # These imports are slow, so we do them inside the functions
     from .AMP_features import features
     from .AMP_predict import predict
+    import gzip
     fs = features(args.fasta_file)
     prediction = predict(
                     data_file("models/AMP.pkl.gz"),
@@ -246,7 +253,10 @@ def do_predict(args, tdir):
                     fs,
                     args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
-    prediction.to_csv(ofile, sep='\t', index_label='Access', float_format="%.3f")
+    with gzip.open(ofile, 'wt') as out:
+        from .macrel_version import __version__
+        out.write('# Prediction from macrel v{}\n'.format(__version__))
+        prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
 
 def do_get_examples(args):
     try:

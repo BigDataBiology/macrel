@@ -1,6 +1,7 @@
-Version 0.4.0+
+Version 0.5.0 2020-05-11
 	* Fix bug with Prodigal by changing internal parameters
 	* Fix bug with using --force and existing directories
+	* Add version to header in output table
 
 Version 0.4.0 2020-03-16
 	* Remove Methionine from N-terminus
