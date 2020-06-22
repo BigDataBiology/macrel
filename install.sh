@@ -42,6 +42,7 @@ conda install -y \
         paladin \
         pandas \
         scikit-learn \
+        atomicwrites \
         rpy2 \
         tzlocal \
         r-base \

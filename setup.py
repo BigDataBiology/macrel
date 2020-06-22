@@ -68,6 +68,11 @@ setuptools.setup(name = 'macrel',
       package_dir = package_dir,
       package_data = package_data,
       zip_safe = False, # We want the model files to be installed as files
+      install_requires=[
+          'scikit-learn',
+          'pandas',
+          'atomicwrites',
+      ],
       entry_points={
           'console_scripts': [
               'macrel= macrel.main:main',

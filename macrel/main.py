@@ -6,6 +6,8 @@ import logging
 import os
 from os import path, makedirs
 
+from .utils import open_output
+
 def error_exit(args, errmessage):
     import sys
     sys.stderr.write(errmessage+'\n')
@@ -253,10 +255,11 @@ def do_predict(args, tdir):
                     fs,
                     args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
-    with gzip.open(ofile, 'wt') as out:
-        from .macrel_version import __version__
-        out.write('# Prediction from macrel v{}\n'.format(__version__))
-        prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
+    with open_output(ofile, mode='wb') as raw_out:
+        with gzip.open(raw_out, 'wt') as out:
+            from .macrel_version import __version__
+            out.write('# Prediction from macrel v{}\n'.format(__version__))
+            prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
 
 def do_get_examples(args):
     try:
