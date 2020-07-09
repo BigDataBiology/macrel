@@ -23,7 +23,7 @@ use.
 **IMPORTANT**: Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel),
 please pay a visit to us.
 
-Macrel represents a joint effort of Celio Dias Santos Jr., Shaojun Pan,
+Macrel represents a joint effort of [Celio Dias Santos Jr.](https://www.researchgate.net/profile/Celio_Santos_Junior), Shaojun Pan,
 [Xing-Ming Zhao](http://comp-sysbio.org/members/intro_zxm.html), and [Luis Pedro
 Coelho](http://luispedro.org) from the _Institute of Science and Technology for
 Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
