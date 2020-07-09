@@ -2,10 +2,14 @@ site_name: "MACREL"
 repo_url: "https://github.com/BigDataBiology/macrel"
 repo_name: "GitHub"
 edit_uri: null # Eliminate edit button
+copyright: "All rights reserved"
+google_analytics: ['UA-36723568-3', 'mkdocs.org']
 
 theme:
     name: readthedocs
     highlightjs: true
+    html_show_sourcelink: false
+    prev_next_buttons_location: both
     hljs_languages:
         - yaml
         - rust
