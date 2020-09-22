@@ -23,7 +23,7 @@ nav:
     - 'Macrel': index.md
     - 'Install': install.md
     - 'Usage': usage.md
-    - 'What's New (history)': novelty.md
+    - "What's New (history)": novelty.md
     - 'Contacts': contact.md
     - 'Cite us': cite.md
 
