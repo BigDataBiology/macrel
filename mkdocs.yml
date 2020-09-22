@@ -1,7 +1,7 @@
 site_name: "MACREL"
 repo_url: "https://github.com/BigDataBiology/macrel"
 repo_name: "GitHub"
-edit_uri: null # Eliminate edit button
+edit_url: null # Eliminate edit button
 copyright: "All rights reserved"
 google_analytics: ['UA-36723568-3', 'mkdocs.org']
 
@@ -23,6 +23,7 @@ nav:
     - 'Macrel': index.md
     - 'Install': install.md
     - 'Usage': usage.md
-    - "What's New (history)": novelty.md
-    - 'Cite': cite.md
+    - 'What's New (history)': novelty.md
+    - 'Contacts': contact.md
+    - 'Cite us': cite.md
 
