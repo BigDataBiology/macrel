@@ -120,3 +120,19 @@ This mode returns a table of abundances containing two columns, the first with t
 name of the AMPs and the second with the number of reads mapped back to each peptide
 using the given reference. An example of this output using the example file can be found
 at `test/abundances/expected.abundance.txt`.
+
+### Community
+
+Macrel is actively developed to fix all issues and assimilate all suggestions we get from 
+users. To make this communication more dynamic and even more colaborative, we created a google
+community. There, Macrel users can discuss issues, ongoing projects, colaborations and
+much more. Please pay us a visit:
+
+[**Go to AMPsphere community now!**](https://groups.google.com/g/ampsphere-users?pli=1)
+
+*Technical issues still are encouraged to be preferentialy sent to the reserved space in the
+Macrel github repository.*
+
+---
+
+This is a project hosted by the **Big Data Biology Research Group**, follow this [link](big-data-biology.org/) to know us more.
