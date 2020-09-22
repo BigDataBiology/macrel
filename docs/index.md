@@ -101,8 +101,4 @@ The other descriptors (independent of sequence order) used in Macrel classifiers
 
 We opted to use random forests after some tests with alternative algorithms. The training of AMPs classifier used the same parameters and data sets used by Bhadra et al. ([2018](https://www.nature.com/articles/s41598-018-19752-w#Sec9)), while the classifier of hemolytic peptides was trained and tested with the data sets previously established by Chaudhary et al. ([2016](https://www.nature.com/articles/srep22843)).
 
-The models here mentioned were implemented to filter off the non-AMP peptides and classify AMPs into hemolytic or not. After that, this script also submits the predicted AMPs to a decisions tree (Figure 2), classifying AMPs into 4 families accordingly to their nature (Cationic or Anionic) and structure (linear or disulfide bond forming). These classifications are then available in an output table with sequence, random identifiers, hemolytic nature and associated probabilities are also given. 
-
-![](fig17.png)
-
-**Figure 2.** Decision tree to classification of peptides into different classes accordingly to their composition and capacity in forming disulfide bonds (Legend: AcidicAA - Acidic amino acids: B + D + E + Z; BasicAA - Alkaline amino acids: H + K + R).
+The models here mentioned were implemented to filter off the non-AMP peptides and classify AMPs into hemolytic or not. These classifications are then available in an output table with sequence, random identifiers or real headers (depending on arguments passed to Macrel), hemolytic nature and probabilities associated to each prediction. 
