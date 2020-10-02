@@ -5,7 +5,7 @@ import gzip
 import logging
 import os
 from os import path, makedirs
-
+import textwrap
 from .utils import open_output
 
 def error_exit(args, errmessage):
@@ -19,10 +19,30 @@ def data_file(fname):
                     fname)
 
 
+
+
 def parse_args(args):
     from .macrel_version import __version__
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                     description='macrel v{}'.format(__version__))
+
+
+
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description='macrel v{}'.format(__version__), epilog=textwrap.dedent('''\
+             Examples:
+                 run Macrel on peptides:  
+                 macrel peptides --fasta example_seqs/expep.faa.gz --output out_peptides -t 4
+                 
+                 run Macrel on contigs:
+                 macrel contigs --fasta example_seqs/excontigs.fna.gz --output out_contigs
+                 
+                 run Macrel on paired-end reads:
+                 macrel reads -1 example_seqs/R1.fq.gz -2 example_seqs/R2.fq.gz --output out_metag --outtag example_metag
+                 
+                 run Macrel to get abundance profiles: 
+                 macrel abundance -1 example_seqs/R1.fq.gz --fasta example_seqs/ref.faa.gz --output out_abundance --outtag example_abundance
+                 
+                 For more information,please read the docs: https://macrel.readthedocs.io/en/latest/
+             '''))
 
     parser.add_argument('command', nargs=1,
             help='Macrel command to execute (see documentation)')
@@ -53,6 +73,8 @@ def parse_args(args):
             help='Whether to keep non-AMPs in the output')
     parser.add_argument('--version', '-v', action='version',
                     version='%(prog)s {version}'.format(version=__version__))
+
+
     return parser.parse_args()
 
 
@@ -105,6 +127,8 @@ def validate_args(args):
         error_exit(args, '--file-output is only possible for `get-smorfs` command')
 
 
+
+
 def do_smorfs(args, tdir):
     from .filter_smorfs import filter_smorfs
     if args.output_dir:
@@ -118,6 +142,7 @@ def do_smorfs(args, tdir):
     fasta_file = link_or_uncompress_fasta_file(
                     args.fasta_file,
                     path.join(tdir, 'contigs.fna'))
+
     subprocess.check_call(
             ['prodigal_sm',
                 '-c', # Closed ends.  Do not allow genes to run off edges.
@@ -133,7 +158,7 @@ def do_smorfs(args, tdir):
                 '-a', all_peptide_file,
 
                 # input file
-                '-i', fasta_file],
+                '-i', fasta_file]
             )
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
@@ -289,6 +314,7 @@ def main(args=None):
         args = sys.argv
     args = parse_args(args)
     validate_args(args)
+
     if args.command == 'get-examples':
         do_get_examples(args)
         return
