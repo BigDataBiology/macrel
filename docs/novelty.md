@@ -1,5 +1,13 @@
 # What's new? (History)
 
+### *User-visible improvements*
+
+- Add `--log-file` flag
+
+### *User-visible improvements*
+
+- Add usage example in command line help message
+
 ## Version 0.5.0
 
 Released May 11 2020
