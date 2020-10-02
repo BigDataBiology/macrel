@@ -40,6 +40,8 @@ def parse_args(args):
                  
                  run Macrel to get abundance profiles: 
                  macrel abundance -1 example_seqs/R1.fq.gz --fasta example_seqs/ref.faa.gz --output out_abundance --outtag example_abundance
+                 
+                 For more information,please read the docs: https://macrel.readthedocs.io/en/latest/
              '''))
 
     parser.add_argument('command', nargs=1,
@@ -71,7 +73,7 @@ def parse_args(args):
             help='Whether to keep non-AMPs in the output')
     parser.add_argument('--version', '-v', action='version',
                     version='%(prog)s {version}'.format(version=__version__))
-    parser.add_argument('--logfile',required=False,default=None,dest='logfile',help='Path to the log file.')
+
 
     return parser.parse_args()
 
@@ -124,11 +126,7 @@ def validate_args(args):
     elif args.command != 'get-smorfs':
         error_exit(args, '--file-output is only possible for `get-smorfs` command')
 
-    if args.logfile:
-        if not path.exists(args.logfile):
-            makedirs(args.logfile, exist_ok=True)
-        else:
-            error_exit(args, "Logfile folder [{}] already exists".format(args.logfile))
+
 
 
 def do_smorfs(args, tdir):
@@ -145,11 +143,6 @@ def do_smorfs(args, tdir):
                     args.fasta_file,
                     path.join(tdir, 'contigs.fna'))
 
-    if args.logfile:
-        f = open(path.join(args.logfile,"logfile.txt"), "a")
-    else:
-        f = None
-
     subprocess.check_call(
             ['prodigal_sm',
                 '-c', # Closed ends.  Do not allow genes to run off edges.
@@ -165,7 +158,7 @@ def do_smorfs(args, tdir):
                 '-a', all_peptide_file,
 
                 # input file
-                '-i', fasta_file],stdout = f
+                '-i', fasta_file]
             )
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
@@ -194,10 +187,6 @@ def do_abundance(args, tdir):
                         args.fasta_file,
                         path.join(tdir, 'paladin.faa'))
 
-    if args.logfile:
-        f = open(path.join(args.logfile,"logfile.txt"), "a")
-    else:
-        f = None
     subprocess.check_call([
         'paladin', 'index',
 
@@ -207,7 +196,7 @@ def do_abundance(args, tdir):
         #     3: Reference contains protein sequences (UniProt or other source)
         #     4: Development tests
         '-r3',
-        fasta_file],stdout = f)
+        fasta_file])
     logging.debug('Mapping reads against references')
     with open(sam_file, 'wb') as sout:
         subprocess.check_call([
@@ -243,7 +232,7 @@ def do_abundance(args, tdir):
         '-j', str(args.threads),
         data_file('scripts/count.ngl'),
         sam_file,
-        path.join(args.output, args.outtag + '.abundance.txt')],stdout = f)
+        path.join(args.output, args.outtag + '.abundance.txt')])
 
 def do_read_trimming(args, tdir):
     ofile = path.join(tdir, 'preproc.fq.gz')
@@ -253,17 +242,13 @@ def do_read_trimming(args, tdir):
     else:
         ngl_file = data_file('scripts/trim.se.ngl')
         ngl_args = [args.reads1, ofile]
-    if args.logfile:
-        f = open(path.join(args.logfile,"logfile.txt"), "a")
-    else:
-        f = None
     subprocess.check_call([
         'ngless',
         '--no-create-report',
         '--quiet',
         '-j', str(args.threads),
         ngl_file,
-        ] + ngl_args,stdout=f)
+        ] + ngl_args)
 
 def do_assembly(args, tdir):
     if args.reads2:
@@ -273,10 +258,6 @@ def do_assembly(args, tdir):
         megahit_args = ['-r', path.join(tdir, 'preproc.pair.1.fq.gz')]
     megahit_output = path.join(args.output, args.outtag + '.megahit_output')
     do_read_trimming(args, tdir)
-    if args.logfile:
-        f = open(path.join(args.logfile,"logfile.txt"), "a")
-    else:
-        f = None
     subprocess.check_call([
         'megahit',
         '--presets', 'meta-large',
@@ -284,7 +265,7 @@ def do_assembly(args, tdir):
         '-t', str(args.threads),
         '-m', str(args.mem),
         '--min-contig-len', '1000',
-        ] + megahit_args,stdout=f)
+        ] + megahit_args)
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
 def do_predict(args, tdir):
