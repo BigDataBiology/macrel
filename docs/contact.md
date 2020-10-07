@@ -11,7 +11,7 @@ group](https://groups.google.com/g/ampsphere-users?pli=1).
 Macrel was developed by:
 
 - [Dr. Célio Dias Santos Júnior](https://www.researchgate.net/profile/Celio_Santos_Junior)
-- [Shaojun Pan](shaojun1997777@gmail.com)
+- [Shaojun Pan](mailto:shaojun1997777@gmail.com)
 - [Dr. Xing-Ming Zhao](http://comp-sysbio.org/members/intro_zxm.html)
 - [Dr. Luis Pedro Coelho](http://luispedro.org/)
 
