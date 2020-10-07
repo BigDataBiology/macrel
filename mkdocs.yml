@@ -25,5 +25,7 @@ nav:
     - 'Usage': usage.md
     - "What's New (history)": novelty.md
     - 'Contacts': contact.md
+    - 'FAQ': faq.md
     - 'Cite us': cite.md
+    
 
