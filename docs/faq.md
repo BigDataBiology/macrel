@@ -1,12 +1,14 @@
 # Frequent Asked Questions - FAQ
 
-*[1]. I tested Macrel with some propeptide and it returned a false negative. Do Macrel detect RiPPs?*
+*[1]. I tested Macrel with some propeptide and it returned a false negative. Does Macrel detect ribosomally*
+
+*synthesized and post-translationally modified peptides (RiPPs)?*
 
     Macrel v.0.5.0 just detects mature peptides. We expect to develop and test approaches to mask the
 
     leader or tail peptides and get predictions from RiPPs too in the next versions of the program.
 
-*[2]. Do Macrel detect peptides of any length?*
+*[2]. Does Macrel detect peptides of any length?*
 
     Macrel v.0.5.0 just detects peptides ranging from 10 to 100 residues.
   
