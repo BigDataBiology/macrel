@@ -22,4 +22,4 @@ to discuss issues, ongoing projects and etc:
 
 [**Go to our community now!**](https://groups.google.com/g/ampsphere-users?pli=1)
 
-This is a project hosted by the **BigData Biology Research Group**! Follow this [link](big-data-biology.org/) to know us more.
+This is a project hosted by the **Big Data Biology Research Group**! Follow this [link](big-data-biology.org/) to know us more.
