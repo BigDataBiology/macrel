@@ -124,9 +124,9 @@ def validate_args(args):
         error_exit(args, '--file-output is only possible for `get-smorfs` command')
 
     if args.logfile:
-        if path.exists(args.logfile):
+        if path.exists(args.logfile) and args.logfile != '/dev/null':
             error_exit(args, "Output logfile [{}] already exists".format(args.logfile))
-        if not path.exists(os.path.dirname(args.logfile)):
+        if not path.exists(os.path.dirname(args.logfile)) and os.path.dirname(args.logfile) != '':
             makedirs(os.path.dirname(args.logfile), exist_ok=True)
 
 def do_smorfs(args, tdir,logfile):
