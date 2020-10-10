@@ -1,4 +1,4 @@
-Version 0.5.0+
+Version 0.6.0 2020-10-10
     * Add --log-append flag
     * Add --log-file argument
     * Add usage example in command line help message

@@ -1,12 +1,15 @@
 # What's new? (History)
 
+
+## Version 0.6.0
+
+Release October 10 2020
+
 ### *User-visible improvements*
 
-- Add `--log-file` flag
-
-### *User-visible improvements*
-
+- Add `--log-file` and `--log-append` command line arguments
 - Add usage example in command line help message
+- Output is now written atomically (_i.e._, no partial files)
 
 ## Version 0.5.0
 
