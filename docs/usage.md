@@ -35,7 +35,8 @@ If you have not yet installed macrel, see [install](install).
 - `--force`: Potentially over-write existing output files
 - `--keep-fasta-headers`: Keep complete FASTA headers [get-smorfs command]
 - `--keep-negatives`: Output a table with **all** sequences (default is to only output putative AMPs)
-- `--log-file`: Output a logfile with log information from macrel
+- `--log-file`: Output a logfile with log information from macrel (instead of printing to the console)
+- `--log-append`: If set, the log file is appended to (rather than overwritten)
 
 Also, `macrel --version` will show the version of macrel installed.
 

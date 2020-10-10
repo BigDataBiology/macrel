@@ -70,8 +70,11 @@ def parse_args(args):
             help='Whether to keep non-AMPs in the output')
     parser.add_argument('--version', '-v', action='version',
                     version='%(prog)s {version}'.format(version=__version__))
-    parser.add_argument('--log-file',required=False,default=None,dest = 'logfile',
-            help='path to the output logfile')
+    parser.add_argument('--log-file', required=False, default=None, dest='logfile',
+            help='Path to the output logfile')
+    parser.add_argument('--log-append', required=False, action='store_true',
+            default=False, dest='logfile_append',
+            help='If set, then the log file is appended to (default: overwrite existing file)')
 
     return parser.parse_args()
 
@@ -157,7 +160,8 @@ def do_smorfs(args, tdir,logfile):
 
                 # input file
                 '-i', fasta_file],
-                 stdout=logfile
+             stdout=logfile,
+             stderr=subprocess.DEVNULL,
             )
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
@@ -319,7 +323,7 @@ def main(args=None):
     validate_args(args)
 
     if args.logfile:
-        logfile = open(args.logfile,'a')
+        logfile = open(args.logfile, ('a' if args.logfile_append else 'w'))
     else:
         logfile = None
 

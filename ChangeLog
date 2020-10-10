@@ -1,7 +1,8 @@
 Version 0.5.0+
-    * Add --log-file flag
+    * Add --log-append flag
+    * Add --log-file argument
     * Add usage example in command line help message
-	* Use atomic writing for output
+    * Use atomic writing for output
 
 Version 0.5.0 2020-05-11
 	* Fix bug with Prodigal by changing internal parameters
