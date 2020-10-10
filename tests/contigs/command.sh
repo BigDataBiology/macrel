@@ -3,7 +3,8 @@
 set -e
 macrel contigs \
     --fasta excontigs.fna.gz \
-    -o out
+    -o out \
+    --log-file log.txt
 
 gunzip out/macrel.out.prediction.gz
 

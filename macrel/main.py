@@ -18,9 +18,6 @@ def data_file(fname):
                     'data',
                     fname)
 
-
-
-
 def parse_args(args):
     from .macrel_version import __version__
 
@@ -73,10 +70,10 @@ def parse_args(args):
             help='Whether to keep non-AMPs in the output')
     parser.add_argument('--version', '-v', action='version',
                     version='%(prog)s {version}'.format(version=__version__))
-
+    parser.add_argument('--log-file',required=False,default=None,dest = 'logfile',
+            help='path to the output logfile')
 
     return parser.parse_args()
-
 
 def validate_args(args):
     '''Checks that args are consistent
@@ -126,10 +123,11 @@ def validate_args(args):
     elif args.command != 'get-smorfs':
         error_exit(args, '--file-output is only possible for `get-smorfs` command')
 
+    if args.logfile:
+        if not path.exists(os.path.dirname(args.logfile)) and os.path.dirname(args.logfile) != '':
+            makedirs(os.path.dirname(args.logfile), exist_ok=True)
 
-
-
-def do_smorfs(args, tdir):
+def do_smorfs(args, tdir,logfile):
     from .filter_smorfs import filter_smorfs
     if args.output_dir:
         all_peptide_file = path.join(args.output, args.outtag+'.all_orfs.faa')
@@ -158,7 +156,8 @@ def do_smorfs(args, tdir):
                 '-a', all_peptide_file,
 
                 # input file
-                '-i', fasta_file]
+                '-i', fasta_file],
+                 stdout=logfile
             )
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
@@ -180,8 +179,8 @@ def link_or_uncompress_fasta_file(orig, dest):
         os.symlink(path.abspath(orig), dest)
     return dest
 
-def do_abundance(args, tdir):
-    do_read_trimming(args, tdir)
+def do_abundance(args, tdir,logfile):
+    do_read_trimming(args, tdir,logfile)
     sam_file = path.join(tdir, 'paladin.out.sam')
     fasta_file = link_or_uncompress_fasta_file(
                         args.fasta_file,
@@ -196,7 +195,8 @@ def do_abundance(args, tdir):
         #     3: Reference contains protein sequences (UniProt or other source)
         #     4: Development tests
         '-r3',
-        fasta_file])
+        fasta_file],
+        stdout=logfile)
     logging.debug('Mapping reads against references')
     with open(sam_file, 'wb') as sout:
         subprocess.check_call([
@@ -232,9 +232,10 @@ def do_abundance(args, tdir):
         '-j', str(args.threads),
         data_file('scripts/count.ngl'),
         sam_file,
-        path.join(args.output, args.outtag + '.abundance.txt')])
+        path.join(args.output, args.outtag + '.abundance.txt')],
+        stdout=logfile)
 
-def do_read_trimming(args, tdir):
+def do_read_trimming(args, tdir,logfile):
     ofile = path.join(tdir, 'preproc.fq.gz')
     if args.reads2:
         ngl_file = data_file('scripts/trim.pe.ngl')
@@ -248,16 +249,17 @@ def do_read_trimming(args, tdir):
         '--quiet',
         '-j', str(args.threads),
         ngl_file,
-        ] + ngl_args)
+        ] + ngl_args,
+        stdout=logfile)
 
-def do_assembly(args, tdir):
+def do_assembly(args, tdir,logfile):
     if args.reads2:
         megahit_args = ['-1', path.join(tdir, 'preproc.pair.1.fq.gz'),
                         '-2', path.join(tdir, 'preproc.pair.2.fq.gz')]
     else:
         megahit_args = ['-r', path.join(tdir, 'preproc.pair.1.fq.gz')]
     megahit_output = path.join(args.output, args.outtag + '.megahit_output')
-    do_read_trimming(args, tdir)
+    do_read_trimming(args, tdir,logfile)
     subprocess.check_call([
         'megahit',
         '--presets', 'meta-large',
@@ -265,7 +267,8 @@ def do_assembly(args, tdir):
         '-t', str(args.threads),
         '-m', str(args.mem),
         '--min-contig-len', '1000',
-        ] + megahit_args)
+        ] + megahit_args,
+        stdout=logfile)
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
 def do_predict(args, tdir):
@@ -315,18 +318,24 @@ def main(args=None):
     args = parse_args(args)
     validate_args(args)
 
+    if args.logfile:
+        logfile = open(args.logfile,'a')
+    else:
+        logfile = None
+
     if args.command == 'get-examples':
         do_get_examples(args)
         return
+
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
         if args.command == 'reads':
-            do_assembly(args, tdir)
+            do_assembly(args, tdir,logfile)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
-            do_smorfs(args, tdir)
+            do_smorfs(args, tdir,logfile)
         if args.command in ['reads', 'contigs', 'peptides']:
             do_predict(args, tdir)
         if args.command == 'abundance':
-            do_abundance(args, tdir)
+            do_abundance(args, tdir,logfile)
 
 if __name__ == '__main__':
     import sys
