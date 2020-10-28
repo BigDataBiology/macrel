@@ -1,3 +1,6 @@
+Version 0.6.1 2020-10-29
+	* Make atomicwrites an optional dependency
+
 Version 0.6.0 2020-10-10
     * Add --log-append flag
     * Add --log-file argument

@@ -1,5 +1,14 @@
 # What's new? (History)
 
+## Version 0.6.1
+
+Release October 29 2020
+
+### *User-visible improvements*
+
+- Atomicwrites is now an optional dependency. This implies a loss of
+  functionality if not available (file writing is no longer atomic), but
+  the atomicwrites dependency caused issues (especially on Mac)
 
 ## Version 0.6.0
 
