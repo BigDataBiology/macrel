@@ -10,6 +10,7 @@ env:
   matrix:
     - PYTHON_VERSION=3.6
     - PYTHON_VERSION=3.7
+    - PYTHON_VERSION=3.8
 
 before_install:
   - bash ./.travis/travis_before_install.sh
