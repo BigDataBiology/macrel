@@ -177,7 +177,7 @@ update msg model =
 
 submitData : QueryModel -> Cmd Msg
 submitData model = Http.post
-    { url = "http://aws.big-data-biology.org:1188/predict"
+    { url = "https://aws.big-data-biology.org:1188/predict"
     , body = Http.multipartBody
                 [ Http.stringPart "dataType" (if model.optype == Just Peptides then "peptides" else "contigs")
                 , Http.stringPart "textData" model.facontent
