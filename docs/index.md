@@ -11,9 +11,9 @@ See the [usage section](usage) for more information.
 
 If you use this software in a publication please cite
 
->   MACREL: antimicrobial peptide screening in genomes and metagenomes
+>   MACREL: antimicrobial peptide screening in genomes and metagenomes.
 >   Celio Dias Santos-Junior, Shaojun Pan, Xing-Ming Zhao, Luis Pedro Coelho.
->   The PeerJ (in press).
+>   The PeerJ (in press), 2020.
 
 **NOTE**: This is still a _work in progress_ and, while the results of the tool
 should be correct, we are still working on making Macrel easier to install and
