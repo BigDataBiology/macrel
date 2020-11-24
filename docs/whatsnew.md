@@ -1,5 +1,9 @@
 # What's new? (History)
 
+## The reference for Macrel is on its way out!
+
+The paper describing Macrel available in [bioRxiv](https://www.biorxiv.org/content/10.1101/2019.12.17.880385v2) is now in press by the PeerJ.
+
 ## Version 0.6.1
 
 Release October 29 2020
