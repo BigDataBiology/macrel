@@ -1,4 +1,18 @@
 def fasta_iter(fname, full_header=False):
+    '''Iterate over a (possibly gzipped) FASTA file
+
+    Parameters
+    ----------
+    fname : str
+        Filename. If it ends with .gz, gzip format is assumed
+    full_header : boolean (optional)
+        If True, yields the full header. Otherwise (the default), only the
+        first word
+
+    Yields
+    ------
+    (h,seq): tuple of (str, str)
+    '''
     header = None
     chunks = []
     if fname.endswith('.gz'):
