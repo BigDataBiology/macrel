@@ -259,7 +259,7 @@ header : Html Msg
 header =
     Grid.simpleRow
         [ Grid.col [] [ Html.h4 [] [ Html.text "Macrel" ] ]
-        , Grid.col [] [ Html.a [ href "http://macrel.rtfd.io/" ] [ Html.h4 [] [ Html.text "Docs" ] ] ]
+        , Grid.col [] [ Html.a [ href "https://macrel.rtfd.io/" ] [ Html.h4 [] [ Html.text "Docs" ] ] ]
         , Grid.col [] [ Html.a [ href "https://github.com/BigDataBiology/macrel/" ] [ Html.h4 [] [ Html.text "Github" ] ] ]
         ]
 
@@ -271,9 +271,9 @@ intro =
         , Html.blockquote []
             [ Html.p []
                 [ Html.em []
-                    [ Html.text """
-                                    MACREL: antimicrobial peptide screening in genomes and metagenomes. Celio Dias Santos-Junior, Shaojun
-                                    Pan, Xing-Ming Zhao, Luis Pedro Coelho. The PeerJ (in press)."                    ]
+                    [ Html.text """MACREL: antimicrobial peptide screening in genomes and metagenomes. Celio Dias Santos-Junior, Shaojun
+                                   Pan, Xing-Ming Zhao, Luis Pedro Coelho. The PeerJ (in press)."""
+                    ]
                 ]
             ]
         ]
