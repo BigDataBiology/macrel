@@ -7,8 +7,8 @@ if [[ x$PYTHON_VERSION == x ]]; then
     PYTHON_VERSION=3.7
 fi
 
-if [[ x$R_VERSION == x ]]; then
-    R_VERSION>=3.6,<4.0
+if [[ y$R_VERSION == y ]]; then
+    R_VERSION=3.6
 fi
 
 
@@ -33,7 +33,7 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo "# Creating new environment for Macrel"
 mkdir -p envs
-conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION r=3.6 ## Fixed 
+conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION r=$R_VERSION ## Fixed 
 source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
@@ -59,6 +59,7 @@ conda install -y \
 # ./recipe/build.sh
 env \
         PYTHON=$(which python) \
+        R=$(which R) \
         SRC_DIR=$PWD \
         PREFIX=$CONDA_PREFIX \
         ./recipe/build.sh
