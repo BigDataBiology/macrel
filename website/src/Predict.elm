@@ -272,8 +272,8 @@ intro =
             [ Html.p []
                 [ Html.em []
                     [ Html.text """
-                                    MACREL: antimicrobial peptide screening in genomes and metagenomes. Celio Dias Santos-Junior, Shaojun
-                                    Pan, Xing-Ming Zhao, Luis Pedro Coelho. The PeerJ (in press)."                    ]
+                                    Santos-Júnior CD, Pan S, Zhao X, Coelho LP. 2020. Macrel: antimicrobial peptide screening in genomes and metagenomes.
+                                    PeerJ 8:e10555. <a href=https://doi.org/10.7717/peerj.10555>10.7717/peerj.10555</a>"                    ]
                 ]
             ]
         ]
