@@ -259,7 +259,7 @@ header : Html Msg
 header =
     Grid.simpleRow
         [ Grid.col [] [ Html.h4 [] [ Html.text "Macrel" ] ]
-        , Grid.col [] [ Html.a [ href "http://macrel.rtfd.io/" ] [ Html.h4 [] [ Html.text "Docs" ] ] ]
+        , Grid.col [] [ Html.a [ href "https://macrel.rtfd.io/" ] [ Html.h4 [] [ Html.text "Docs" ] ] ]
         , Grid.col [] [ Html.a [ href "https://github.com/BigDataBiology/macrel/" ] [ Html.h4 [] [ Html.text "Github" ] ] ]
         ]
 
@@ -271,9 +271,10 @@ intro =
         , Html.blockquote []
             [ Html.p []
                 [ Html.em []
+
                     [ Html.text """
                                     Santos-Júnior CD, Pan S, Zhao X, Coelho LP. 2020. Macrel: antimicrobial peptide screening in genomes and metagenomes.
-                                    PeerJ 8:e10555. <a href=https://doi.org/10.7717/peerj.10555>10.7717/peerj.10555</a>"                    ]
+                                    PeerJ 8:e10555. doi: 10.7717/peerj.10555"""                  ]
                 ]
             ]
         ]
