@@ -1,4 +1,4 @@
-# MACREL: Meta(genomic) AMP Classification and Retrieval
+# Macrel: (Meta)genomic AMP Classification and Retrieval
 
 Pipeline to mine antimicrobial peptides (AMPs) from (meta)genomes.
 
@@ -10,9 +10,9 @@ Pipeline to mine antimicrobial peptides (AMPs) from (meta)genomes.
 
 If you use this software in a publication please cite
 
->   MACREL: antimicrobial peptide screening in genomes and metagenomes.
->   Celio Dias Santos-Junior, Shaojun Pan, Xing-Ming Zhao, Luis Pedro Coelho.
->   The PeerJ (in press).
+>   Santos-Júnior CD, Pan S, Zhao X, Coelho LP. 2020.
+>   Macrel: antimicrobial peptide screening in genomes and metagenomes.
+>   PeerJ 8:e10555. DOI: [10.7717/peerj.10555](https://doi.org/10.7717/peerj.10555)
 
 
 ## License
@@ -30,14 +30,6 @@ The recommended method of installation is through
 
 ```bash
 conda install -c bioconda macrel
-```
-
-Alternatively, install Macrel from a hard coded environment recipe:
-
-```bash
-wget shorturl.at/bhEI2
-conda env create -f bhEI2
-rm -rf bhEI2
 ```
 
 To install from source, [read the docs](https://macrel.readthedocs.io/en/latest/install)
