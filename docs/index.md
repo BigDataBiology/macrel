@@ -13,7 +13,7 @@ If you use this software in a publication please cite
 
 >   Santos-Júnior CD, Pan S, Zhao X, Coelho LP. 2020.
 >   Macrel: antimicrobial peptide screening in genomes and metagenomes.
->   PeerJ 8:e10555 https://doi.org/10.7717/peerj.10555
+>   PeerJ 8:e10555. DOI:[10.7717/peerj.10555](https://doi.org/10.7717/peerj.10555)
 
 **NOTE**: This is still a _work in progress_ and, while the results of the tool
 should be correct, we are still working on making Macrel easier to install and
