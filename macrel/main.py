@@ -7,7 +7,6 @@ import os
 from os import path, makedirs
 import textwrap
 from .utils import open_output
-from atomicwrites import atomic_write
 
 def error_exit(args, errmessage):
     import sys
@@ -337,19 +336,19 @@ def main(args=None):
             readme_output_peptides_mode,readme_output_reads_mode
         if args.command == 'reads':
             do_assembly(args, tdir,logfile)
-            with atomic_write(os.path.join(args.output, 'readme.txt'), overwrite=True) as ofile:
+            with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_reads_mode)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
             do_smorfs(args, tdir,logfile)
-            with atomic_write(os.path.join(args.output, 'readme.txt'), overwrite=True) as ofile:
+            with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
             do_predict(args, tdir)
-            with atomic_write(os.path.join(args.output, 'readme.txt'), overwrite=True) as ofile:
+            with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_peptides_mode)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
-            with atomic_write(os.path.join(args.output, 'readme.txt'), overwrite=True) as ofile:
+            with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_abundance_mode)
 
 if __name__ == '__main__':
