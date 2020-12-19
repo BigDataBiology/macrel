@@ -340,8 +340,9 @@ def main(args=None):
                 ofile.write(readme_output_reads_mode)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
             do_smorfs(args, tdir,logfile)
-            with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                ofile.write(readme_output_contigs_mode)
+            if args.output:
+                with open_output(os.path.join(args.output, 'README.md')) as ofile:
+                    ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
             do_predict(args, tdir)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
