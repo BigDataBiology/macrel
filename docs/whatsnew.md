@@ -1,5 +1,11 @@
 # What's new? (History)
 
+## Version 1.0.0
+
+### *User-visible improvements*
+
+- Add README.md files to the output directories documenting the output files
+
 ## The reference for Macrel is on its way!
 
 The paper describing Macrel available in [bioRxiv](https://www.biorxiv.org/content/10.1101/2019.12.17.880385v2) is now in press by the PeerJ.

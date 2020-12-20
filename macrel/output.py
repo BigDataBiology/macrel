@@ -1,186 +1,93 @@
-readme_header="""
---------------------------------------------------------------------------------------------------------------------------
-                                                        README
-                                                       
-                  Thank you for using Macrel - the (meta)genome AMPs classification and retrieval. 
+header = """If you find Macrel useful, please cite:
 
-                  If you find Macrel useful, please cite:
+> Santos-Junior, C.D. et al. Macrel: antimicrobial peptide screening in
+> genomes and metagenomes. The PeerJ 8:e10555
+>  https://doi.org/10.7717/peerj.10555
 
-                  Santos-Junior, C.D. et al. Macrel: antimicrobial peptide screening in genomes and
-                  metagenomes. The PeerJ 8:e10555 DOI 10.7717/peerj.10555
+For more information, please read [the macrel
+documentation](https://macrel.readthedocs.io) and use the [AMPsphere mailing
+list](https://groups.google.com/g/ampsphere-users) for questions."""
 
---------------------------------------------------------------------------------------------------------------------------
-                                  
-### This is an explanatory file to the outputs given by Macrel.
+footer = f"""If you used the `--outtag` argument, then the above files will be named using
+that tag, instead of `macrel.out`"""
 
+prediction_table_doc = f"""- `macrel.out.prediction.gz`
+
+Compressed tab-separated table with the following columns
+
+1. `Access` Identififiers (arbitrarily assigned by Macrel)
+2. `Sequence` Predicted amino acid sequence
+3. `AMP_family`: AMP family classified into anionic/cationic and
+   cysteine-containing/linear coded as: `A`/`C` and `D`/`L`, respectively,
+   followed by a `P` (for peptide), _e.g._, a cationic cysteine-containing
+   peptide would be `CDP`.
+4. `AMP_probability`: Probability that the peptide is antimicrobial
+5. `Hemolytic`: Classification into hemolytic (Hemo) or non-hemolytic (NonHemo)
+6. `Hemolytic_probability`: Probability of hemolytic activity
+
+The table contains a header (as comments marked with the `#` character at the
+start of the line) identifying the version of macrel used to generate these
+results.
+
+Note that, by default, only peptides predicted to be AMPs are output. If the
+`--keep-negatives` flag is used, however, all sequences will be present in the
+table."""
+
+predicted_faas_doc = """- `macrel.out.all_orfs.faa`
+
+Fasta file containing all predicted genes from the contigs (including large
+proteins).
+
+- `macrel.out.smorfs.faa`
+
+Fasta file containing the predicted small ORFs (length filtered ranging from 10
+to 100 amino acids)."""
+
+megahit_output_doc = """- `example_metag.megahit_output`
+
+This folder contains the full outputs of running megahit for assembly."""
+
+readme_output_abundance_mode = f"""{header}
+
+## Outputs for `abundance` mode
+
+- `macrel.out.out.abundance.txt`
+
+This file contains a table with two columns:
+
+1. `smORF_accession`: smORFs IDs (i.e., the name of the sequences in the reference file)
+2. `MACREL`: Peptide abundance in number of (short) reads mapped
+
+{footer}
 """
 
-readme_output_abundance_mode = """Mode: ABUNDANCE
+readme_output_contigs_mode = f"""{header}
 
-### Usage example in version 1.0 on the abundance subcommand:
+## Outputs for `contigs` mode
 
+{prediction_table_doc}
+{predicted_faas_doc}
 
-``` macrel abundance \
-    -1 example_seqs/R1.fq.gz \
-    --fasta example_seqs/ref.faa.gz \
-    --output out_abundance \
-    --tag example_abundance
-```
-
-It generates the following outputs:
-
-
-* out_abundance/example_abundance.out.abundance.txt  --  This file contains a table in the following format:
-
-
-	smORF_accession	| tag 
-	------------ | ------------ 
-  [1] | [2]   
-
-Table fields are explained in detail below:
-
-      [1.] Access of smORFs arbitrarily given by Macrel or the name of
-           the proteins in the reference file
-
-      [2.] Name of the tag given to Macrel or generically "MACREL" and
-           represents the abundance given in reads mapped to the peptide,
-           we recommend to a normalization the user make a pseudo-RPKM
-           calculus as:                        
-           
-                             pseudo-RPKM =  mapped reads * 1000 / total reads * (length in bp)
-                             
+{footer}
 """
 
-readme_output_contigs_mode = """Mode: CONTIGS
 
-### Usage example in version 1.0 on the contigs subcommand:
+readme_output_peptides_mode = f"""{header}
 
+## Outputs for `peptides` mode
 
-``` macrel contigs \
-    --fasta example_seqs/excontigs.fna.gz \
-    --output out_contigs
-```
+{prediction_table_doc}
 
-It generates the following outputs:
-
-
-* out_contigs/macrel.out.prediction.gz  --  This file contains a table in the following format:
-
-
-	Access	| Sequence | AMP_family	| AMP_probability	| Hemolytic | Hemolytic_probability
-	------------ | ------------ | ------------- | ------------- | ------------ | -------------
-  [1] | [2] | [3] | [4] | [5] | [6]
-
-Table fields are explained in detail below:
-
-      [1.] Access of smORFs arbitrarily given by Macrel
-
-      [2.] Predicted amino acid sequence 
-
-      [3.] AMP family classified into anionic/cationic and cysteine-containing/linear coded as:
-
-           A/C and D/L, respectively. (e.g. a cationic cysteine-containing peptide would be CDP)
-
-      [4.] Probability of a given peptide be antimicrobial in Macrel's model
-
-      [5.] Classification of hemolytic activity of a given peptide into hemolytic (Hemo) or non-hemolytic (NonHemo)
-
-      [6.] Probability of a given peptide be hemolytic in Macrel's model
-
-
-* out_contigs/macrel.out.all_orfs.faa   --  Fasta file containing all predicted genes from the contigs given independently
-                                             the size outputted by Macrel.
-
-* out_contigs/macrel.out.smorfs.faa     --  Fasta file containing the predicted small ORFs length filtered ranging from 10 to
-                                             100 amino acids. This file can be used, for example for independent runs in Macrel
-                                             under the "peptides" mode.
-
+{footer}
 """
 
-readme_output_peptides_mode = """Mode: PEPTIDES
+readme_output_reads_mode = f"""{header}
 
-### Usage example in version 1.0 on the peptides subcommand:
+## Outputs for `reads` mode
 
-``` macrel peptides \
-    --fasta example_seqs/expep.faa.gz \
-    --output out_peptides \
-    -t 4
-```
+{prediction_table_doc}
+{predicted_faas_doc}
+{megahit_output_doc}
 
-It generates the following outputs:
-
-* out_peptides/macrel.out.prediction.gz  --  This file contains a table in the following format:
-
-	Access	| Sequence | AMP_family	| AMP_probability	| Hemolytic | Hemolytic_probability
-	------------ | ------------ | ------------- | ------------- | ------------ | -------------
-  [1] | [2] | [3] | [4] | [5] | [6]
-
-Table fields are explained in detail below:
-
-      [1.] Access of smORFs arbitrarily given by Macrel
-
-      [2.] Predicted amino acid sequence 
-
-      [3.] AMP family classified into anionic/cationic and cysteine-containing/linear coded as:
-
-           A/C and D/L, respectively. (e.g. a cationic cysteine-containing peptide would be CDP)
-
-      [4.] Probability of a given peptide be antimicrobial in Macrel's model
-
-      [5.] Classification of hemolytic activity of a given peptide into hemolytic (Hemo) or non-hemolytic (NonHemo)
-
-      [6.] Probability of a given peptide be hemolytic in Macrel's model
-      
-"""
-
-readme_output_reads_mode = """Mode: READS
-
-### Usage example in version 1.0 on the reads subcommand:
-
-
-``` macrel reads \
-    -1 example_seqs/R1.fq.gz \
-    -2 example_seqs/R2.fq.gz \
-    --output out_metag \
-    --tag example_metag
-```
-
-It generates the following outputs:
-
-* out_metag/example_metag.prediction.gz  --  This file contains a table in the following format:
-
-	Access	| Sequence | AMP_family	| AMP_probability	| Hemolytic | Hemolytic_probability
-	------------ | ------------ | ------------- | ------------- | ------------ | -------------
-  [1] | [2] | [3] | [4] | [5] | [6]
-
-Table fields are explained in detail below:
-
-      [1.] Access of smORFs arbitrarily given by Macrel
-
-      [2.] Predicted amino acid sequence 
-
-      [3.] AMP family classified into anionic/cationic and cysteine-containing/linear coded as:
-
-           A/C and D/L, respectively. (e.g. a cationic cysteine-containing peptide would be CDP)
-
-      [4.] Probability of a given peptide be antimicrobial in Macrel's model
-
-      [5.] Classification of hemolytic activity of a given peptide into hemolytic (Hemo) or non-hemolytic (NonHemo)
-
-      [6.] Probability of a given peptide be hemolytic in Macrel's model
-
-
-* out_metag/example_metag.megahit_output/ -- This folder contains the assembly results obtained with megahit.
-                                             It contains several subfolders and intermediate
-                                             steps of assembly with important information that
-                                             allow the user trace back crucial information to infer
-                                             missassemblies or even detect events/binning elements of interest.
-
-* out_metag/example_metag.all_orfs.faa   --  Fasta file containing all predicted genes from the contigs given independently
-                                             the size outputted by Macrel.
-
-* out_metag/example_metag.smorfs.faa     --  Fasta file containing the predicted small ORFs length filtered ranging from 10 to
-                                             100 amino acids. This file can be used, for example for independent runs in Macrel
-                                             under the "peptides" mode.
-
+{footer}
 """
