@@ -32,14 +32,6 @@ The recommended method of installation is through
 conda install -c bioconda macrel
 ```
 
-Alternatively, install Macrel from a hard coded environment recipe:
-
-```bash
-wget shorturl.at/bhEI2
-conda env create -f bhEI2
-rm -rf bhEI2
-```
-
 To install from source, [read the docs](https://macrel.readthedocs.io/en/latest/install)
 
 ### Examples
