@@ -68,8 +68,7 @@ To run Macrel on peptides, use the `peptides` subcommand:
 ```bash
 macrel peptides \
     --fasta example_seqs/expep.faa.gz \
-    --output out_peptides \
-    -t 4
+    --output out_peptides
 ```
 
 In this case, we use `example_seqs/expep.faa.gz` as the input sequence. This should

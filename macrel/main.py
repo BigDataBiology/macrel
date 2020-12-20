@@ -27,7 +27,7 @@ def parse_args(args):
                                      description='macrel v{}'.format(__version__), epilog=textwrap.dedent('''\
              Examples:
                  run Macrel on peptides:  
-                 macrel peptides --fasta example_seqs/expep.faa.gz --output out_peptides -t 4
+                 macrel peptides --fasta example_seqs/expep.faa.gz --output out_peptides
                  
                  run Macrel on contigs:
                  macrel contigs --fasta example_seqs/excontigs.fna.gz --output out_contigs
