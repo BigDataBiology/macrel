@@ -1,0 +1,75 @@
+name: build status
+   
+on:
+   push:
+   pull_request:
+   schedule:
+     - cron: '0 0 * * 0' # weekly
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+#        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.6, 3.7, 3.8]
+#        exclude:
+#          - os: macos-latest
+#            python-version: 3.8
+#          - os: windows-latest
+#            python-version: 3.6
+
+    env:
+      TRAVIS_REPO_SLUG: ${{ github.repository }}
+      TRAVIS_BRANCH: ${{ github.head_ref }}
+      TRAVIS_PULL_REQUEST: ${{ github.event.number }}
+
+    steps:
+            
+    - name: Checking code
+      uses: actions/checkout@v2
+  
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+    
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniconda-version: "latest"
+        auto-activate-base: true
+        activate-environment: ""
+
+
+    - name: Set ENV variables
+      run: |
+          echo "{TRAVIS_BRANCH}=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}" >> $GITHUB_ENV
+          echo "{TRAVIS_SECURE_ENV_VARS}=${TRAVIS_SECURE_ENV_VARS:-$(if [ -z "${{ secrets.something }}" ]; then echo "false"; else echo "true"; fi)}" >> $GITHUB_ENV
+          echo "{TRAVIS_EVENT_TYPE}=${TRAVIS_EVENT_TYPE:-$(if [ "schedule" == "${{ github.event_name }}" ]; then echo "cron"; else echo "${{ github.event_name }}"; fi)}" >> $GITHUB_ENV
+        
+    - name: Print Travis ENV vars 
+      run: |
+          echo "TRAVIS_BRANCH: ${TRAVIS_BRANCH}"
+          echo "TRAVIS_PULL_REQUEST: ${TRAVIS_PULL_REQUEST}"
+          echo "TRAVIS_REPO_SLUG: ${TRAVIS_REPO_SLUG}"
+          echo "TRAVIS_SECURE_ENV_VARS: ${TRAVIS_SECURE_ENV_VARS}"
+ 
+    - name: Build and test environment
+      run: |
+        ./install.sh
+        conda install --prefix ./envs/Macrel_env  -y pytest
+
+    - name: Activating Macrel environment
+      run: source /usr/share/miniconda3/bin/activate /home/runner/work/macrel/macrel/envs/Macrel_env
+                      
+    - name: Evaluate Macrel Build
+      run: |
+        ./run-tests.sh
+        python -m pytest macrel/tests
