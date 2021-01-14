@@ -1,0 +1,65 @@
+name: MACREL CI
+
+on:
+   push:
+   pull_request:
+   schedule:
+     - cron: '0 0 * * 0' # weekly
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+      sudo: required
+      dist: xenial
+      language: c
+
+    name: Python ${{ matrix.python }}
+      strategy:
+        matrix:
+          python: [3.6, 3.7, 3.8]
+
+    env:
+      TRAVIS_REPO_SLUG: ${{ github.repository }}
+      TRAVIS_BRANCH: ${{ github.head_ref }}
+      TRAVIS_PULL_REQUEST: ${{ github.event.number }}
+
+    - name: Cache
+      uses: actions/cache@v2.1.3
+        with:
+          path: $HOME/miniconda3  
+
+  steps:
+    - uses: actions/checkout@v2
+
+    - name: Set ENV variables
+        run: |
+          echo "::set-env name=TRAVIS_BRANCH::${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}" 
+          echo "::set-env name=TRAVIS_SECURE_ENV_VARS::$(if [ -z "${{ secrets.something }}" ]; then echo "false"; else echo "true"; fi)" 
+          echo "::set-env name=TRAVIS_EVENT_TYPE::$(if [ "schedule" == "${{ github.event_name }}" ]; then echo "cron"; else echo "${{ github.event_name }}"; fi)" 
+
+    - name: Print Travis ENV vars 
+        run: |
+          echo "TRAVIS_BRANCH: ${TRAVIS_BRANCH}"
+          echo "TRAVIS_PULL_REQUEST: ${TRAVIS_PULL_REQUEST}"
+          echo "TRAVIS_REPO_SLUG: ${TRAVIS_REPO_SLUG}"
+          echo "TRAVIS_SECURE_ENV_VARS: ${TRAVIS_SECURE_ENV_VARS}"
+
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Build and test environment
+      run: source ./src/ci/before_install.sh && ./src/ci/build.sh
+      after_success: 
+        export PATH=$HOME/miniconda3/bin:$PATH
+        bash install.sh
+        conda install --prefix ./envs/Macrel_env  -y pytest
+
+    - name: Evalute Macrel Build
+      run:|
+        eval "$(conda shell.bash hook
+        conda activate ./envs/Macrel_env
+        ./run-tests.sh
+        python -m pytest macrel/tests
+        fail_ci_if_error: True
