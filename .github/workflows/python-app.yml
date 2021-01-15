@@ -1,4 +1,4 @@
-name: build status
+name: Build Status
    
 on:
    push:
@@ -66,10 +66,9 @@ jobs:
         ./install.sh
         conda install --prefix ./envs/Macrel_env  -y pytest
 
-    - name: Activating Macrel environment
-      run: source /usr/share/miniconda3/bin/activate /home/runner/work/macrel/macrel/envs/Macrel_env
-                      
     - name: Evaluate Macrel Build
       run: |
+        source /usr/share/miniconda3/bin/activate /home/runner/work/macrel/macrel/envs/Macrel_env
+        macrel="/home/runner/work/macrel/macrel/envs/Macrel_env/bin/macrel"
         ./run-tests.sh
         python -m pytest macrel/tests
