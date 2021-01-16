@@ -4,6 +4,11 @@ on:
    push:
    pull_request:
 
+-defaults:
+  run:
+    # Conda activate needs to be on bash
+    shell: bash
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -17,20 +22,14 @@ jobs:
     - name: Checking code
       uses: actions/checkout@v2
   
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    
     - uses: conda-incubator/setup-miniconda@v2
       with:
         miniconda-version: "latest"
-        auto-activate-base: true
-        activate-environment: ""
  
     - name: Build and test environment
       run: |
-        ./install.sh
+        conda activate test
+        PYTHON_VERSION=${{ matrix.python-version }} ./install.sh
         conda install --prefix ./envs/Macrel_env  -y pytest
 
     - name: Evaluate Macrel Build
