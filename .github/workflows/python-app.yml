@@ -4,7 +4,7 @@ on:
    push:
    pull_request:
 
--defaults:
+defaults:
   run:
     # Conda activate needs to be on bash
     shell: bash
