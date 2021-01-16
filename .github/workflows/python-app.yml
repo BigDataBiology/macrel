@@ -1,5 +1,4 @@
 name: Build Status
-   
 on: [push, pull_request]
 
 jobs:
@@ -10,20 +9,20 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
-            
     - name: Checking code
       uses: actions/checkout@v2
-  
-    - uses: conda-incubator/setup-miniconda@v2
+
+    - name: Setup miniconda
+      uses: conda-incubator/setup-miniconda@v2
       with:
         miniconda-version: "latest"
  
-    - name: Build and test environment
+    - name: Build environment
       run: |
         PYTHON_VERSION=${{ matrix.python-version }} ./install.sh
         conda install --prefix ./envs/Macrel_env  -y pytest
 
-    - name: Evaluate Macrel Build
+    - name: Test Macrel
       run: |
         source /usr/share/miniconda3/bin/activate envs/Macrel_env/
         ./run-tests.sh
