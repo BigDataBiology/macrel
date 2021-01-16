@@ -1,13 +1,6 @@
 name: Build Status
    
-on:
-   push:
-   pull_request:
-
-defaults:
-  run:
-    # Conda activate needs to be on bash
-    shell: bash
+on: [push, pull_request]
 
 jobs:
   build:
@@ -28,12 +21,11 @@ jobs:
  
     - name: Build and test environment
       run: |
-        conda activate test
         PYTHON_VERSION=${{ matrix.python-version }} ./install.sh
         conda install --prefix ./envs/Macrel_env  -y pytest
 
     - name: Evaluate Macrel Build
       run: |
-        conda activate envs/Macrel_env/
+        source /usr/share/miniconda3/bin/activate envs/Macrel_env/
         ./run-tests.sh
         python -m pytest macrel/tests
