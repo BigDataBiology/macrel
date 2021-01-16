@@ -35,6 +35,6 @@ jobs:
 
     - name: Evaluate Macrel Build
       run: |
-        source activate ./envs/Macrel_env
+        conda activate envs/Macrel_env/
         ./run-tests.sh
         python -m pytest macrel/tests
