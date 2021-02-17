@@ -125,7 +125,7 @@ users. To make this communication more dynamic and even more colaborative, we cr
 community. There, Macrel users can discuss issues, ongoing projects, colaborations and
 much more. Please pay us a visit:
 
-[**Go to AMPsphere community now!**](https://groups.google.com/g/ampsphere-users?pli=1)
+[**Go to AMPSphere community now!**](https://groups.google.com/g/ampsphere-users?pli=1)
 
 *Technical issues still are encouraged to be preferentialy sent to the reserved space in the
 Macrel github repository.*
