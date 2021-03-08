@@ -47,8 +47,8 @@ def parse_args(args):
             help='Number of threads to use',
             default='1', dest='threads')
     parser.add_argument('--model', '-m', required=False, action='store',
-            help='Model used to predict AMPs. Use (orig) for original model, and (le50) for models trained with peptides of 50 res. or less.',
-            default='orig', dest='model_chance')
+            help='Model used to predict AMPs. Use (orig) for original model, and (l50) for models trained with peptides of 50 res. or less.',
+            default='orig', dest='model')
     parser.add_argument('-o', '--output', required=False, default=None,
             help='path to the output directory', dest='output')
     parser.add_argument('--file-output', required=False, default=None,
@@ -111,17 +111,20 @@ def validate_args(args):
             error_exit(args, "Fasta file is necessary for 'get-smorfs' command.")
     else:
         error_exit(args, "Unknown command {}".format(args.command))
+    
     if not args.output and not args.output_file:
         error_exit(args, "Either --output or --file-output argument must be used")
 
     if args.keep_fasta_headers and args.command != 'get-smorfs':
         error_exit(args, '--keep-fasta-headers is only available for get-smorfs command')
 
-    if args.model_chance:
-        if args.model_chance != 'orig':
-            if args.model_chance != 'l50':
-                print('Wrong model_chance assigning to original model')
-                args.model_chance = 'orig'
+    if args.model:
+        if args.model != 'orig':
+            if args.model != 'l50':
+                print('Wrong model assigning to original model')
+                args.model == 'orig'
+    else:
+        args.model == 'orig'
         
     args.output_dir = args.output
     if args.output_dir:
@@ -291,12 +294,12 @@ def do_predict(args, tdir):
     import gzip
     fs = features(args.fasta_file)
     # Predict AMPs using one of the two different models orig or le50
-    if model_chance == 'orig':
+    if args.model == 'orig':
         prediction = predict(data_file("models/AMP.pkl.gz"),
                              data_file("models/Hemo.pkl.gz"),
                              fs,
                              args.keep_negatives)
-    else:
+    elif args.model == 'l50':
         prediction = predict(data_file("models/AMP_le50.pkl.gz"),
                              data_file("models/Hemo_le50.pkl.gz"),
                              fs,
