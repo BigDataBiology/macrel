@@ -46,7 +46,7 @@ def parse_args(args):
     parser.add_argument('-t', '--threads', required=False, action='store',
             help='Number of threads to use',
             default='1', dest='threads')
-    parser.add_argument('-model', '-m', required=False, action='store',
+    parser.add_argument('--model', '-m', required=False, action='store',
             help='Model used to predict AMPs. Use (orig) for original model, and (le50) for models trained with peptides of 50 res. or less.',
             default='orig', dest='model_chance')
     parser.add_argument('-o', '--output', required=False, default=None,
