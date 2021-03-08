@@ -28,6 +28,7 @@ If you have not yet installed macrel, see [install](install).
 ## Optional flags
 
 - `--threads` (`-t`): Specify the number of cpus used
+- `--model` (`-m`): Specify the model used in predictions
 - `--cluster`: Pre-cluster the smORFs (at 100%% identity) to avoid repeats
 - `--tag`: If used, then all the output files will incorporate it.
 - `--mem`: Used during assembly to specify the percent of RAM used (1-0)
