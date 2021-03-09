@@ -2,7 +2,7 @@
 
 set -e
 macrel contigs \
-    --fasta excontigs.fna.gz \
+    --fasta ../../example_seqs/excontigs.fna.gz \
     -o out \
     -m less50 \
     --log-file log.txt
