@@ -1,2 +1,2 @@
-# Prediction from macrel v1.0.0
-Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability
+# Prediction from macrel v1.0.1 and complete model
+Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability	Length_warning
