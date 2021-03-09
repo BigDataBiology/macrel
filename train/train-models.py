@@ -9,7 +9,6 @@ def report(name, y_true, y_pred):
     print(f"# {name} CLASSIFIER ")
     print("Accuracy: {:.3}".format(metrics.accuracy_score(y_true, y_pred)))
     print("MCC: {:.3}".format(metrics.matthews_corrcoef(y_true, y_pred)))
-
     print()
     print("Confusion matrix:")
     print(metrics.confusion_matrix(y_true, y_pred))
@@ -31,6 +30,7 @@ rf_wout_oob = ensemble.RandomForestClassifier(
         n_estimators=101,
         random_state=12345,
         n_jobs=8)
+
 rf_w_oob.fit(ampep_train.iloc[:, 3:], ampep_train['group'])
 rf_wout_oob.fit(ampep_train.iloc[:, 3:], ampep_train['group'])
 
@@ -66,3 +66,36 @@ pickle.dump(rf_wout_oob, gzip.open('models/Hemo.pkl.gz', 'wb'))
 
 
 report('Hemo', hemo_test['group'], rf_w_oob.predict(hemo_test.iloc[:, 3:]))
+
+## Performing the same above with peptide sets smaller than 50 res.
+
+ampep_train_lt50 = pd.read_table('preproc/AMP_lt50.train.tsv', index_col=0)
+xiao_test_lt50 = pd.read_table('preproc/AMP_lt50.test.tsv', index_col=0)
+
+rf_w_oob.fit(ampep_train_lt50.iloc[:, 3:], ampep_train_lt50['group'])
+rf_wout_oob.fit(ampep_train_lt50.iloc[:, 3:], ampep_train_lt50['group'])
+
+pickle.dump(rf_wout_oob, gzip.open('models/AMP_lt50.pkl.gz', 'wb'))
+
+oob_pred = rf_w_oob.classes_[(rf_w_oob.oob_decision_function_.T[1] > .5).astype(int)]
+xiao_pred = rf_w_oob.predict(xiao_test_lt50.iloc[:, 3:])
+
+xiao_pred = pd.Series(xiao_pred, index=xiao_test_lt50.sequence).to_dict()
+oob_pred  = pd.Series(oob_pred,  index=ampep_train_lt50.sequence).to_dict()
+pred = xiao_test_lt50.sequence.map(lambda seq: oob_pred.get(seq, xiao_pred[seq]))
+
+report('AMP-lt50 (unbalanced training)', xiao_test_lt50['group'], pred)
+
+xiao_train_lt50 = pd.read_table('preproc/AMP_lt50.train_bench.tsv', index_col=0)
+rf_wout_oob.fit(xiao_train_lt50.iloc[:,3:], xiao_train_lt50['group'])
+xiao_pred = rf_wout_oob.predict(xiao_test_lt50.iloc[:, 3:])
+report('AMP-lt50 (benchmark training)', xiao_test_lt50['group'], xiao_pred)
+
+hemo_train_lt50 = pd.read_table('preproc/Hemo_lt50.train.tsv', index_col=0)
+hemo_test_lt50 = pd.read_table('preproc/Hemo_lt50.test.tsv', index_col=0)
+rf_w_oob.fit(hemo_train_lt50.iloc[:,3:], hemo_train_lt50['group'])
+rf_wout_oob.fit(hemo_train_lt50.iloc[:,3:], hemo_train_lt50['group'])
+pickle.dump(rf_wout_oob, gzip.open('models/Hemo_lt50.pkl.gz', 'wb'))
+
+
+report('Hemo-lt50', hemo_test_lt50['group'], rf_w_oob.predict(hemo_test_lt50.iloc[:, 3:]))
