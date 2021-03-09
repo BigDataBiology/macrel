@@ -287,18 +287,18 @@ def do_assembly(args, tdir,logfile):
         stdout=logfile)
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
-def answ(x):
+def answ(model, x):
     if len(x) > 100:
         answer = 'too big for Macrel models -- be careful (> 100 res.)'
-    elif (len(x) > 50) and (args.model == 'complete'):
+    elif (len(x) > 50) and (model == 'complete'):
         answer = 'evaluated with complete model (> 50 res.)'
-    elif (len(x) > 50) and (args.model == 'less50'):
+    elif (len(x) > 50) and (model == 'less50'):
         answer = 'recommended evaluation with complete model (> 50 res.)'
     elif len(x) < 8:  # min. length of (10 - 2), because start (M) and stop (*)
         answer = 'too small for Macrel models -- be careful (< 8 res.)'
-    elif (len(x) <= 50) and (args.model == 'complete'):
+    elif (len(x) <= 50) and (model == 'complete'):
         answer = 'recommended evaluation with less50 model (<= 50 res.)'
-    elif (len(x) <= 50) and (args.model == 'less'):
+    elif (len(x) <= 50) and (model == 'less'):
         answer = 'evaluated with less50 model (<= 50 res.)'
     else:
         answer = 'be aware something went wrong'
@@ -325,7 +325,7 @@ def do_predict(args, tdir):
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
             from .macrel_version import __version__
-            prediction['Length_warning'] = [ answ(x) <= 50) for x in prediction['Sequence'] ] 
+            prediction['Length_warning'] = [ answ(args.model, x) <= 50) for x in prediction['Sequence'] ] 
             out.write('# Prediction from macrel v{} and {} model\n'.format(__version__, args.model))
             prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
 
