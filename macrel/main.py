@@ -325,7 +325,7 @@ def do_predict(args, tdir):
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
             from .macrel_version import __version__
-            prediction['Length_warning'] = [ answ(args.model, x) <= 50) for x in prediction['Sequence'] ] 
+            prediction['Length_warning'] = [ answ(args.model, x) for x in prediction['Sequence'] ] 
             out.write('# Prediction from macrel v{} and {} model\n'.format(__version__, args.model))
             prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
 
