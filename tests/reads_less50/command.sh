@@ -8,3 +8,4 @@ macrel reads \
     -o out
 
 gunzip out/macrel.out.prediction.gz
+
