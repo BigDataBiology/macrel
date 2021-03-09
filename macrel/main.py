@@ -298,7 +298,7 @@ def answ(model, x):
         answer = 'too small for Macrel models -- be careful (< 8 res.)'
     elif (len(x) <= 50) and (model == 'complete'):
         answer = 'recommended evaluation with less50 model (<= 50 res.)'
-    elif (len(x) <= 50) and (model == 'less'):
+    elif (len(x) <= 50) and (model == 'less50'):
         answer = 'evaluated with less50 model (<= 50 res.)'
     else:
         answer = 'be aware something went wrong'
