@@ -1,0 +1,6 @@
+# Prediction from macrel v1.0.1 and less50 model
+Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability	Length_warning
+smORF_0	KVIKKVVAALMVLGALAALTVGVVLKPGRKGDET	CLP	0.604	Hemo	0.851	<= 50 res.
+smORF_2	RFLIKMVKVNLMNGKLIRKISLM	CLP	0.683	Hemo	0.941	<= 50 res.
+smORF_18	FFNDGKGTIYYGIKKYFRIYF	CLP	0.653	Hemo	0.792	<= 50 res.
+smORF_21	TIVVKKVPKCLRGIVKLLFGIKEKWYEKRGYSYSLYFLFVYLL	CDP	0.851	Hemo	0.881	<= 50 res.
