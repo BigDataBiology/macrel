@@ -24,6 +24,7 @@ Compressed tab-separated table with the following columns
 4. `AMP_probability`: Probability that the peptide is antimicrobial
 5. `Hemolytic`: Classification into hemolytic (Hemo) or non-hemolytic (NonHemo)
 6. `Hemolytic_probability`: Probability of hemolytic activity
+7. `Length_warning`: Length classification (mark indicates length higher than 50 res.)
 
 The table contains a header (as comments marked with the `#` character at the
 start of the line) identifying the version of macrel used to generate these
