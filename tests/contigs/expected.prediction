@@ -1,4 +1,4 @@
 # Prediction from macrel v1.0.1 and complete model
 Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability	Length_warning
-smORF_2	RFLIKMVKVNLMNGKLIRKISLM	CLP	0.634	Hemo	0.871	recommended evaluation with less50 model (<= 50 res.)
-smORF_18	FFNDGKGTIYYGIKKYFRIYF	CLP	0.673	Hemo	0.822	recommended evaluation with less50 model (<= 50 res.)
+scaffold75334_1_MH0058_1	RFLIKMVKVNLMNGKLIRKISLM	CLP	0.634	Hemo	0.871	recommended evaluation with less50 model (<= 50 res.)
+scaffold33693_17_MH0058_2	FFNDGKGTIYYGIKKYFRIYF	CLP	0.673	Hemo	0.822	recommended evaluation with less50 model (<= 50 res.)
