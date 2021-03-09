@@ -122,8 +122,7 @@ def validate_args(args):
     if args.model:
         if args.model != 'complete':
             if args.model != 'less50':
-                print('Wrong model assignment -- Using original model')
-                args.model == 'complete'
+                error_exit(args, "Wrong model assignment -- Using original model")
     else:
         args.model == 'complete'
         
@@ -311,9 +310,7 @@ def do_predict(args, tdir):
         prediction = predict(data_file("models/AMP_lt50.pkl.gz"),
                              data_file("models/Hemo_lt50.pkl.gz"),
                              fs,
-                             args.keep_negatives)        
-    else:
-        sys.exit("Error in model selection")
+                             args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
