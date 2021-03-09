@@ -100,7 +100,7 @@ def validate_args(args):
             error_exit(args, "FASTA File is necessary for 'contigs' command.")
     elif args.command == 'reads':
         if not args.reads1:
-            errceliosantosjr-newmodelsor_exit(args, "FQ file is necessary for 'reads' command.")
+            error_exit(args, "FQ file is necessary for 'reads' command.")
     elif args.command == 'abundance':
         if not args.reads1:
             error_exit(args, "FQ file is necessary for 'abundance' command.")
