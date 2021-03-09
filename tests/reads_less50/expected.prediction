@@ -1,5 +1,5 @@
 # Prediction from macrel v1.0.1 and less50 model
 Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability	Length_warning
-k77_7_7	TIVVKKVPKCLRGIVKLLFGIKEKWYEKRGYSYSLYFLFVYLL	CDP	0.851	Hemo	0.881	<= 50 res.
-k77_12_1	RFLIKMVKVNLMNGKLIRKISLM	CLP	0.683	Hemo	0.941	<= 50 res.
-k77_15_1	FFNDGKGTIYYGIKKYFRIYF	CLP	0.653	Hemo	0.792	<= 50 res.
+k77_7_7	TIVVKKVPKCLRGIVKLLFGIKEKWYEKRGYSYSLYFLFVYLL	CDP	0.851	Hemo	0.881	evaluated with less50 model (<= 50 res.)
+k77_12_1	RFLIKMVKVNLMNGKLIRKISLM	CLP	0.683	Hemo	0.941	evaluated with less50 model (<= 50 res.)
+k77_15_1	FFNDGKGTIYYGIKKYFRIYF	CLP	0.653	Hemo	0.792	evaluated with less50 model (<= 50 res.)
