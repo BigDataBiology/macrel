@@ -7,3 +7,4 @@ macrel contigs \
     -m less50
 
 gunzip out/macrel.out.prediction.gz
+
