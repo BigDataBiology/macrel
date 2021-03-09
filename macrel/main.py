@@ -290,12 +290,18 @@ def do_assembly(args, tdir,logfile):
 def answ(x):
     if len(x) > 100:
         answer = 'too big for Macrel models -- be careful (> 100 res.)'
-    elif len(x) > 50:
+    elif (len(x) > 50) and (args.model == 'complete'):
+        answer = 'evaluated with complete model (> 50 res.)'
+    elif (len(x) > 50) and (args.model == 'less50'):
         answer = 'recommended evaluation with complete model (> 50 res.)'
     elif len(x) < 8:  # min. length of (10 - 2), because start (M) and stop (*)
         answer = 'too small for Macrel models -- be careful (< 8 res.)'
-    else:
+    elif (len(x) <= 50) and (args.model == 'complete'):
         answer = 'recommended evaluation with less50 model (<= 50 res.)'
+    elif (len(x) <= 50) and (args.model == 'less'):
+        answer = 'evaluated with less50 model (<= 50 res.)'
+    else:
+        answer = 'be aware something went wrong'
     return answer
 
 def do_predict(args, tdir):
