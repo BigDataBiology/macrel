@@ -1,3 +1,9 @@
+Version 1.0.1 2021-03-10
+	* Add new models trained with peptides of 50 res. or less
+	* Add option -model to Macrel
+	* Add tests for -model option
+	* Update outputs to include warnings for peptide length and model used in prediction
+
 Version 1.0.0 2020-12-20
 	* Add README.md files to the output directories documenting the output files
 
