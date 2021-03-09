@@ -8,3 +8,4 @@ macrel contigs \
     --log-file log.txt
 
 gunzip out/macrel.out.prediction.gz
+
