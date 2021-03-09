@@ -7,6 +7,7 @@ import os
 from os import path, makedirs
 import textwrap
 from .utils import open_output
+import pandas as pd
 
 def error_exit(args, errmessage):
     import sys
@@ -287,6 +288,13 @@ def do_assembly(args, tdir,logfile):
         stdout=logfile)
     args.fasta_file = path.join(megahit_output, 'final.contigs.fa')
 
+def answ(x):
+    if len(x) > 50:
+        answer = '> 50 res.'
+    else:
+        answer = '<= 50 res.'
+    return answer
+
 def do_predict(args, tdir):
     # These imports are slow, so we do them inside the functions
     from .AMP_features import features
@@ -310,7 +318,8 @@ def do_predict(args, tdir):
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
             from .macrel_version import __version__
-            out.write('# Prediction from macrel v{}\n'.format(__version__))
+            prediction['Length_warning'] = [ answ(x) <= 50) for x in prediction['Sequence'] ] 
+            out.write('# Prediction from macrel v{} and {} model\n'.format(__version__, args.model))
             prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
 
 def do_get_examples(args):
