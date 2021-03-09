@@ -47,8 +47,8 @@ def parse_args(args):
             help='Number of threads to use',
             default='1', dest='threads')
     parser.add_argument('--model', '-m', required=False, action='store',
-            help='Model used to predict AMPs. Use (orig) for original model, and (l50) for models trained with peptides of 50 res. or less.',
-            default='orig', dest='model')
+            help='Model used to predict AMPs. Use (complete) for original model, and (less50) for models trained with peptides of 50 res. or less.',
+            default='complete', dest='model')
     parser.add_argument('-o', '--output', required=False, default=None,
             help='path to the output directory', dest='output')
     parser.add_argument('--file-output', required=False, default=None,
@@ -119,12 +119,12 @@ def validate_args(args):
         error_exit(args, '--keep-fasta-headers is only available for get-smorfs command')
 
     if args.model:
-        if args.model != 'orig':
-            if args.model != 'l50':
-                print('Wrong model assigning to original model')
-                args.model == 'orig'
+        if args.model != 'complete':
+            if args.model != 'less50':
+                print('Wrong model assignment -- Using original model')
+                args.model == 'complete'
     else:
-        args.model == 'orig'
+        args.model == 'complete'
         
     args.output_dir = args.output
     if args.output_dir:
@@ -293,17 +293,19 @@ def do_predict(args, tdir):
     from .AMP_predict import predict
     import gzip
     fs = features(args.fasta_file)
-    # Predict AMPs using one of the two different models orig or le50
-    if args.model == 'orig':
+    # Predict AMPs using one of the two different models complete or less50
+    if args.model == 'complete':
         prediction = predict(data_file("models/AMP.pkl.gz"),
                              data_file("models/Hemo.pkl.gz"),
                              fs,
                              args.keep_negatives)
-    elif args.model == 'l50':
-        prediction = predict(data_file("models/AMP_le50.pkl.gz"),
-                             data_file("models/Hemo_le50.pkl.gz"),
+    elif args.model == 'less50':
+        prediction = predict(data_file("models/AMP_lt50.pkl.gz"),
+                             data_file("models/Hemo_lt50.pkl.gz"),
                              fs,
                              args.keep_negatives)        
+    else:
+        sys.exit("Error in model selection")
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
