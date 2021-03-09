@@ -1,0 +1,106 @@
+# AMP (unbalanced training) CLASSIFIER 
+Accuracy: 0.932
+MCC: 0.872
+
+Confusion matrix:
+[[795 125]
+ [  0 920]]
+
+              precision    recall  f1-score   support
+
+         AMP      1.000     0.864     0.927       920
+        NAMP      0.880     1.000     0.936       920
+
+    accuracy                          0.932      1840
+   macro avg      0.940     0.932     0.932      1840
+weighted avg      0.940     0.932     0.932      1840
+
+
+# AMP-lt50 (unbalanced training) CLASSIFIER 
+Accuracy: 0.911
+MCC: 0.726
+
+Confusion matrix:
+[[799  90]
+ [  1 131]]
+
+              precision    recall  f1-score   support
+
+         AMP      0.999     0.899     0.946       889
+        NAMP      0.593     0.992     0.742       132
+
+    accuracy                          0.911      1021
+   macro avg      0.796     0.946     0.844      1021
+weighted avg      0.946     0.911     0.920      1021
+
+
+# AMP (benchmark training) CLASSIFIER 
+Accuracy: 0.945
+MCC: 0.89
+
+Confusion matrix:
+[[844  76]
+ [ 26 894]]
+
+              precision    recall  f1-score   support
+
+         AMP      0.970     0.917     0.943       920
+        NAMP      0.922     0.972     0.946       920
+
+    accuracy                          0.945      1840
+   macro avg      0.946     0.945     0.945      1840
+weighted avg      0.946     0.945     0.945      1840
+
+
+# AMP-lt50 (benchmark training) CLASSIFIER 
+Accuracy: 0.946
+MCC: 0.766
+
+Confusion matrix:
+[[858  31]
+ [ 24 108]]
+
+              precision    recall  f1-score   support
+
+         AMP      0.973     0.965     0.969       889
+        NAMP      0.777     0.818     0.797       132
+
+    accuracy                          0.946      1021
+   macro avg      0.875     0.892     0.883      1021
+weighted avg      0.947     0.946     0.947      1021
+
+
+# Hemo CLASSIFIER 
+Accuracy: 0.941
+MCC: 0.883
+
+Confusion matrix:
+[[101   9]
+ [  4 106]]
+
+              precision    recall  f1-score   support
+
+        Hemo      0.962     0.918     0.940       110
+     NonHemo      0.922     0.964     0.942       110
+
+    accuracy                          0.941       220
+   macro avg      0.942     0.941     0.941       220
+weighted avg      0.942     0.941     0.941       220
+
+
+# Hemo-lt50 CLASSIFIER 
+Accuracy: 0.945
+MCC: 0.889
+
+Confusion matrix:
+[[104   6]
+ [  6 101]]
+
+              precision    recall  f1-score   support
+
+        Hemo      0.945     0.945     0.945       110
+     NonHemo      0.944     0.944     0.944       107
+
+    accuracy                          0.945       217
+   macro avg      0.945     0.945     0.945       217
+weighted avg      0.945     0.945     0.945       217
