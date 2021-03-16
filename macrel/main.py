@@ -111,8 +111,9 @@ def validate_args(args):
     if not args.output and not args.output_file:
         error_exit(args, "Either --output or --file-output argument must be used")
 
-    if args.keep_fasta_headers and args.command != 'get-smorfs':
-        error_exit(args, '--keep-fasta-headers is only available for get-smorfs command')
+    # This makes the args.keep_fasta_headers be used in more modes
+    if args.keep_fasta_headers and args.command in ['peptides', 'abundance']:
+        error_exit(args, '--keep-fasta-headers is not available for peptides and abundance commands')
 
     args.output_dir = args.output
     if args.output_dir:
