@@ -60,20 +60,20 @@ Following the coordinate information is a semicolon-delimited string with he fol
 
    - ID: unique identifier for each gene, consisting of the ordinal ID of the sequence and an ordinal ID of that
          gene within the sequence (separated by an underscore).
-
+   
    - partial: "0" indicates the gene has a true boundary (a start or a stop), whereas a "1" indicates the gene is
               "unfinished" at that edge (i.e. a partial gene).
-
+   
    - start_type: sequence of the start codon (usually ATG, GTG, TTG, or "Edge" if the gene has no start codon).
-
+   
    - stop_type: sequence of the stop codon (usually TAA, TGA, TAG or "Edge" if the gene has no stop codon).
-
+   
    - rbs_motif: RBS motif found by Prodigal (e.g. "AGGA" or "GGA", etc.)
-
+   
    - rbs_spacer: number of bases between the start codon and the observed motif.
-
+   
    - gc_cont: GC content of the gene sequence.
-
+   
 """
 
 megahit_output_doc = """- `example_metag.megahit_output`
