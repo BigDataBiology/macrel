@@ -1,6 +1,7 @@
 import numpy as np
 from macrel import AMP_features, AMP_predict
 from macrel.main import data_file
+from os import path
 
 def test_predict():
     fs = AMP_features.features('tests/peptides/expep.faa.gz')
@@ -12,3 +13,10 @@ def test_predict():
                         fs, keep_negatives=True)
     assert len(fsp) < len(fsn)
     assert not np.all(fsn.is_AMP)
+
+def test_predict_very_short():
+    fs = AMP_features.features(
+            path.join(path.dirname(__file__),
+                    'data',
+                    'very_short.faa')) 
+    assert len(fs) == 1
