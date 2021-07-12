@@ -79,6 +79,8 @@ def predict(model1, model2, data, keep_negatives=False):
     else:
         newhemoprob = [ float(f'{x:.3f}') if x != '-' else '-' for x in final.Hemolytic_probability ]
         final.Hemolytic_probability = newhemoprob
+        newisamp = [ 'AMP' if x == 1 else 'NAMP' for x in final.is_AMP ]
+        final.is_AMP = newisamp
 
     return final
 
