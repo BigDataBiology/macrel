@@ -29,6 +29,7 @@ for testdir in tests/*; do
         fi
         mkdir -p temp
         export TMPDIR="$PWD/temp"
+        chmod 777 command.sh
         ./command.sh >stdout.txt 2>stderr.txt
         macrel_exit=$?
         if [[ $testdir == tests/error-* ]] ; then
