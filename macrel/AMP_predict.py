@@ -29,8 +29,17 @@ def predict(model1, model2, data, keep_negatives=False):
         logger.warning('Warning: some input sequences are longer than 100 amino-acids.'
                 ' Macrel models were developed and tested for short peptides (<100 amino-acids).'
                 ' Applying them on longer ones will return a result, but these should be considered less reliable.')
-    features = data.iloc[:, 3:]
+    elif data.sequence.map(len).min() <= 8:
+        logger = logging.getLogger('macrel')
+        logger.warning('Warning: some input sequences are smaller than 10 amino-acids.'
+                ' Macrel models were developed and tested for short peptides (>= 10 amino-acids).'
+                ' Applying them on shorter ones will return all of them as non-amps.')
 
+    namp_seq = data[data['group'] == 'NAMP']['sequence'].tolist()
+    namp_header = data[data['group'] == 'NAMP'].index.tolist()
+    data.dropna(inplace=True)
+    features = data.iloc[:, 3:]
+ 
     # predict_proba will raise an Exception if passed empty arguments
     if len(features):
         amp_prob = model1.predict_proba(features).T[0]
@@ -38,9 +47,19 @@ def predict(model1, model2, data, keep_negatives=False):
     else:
         amp_prob = np.array([])
         hemo_prob = np.array([])
+    
     is_amp = np.where(amp_prob > .5, model1.classes_[0], model1.classes_[1])
     is_amp = (is_amp == "AMP")
     is_hemo = np.where(hemo_prob > .5, model2.classes_[0], model2.classes_[1])
+    
+    df = pd.DataFrame()
+    df['Sequence'] = namp_seq
+    df['AMP_family'] = ['-' for x in namp_header]
+    df['is_AMP'] = ['NAMP' for x in namp_header]
+    df['AMP_probability'] = [0 for x in namp_header]
+    df['Hemolytic'] = ['-' for x in namp_header]
+    df['Hemolytic_probability'] = ['-' for x in namp_header]
+    df.index = namp_header
 
     final = pd.DataFrame({'Sequence': data['sequence'],
                 'AMP_family':
@@ -51,7 +70,11 @@ def predict(model1, model2, data, keep_negatives=False):
                 'AMP_probability' : amp_prob,
                 'Hemolytic': is_hemo,
                 'Hemolytic_probability': hemo_prob})
+
+    final = pd.concat([final, df])
+
     if not keep_negatives:
         final = final.query('is_AMP').drop('is_AMP', axis=1)
+    
     return final
 
