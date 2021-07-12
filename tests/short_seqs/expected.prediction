@@ -1,0 +1,11 @@
+# Prediction from macrel v1.0.0
+Access	Sequence	AMP_family	is_AMP	AMP_probability	Hemolytic	Hemolytic_probability
+shortseq8	KALKAVYIL	CLP	NAMP	0.386	Hemo	0.663
+NORMAL_TEST	EKALKEALLEKALKSA	CLP	NAMP	0.287	NonHemo	0.089
+shortseq1	A	-	NAMP	0.000	-	-
+shortseq2	KA	-	NAMP	0.000	-	-
+shortseq3	AKS	-	NAMP	0.000	-	-
+shortseq4	LLAK	-	NAMP	0.000	-	-
+shortseq5	AKVA	-	NAMP	0.000	-	-
+shortseq6	CHEVAL	-	NAMP	0.000	-	-
+shortseq7	SEVENSS	-	NAMP	0.000	-	-
