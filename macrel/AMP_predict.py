@@ -55,7 +55,7 @@ def predict(model1, model2, data, keep_negatives=False):
     df = pd.DataFrame()
     df['Sequence'] = namp_seq
     df['AMP_family'] = ['-' for x in namp_header]
-    df['is_AMP'] = ['NAMP' for x in namp_header]
+    df['is_AMP'] = [0 for x in namp_header]
     df['AMP_probability'] = [0 for x in namp_header]
     df['Hemolytic'] = ['-' for x in namp_header]
     df['Hemolytic_probability'] = ['-' for x in namp_header]
@@ -74,7 +74,7 @@ def predict(model1, model2, data, keep_negatives=False):
     final = pd.concat([final, df])
 
     if not keep_negatives:
-        final = final.query('is_AMP').drop('is_AMP', axis=1)
-    
+        final = final[final['is_AMP'] == 1].drop('is_AMP', axis=1)
+        
     return final
 
