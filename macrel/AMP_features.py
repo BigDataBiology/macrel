@@ -14,14 +14,6 @@ r.library('Peptides')
 
 GROUPS_SA = ['ALFCGIVW', 'RKQEND', 'MSPTHY'] #solventaccess
 GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
-colist = ["tinyAA", "smallAA", "aliphaticAA",
-          "aromaticAA", "nonpolarAA", "polarAA",
-          "chargedAA", "basicAA", "acidicAA",
-          "charge", "pI", "aindex", "instaindex",
-          "boman", "hydrophobicity", "hmoment",
-          "SA.Group1.residue0", "SA.Group2.residue0",
-          "SA.Group3.residue0", "HB.Group1.residue0",
-          "HB.Group2.residue0", "HB.Group3.residue0"]
 
 #' # http://emboss.bioinformatics.nl/cgi-bin/emboss/pepstats
 #' # Property      Residues              Number  Mole%
@@ -110,6 +102,15 @@ def features(ifile):
     if len(features) == 0:
         features = []
 
+
+    colist = ["tinyAA", "smallAA", "aliphaticAA",
+              "aromaticAA", "nonpolarAA", "polarAA",
+              "chargedAA", "basicAA", "acidicAA",
+              "charge", "pI", "aindex", "instaindex",
+              "boman", "hydrophobicity", "hmoment",
+              "SA.Group1.residue0", "SA.Group2.residue0",
+              "SA.Group3.residue0", "HB.Group1.residue0",
+              "HB.Group2.residue0", "HB.Group3.residue0"]
     features = pd.DataFrame(features, index=headers, columns=colist)
     features.insert(0, 'group', 'Unk')
     features.insert(0, 'sequence', seqs)
@@ -119,7 +120,7 @@ def features(ifile):
     df['sequence'] = tooshort_s
     df['group'] = ['NAMP' for x in tooshort_s]
 
-    for col in the colist: 
+    for col in colist: 
         df[col] = [np.nan for x in tooshort_s]
     
     df.index = tooshort_h
