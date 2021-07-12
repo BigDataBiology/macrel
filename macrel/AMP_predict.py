@@ -76,6 +76,9 @@ def predict(model1, model2, data, keep_negatives=False):
     if not keep_negatives:
         final = final[final['is_AMP'] == 1].drop('is_AMP', axis=1)
         final.Hemolytic_probability = pd.to_numeric(final.Hemolytic_probability)
+    else:
+        newhemoprob = [ float(f'{x:.3f}') if x != '-' else '-' for x in final.Hemolytic_probability ]
+        final.Hemolytic_probability = newhemoprob
 
     return final
 
