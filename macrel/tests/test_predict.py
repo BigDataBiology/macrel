@@ -4,15 +4,15 @@ from macrel.main import data_file
 from os import path
 
 def test_predict():
-    fs = features('tests/peptides/expep.faa.gz')
-    fsp = predict(data_file('models/AMP.pkl.gz'),
-                  data_file('models/Hemo.pkl.gz'),
-                  fs,
-                  keep_negatives=False)
-    fsn = predict(data_file('models/AMP.pkl.gz'),
-                  data_file('models/Hemo.pkl.gz'),
-                  fs,
-                  keep_negatives=True)
+    fs = AMP_features.features('tests/peptides/expep.faa.gz')
+    fsp = AMP_predict.predict(data_file('models/AMP.pkl.gz'),
+                              data_file('models/Hemo.pkl.gz'),
+                              fs,
+                              keep_negatives=False)
+    fsn = AMP_predict.predict(data_file('models/AMP.pkl.gz'),
+                              data_file('models/Hemo.pkl.gz'),
+                              fs,
+                              keep_negatives=True)
     assert len(fsp) < len(fsn)
     assert not np.all(fsn.is_AMP)
 
