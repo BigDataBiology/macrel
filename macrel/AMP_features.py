@@ -56,7 +56,7 @@ def ctdd(sequence, groups):
                 break
         else:
             code.append(0)
-    return code
+    return np.array(code)
 
 
 def features(ifile):
@@ -74,6 +74,21 @@ def features(ifile):
         headers.append(h)
         encodings.append(ctdd(seq, groups))
         aaComp.append(amino_acid_composition(seq))
+        if len(seq) < 3:
+            import logging
+            logger = logging.getLogger('macrel')
+            logger.warning("Warning: input sequence '{}' is shorter longer than 3 amino acids."
+                " Macrel models were developed and tested for peptides with at least 10 amino acids and "
+                " results on very short peptides these should be considered unreliable.".format(h))
+
+            encodings[-1] *= 0
+            aaComp[-1] *= 0
+            # This is a major hack, but otherwise, the R code will fail
+            if len(seq) == 1:
+                seq += 'XX'
+            elif len(seq) == 2:
+                seq += 'X'
+            seqs[-1] = seq
 
     # We can do this inside the loop so that we are not forced to pre-load all
     # the sequences into memory. However, it becomes much slower
