@@ -26,4 +26,4 @@ jobs:
       run: |
         source /usr/share/miniconda3/bin/activate envs/Macrel_env/
         ./run-tests.sh
-        
+        python -m pytest macrel/tests        
