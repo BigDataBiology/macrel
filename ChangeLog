@@ -1,3 +1,6 @@
+Version 1.0.1 2021-09-02
+	* No longer crash on very short peptides (1 or 2 amino acids)
+
 Version 1.0.0 2020-12-20
 	* Add README.md files to the output directories documenting the output files
 
