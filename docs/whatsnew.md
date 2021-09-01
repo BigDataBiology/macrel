@@ -1,5 +1,13 @@
 # What's new? (History)
 
+## Version 1.0.1
+
+Released September 2 2021
+
+### Bugfixes
+
+- No longer crash on very short peptides (1 or 2 amino acids)
+
 ## Version 1.0.0
 
 Released December 21 2020
