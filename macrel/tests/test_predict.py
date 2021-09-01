@@ -1,6 +1,7 @@
 import numpy as np
 from macrel import AMP_features, AMP_predict
 from macrel.main import data_file
+from os import path
 
 def test_predict():
     fs = AMP_features.features('tests/peptides/expep.faa.gz')
