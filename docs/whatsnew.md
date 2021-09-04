@@ -1,5 +1,12 @@
 # What's new? (History)
 
+## Unreleased
+
+### User-visible improvements
+
+- Add support for bzip2 and xz compressed FASTA files
+
+
 ## Version 1.0.1
 
 Released September 2 2021

@@ -4,7 +4,10 @@ def fasta_iter(fname, full_header=False):
     Parameters
     ----------
     fname : str
-        Filename. If it ends with .gz, gzip format is assumed
+        Filename.
+            If it ends with .gz, gzip format is assumed
+            If .bz2 then bzip2 format is assumed
+            if .xz, then lzma format is assumerd
     full_header : boolean (optional)
         If True, yields the full header. Otherwise (the default), only the
         first word
@@ -18,6 +21,12 @@ def fasta_iter(fname, full_header=False):
     if fname.endswith('.gz'):
         import gzip
         op = gzip.open
+    elif fname.endswith('.bz2'):
+        import bz2
+        op = bz2.open
+    elif fname.endswith('.xz'):
+        import lzma
+        op = lzma.open
     else:
         op = open
     with op(fname, 'rt') as f:
