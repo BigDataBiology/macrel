@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019-2020, MACREL Authors
+# Copyright (C) 2019-2021, MACREL Authors
 # vim: set ts=4 sts=4 sw=4 expandtab smartindent:
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -42,14 +42,16 @@ package_data = {
 packages = setuptools.find_packages()
 
 classifiers = [
-'Development Status :: 4 - Beta',
+'Development Status :: 5 - Production/Stable',
 'Intended Audience :: Science/Research',
 'Programming Language :: Python',
 'Programming Language :: Python :: 3',
 'Programming Language :: Python :: 3.6',
 'Programming Language :: Python :: 3.7',
 'Programming Language :: Python :: 3.8',
-'Programming Language :: R :: 3.6',
+'Programming Language :: Python :: 3.9',
+'Programming Language :: Python :: 3.10',
+'Programming Language :: R',
 'Operating System :: OS Independent',
 'License :: OSI Approved :: MIT License',
 ]
