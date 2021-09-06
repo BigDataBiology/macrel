@@ -227,7 +227,7 @@ def do_abundance(args, tdir,logfile):
             # -M            mark shorter split hits as secondary
             '-M',
             fasta_file,
-            path.join(tdir, 'preproc.pair.1.fq.gz')],
+            path.join(tdir, 'preproc.fq.gz')],
             stdout=sout)
     subprocess.check_call([
         'ngless',
@@ -261,7 +261,7 @@ def do_assembly(args, tdir,logfile):
         megahit_args = ['-1', path.join(tdir, 'preproc.pair.1.fq.gz'),
                         '-2', path.join(tdir, 'preproc.pair.2.fq.gz')]
     else:
-        megahit_args = ['-r', path.join(tdir, 'preproc.pair.1.fq.gz')]
+        megahit_args = ['-r', path.join(tdir, 'preproc.fq.gz')]
     megahit_output = path.join(args.output, args.outtag + '.megahit_output')
     do_read_trimming(args, tdir,logfile)
     subprocess.check_call([
