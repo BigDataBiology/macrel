@@ -6,6 +6,9 @@
 
 - Add support for bzip2 and xz compressed FASTA files
 
+### Bugfixes
+
+- Fix abundance/reads modes when single-ended reads were used
 
 ## Version 1.0.1
 

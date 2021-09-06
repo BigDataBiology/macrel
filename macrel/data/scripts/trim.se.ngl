@@ -2,7 +2,7 @@ ngless "1.0"
 
 input = fastq(ARGV[1])
 
-preproc = preprocess(input, keep_singles=False) using |r|:
+preproc = preprocess(input, keep_singles=True) using |r|:
     r = r.n_to_zero_quality()
     r = endstrim(r, min_quality=3)
     if len(r) < 75:
