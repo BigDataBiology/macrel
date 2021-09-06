@@ -4,8 +4,8 @@ outfolder_mode_a_fasta="out"
 outtag_mode_a_fasta="example_abundance"
 
 macrel abundance \
-    -1 ../../example_seqs/R1.fq.gz \
-    --fasta ../../example_seqs/ref.faa.gz \
+    -1 R1.fq.gz \
+    --fasta ref.faa.gz \
     --output out
 if [[ $? != 0 ]]; then
     >&2 echo "macrel failed"
