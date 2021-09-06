@@ -1,0 +1,4 @@
+	MACREL
+smORF_1	12
+smORF_10	4
+smORF_9	4
