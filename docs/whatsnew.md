@@ -1,5 +1,13 @@
 # What's new? (History)
 
+## Version 1.0.2
+
+Released September 16 2021
+
+### Bugfixes
+
+- Fix abundance/reads modes when single-ended reads were used
+
 ## Version 1.0.1
 
 Released September 2 2021

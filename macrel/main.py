@@ -185,6 +185,13 @@ def link_or_uncompress_fasta_file(orig, dest):
 
 def do_abundance(args, tdir,logfile):
     do_read_trimming(args, tdir,logfile)
+    # Even when paired reads, to do the abundance, 
+    # only one pair is used to make the measures
+    # comparable
+    if args.reads2:
+        trimmed_file = path.join(tdir, 'preproc.pair.1.fq.gz')
+    else:
+        trimmed_file = path.join(tdir, 'preproc.fq.gz')
     sam_file = path.join(tdir, 'paladin.out.sam')
     fasta_file = link_or_uncompress_fasta_file(
                         args.fasta_file,
@@ -227,7 +234,7 @@ def do_abundance(args, tdir,logfile):
             # -M            mark shorter split hits as secondary
             '-M',
             fasta_file,
-            path.join(tdir, 'preproc.pair.1.fq.gz')],
+            trimmed_file],
             stdout=sout)
     subprocess.check_call([
         'ngless',
@@ -261,7 +268,7 @@ def do_assembly(args, tdir,logfile):
         megahit_args = ['-1', path.join(tdir, 'preproc.pair.1.fq.gz'),
                         '-2', path.join(tdir, 'preproc.pair.2.fq.gz')]
     else:
-        megahit_args = ['-r', path.join(tdir, 'preproc.pair.1.fq.gz')]
+        megahit_args = ['-r', path.join(tdir, 'preproc.fq.gz')]
     megahit_output = path.join(args.output, args.outtag + '.megahit_output')
     do_read_trimming(args, tdir,logfile)
     subprocess.check_call([
