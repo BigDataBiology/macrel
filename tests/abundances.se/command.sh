@@ -18,3 +18,4 @@ if [[ -f "out/macrel.out.abundance.tsv" ]] ; then
     >&2 echo "bad"
     exit 1
 fi
+
