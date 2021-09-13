@@ -29,7 +29,8 @@ The recommended method of installation is through
 [bioconda](https://anaconda.org/bioconda/macrel):
 
 ```bash
-conda install -c bioconda macrel
+conda install mamba -n base -c conda-forge 
+mamba install macrel -c bioconda
 ```
 
 To install from source, [read the docs](https://macrel.readthedocs.io/en/latest/install)
