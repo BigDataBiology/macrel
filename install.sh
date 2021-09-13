@@ -40,7 +40,7 @@ conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 conda install -y mamba -n base -c conda-forge
 
-echo "# Installing conda packages"
+echo "# Installing packages with MAMBA"
 
 mamba install -y \
         ngless \
