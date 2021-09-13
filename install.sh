@@ -38,10 +38,11 @@ source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
+conda install -y mamba -n base -c conda-forge
 
 echo "# Installing conda packages"
 
-conda install -y \
+mamba install -y \
         ngless \
         megahit \
         paladin \
