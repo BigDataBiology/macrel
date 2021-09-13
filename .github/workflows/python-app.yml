@@ -20,7 +20,7 @@ jobs:
     - name: Build environment
       run: |
         PYTHON_VERSION=${{ matrix.python-version }} ./install.sh
-        conda install --prefix ./envs/Macrel_env  -y pytest
+        mamba install --prefix ./envs/Macrel_env  -y pytest
 
     - name: Test Macrel
       run: |
