@@ -38,23 +38,37 @@ source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
-conda install -y mamba -n base -c conda-forge
 
 echo "# Installing packages with MAMBA"
-
-mamba install -y \
-        ngless \
-        megahit \
-        paladin \
-        pandas \
-        scikit-learn \
-        atomicwrites \
-        rpy2 \
-        tzlocal \
-        r-base \
-        r-essentials \
-        r-peptides \
-        --quiet
+if ! which mamba > /dev/null; then
+    conda install -y \
+              ngless \
+              megahit \
+              paladin \
+              pandas \
+              scikit-learn \
+              atomicwrites \
+              rpy2 \
+              tzlocal \
+              r-base \
+              r-essentials \
+              r-peptides \
+              --quiet
+else
+    mamba install -y \
+              ngless \
+              megahit \
+              paladin \
+              pandas \
+              scikit-learn \
+              atomicwrites \
+              rpy2 \
+              tzlocal \
+              r-base \
+              r-essentials \
+              r-peptides \
+              --quiet
+fi
 
 # env forwards the current environment and sets some extra variables needed by
 # ./recipe/build.sh
