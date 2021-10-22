@@ -1,4 +1,4 @@
-module Main exposing (..)
+module Predict exposing (..)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button
