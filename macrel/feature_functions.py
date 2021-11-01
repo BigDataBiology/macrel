@@ -1,5 +1,7 @@
-''' Functions were adapted from:
-  -- ModlAMP(https://github.com/alexarnimueller/modlAMP)
+'''
+Functions were adapted from:
+
+-- ModlAMP(https://github.com/alexarnimueller/modlAMP)
   -- Peptides R Package (https://github.com/dosorio/Peptides), and
   -- originally available in Macrel v.1 (https://github.com/celiosantosjr/macrel)
 
@@ -9,7 +11,9 @@ some others into here.
 '''
 
 def amino_acid_composition(seq):
+    import numpy as np
     from .database import _aa_groups
+    
     # See groups above
     return np.array(
             [sum(map(g.__contains__, seq)) for g in _aa_groups],
@@ -17,6 +21,8 @@ def amino_acid_composition(seq):
 
 
 def ctdd(sequence, groups):
+    import numpy as np
+    
     code = []
     for group in groups:
         for i, aa in enumerate(sequence):
