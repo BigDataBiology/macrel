@@ -39,7 +39,7 @@ def features(ifile):
             elif len(seq) == 2:
                 seq += 'X'
             seqs[-1] = seq
-        ch = _charge(seq, 7)
+        ch = pep_charge(seq, 7)
         pI = isoelectric_point(seq)
         aIndex = aliphatic_index(seq)
         instaIndex = instability_index(seq)
