@@ -91,8 +91,8 @@ def main(args):
 
     ifile = args[1]
     ofile = args[2]
-    features = features(ifile)
-    features.to_csv(ofile, sep='\t', index_label='Access')
+    feat = features(ifile)
+    feat.to_csv(ofile, sep='\t', index_label='Access')
 
 if __name__ == '__main__':
     main(sys.argv)
