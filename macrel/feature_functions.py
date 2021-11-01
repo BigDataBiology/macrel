@@ -11,7 +11,7 @@ some others into here.
 '''
 
 def amino_acid_composition(seq):
-    from database import _aa_groups
+    from .database import _aa_groups
     import numpy as np
     
     # See groups above
@@ -36,7 +36,7 @@ def ctdd(sequence, groups):
     
 def pep_charge(seq, ph=7.0):
     from collections import Counter
-    from database import pos_pks, neg_pks
+    from .database import pos_pks, neg_pks
 
     aa_content = dict(Counter(seq))
     aa_content['Nterm'] = 1
@@ -100,7 +100,7 @@ def isoelectric_point(seq, ph=7.0):
 
 
 def instability_index(seq):
-    from database import instability as dimv
+    from .database import instability as dimv
 
     stabindex = 0.0
     for i in range(len(seq) - 1):
@@ -110,7 +110,7 @@ def instability_index(seq):
 
 
 def hydrophobicity(seq):
-    from database import eisenberg
+    from .database import eisenberg
 
     hydrophobicity = 0.0
 
@@ -129,7 +129,7 @@ def aliphatic_index(seq):
 
 
 def boman_index(seq):
-    from database import boman_scale
+    from .database import boman_scale
 
     val = []
     for a in seq:
@@ -139,7 +139,7 @@ def boman_index(seq):
 
 
 def hmoment(seq, angle = 100, window = 11):
-  from database import eisenberg
+  from .database import eisenberg
   import numpy as np
 
   wdw = min(window, len(seq))  # if sequence is shorter than window, take the whole sequence instead
