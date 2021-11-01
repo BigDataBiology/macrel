@@ -56,7 +56,7 @@ def pep_charge(seq, ph=7.0):
         if aa_content.get(aa):
             net_charge -= aa_content.get(aa) * partial_charge
 
-    return round(net_charge, 3)
+    return net_charge
     
 def isoelectric_point(seq, ph=7.0):
     ph1, ph2 = float(), float()
@@ -123,9 +123,9 @@ def hydrophobicity(seq):
 
 def aliphatic_index(seq):
     aliph = 'AVIL'
-    d = {aa: (seq.count(aa) / len(seq)) for aa in aliph}  # count aa
+    d = {aa: float(seq.count(aa)) / len(seq) for aa in aliph}  # count aa
     
-    return d['A'] + 2.9 * d['V'] + 3.9 * (d['I'] + d['L'])  # formula for calculating the AI (Ikai, 1980)
+    return 100*(d['A'] + 2.9 * d['V'] + 3.9 * (d['I'] + d['L']))  # formula for calculating the AI (Ikai, 1980)
 
 
 def boman_index(seq):
@@ -139,17 +139,31 @@ def boman_index(seq):
 
 
 def hmoment(seq, angle = 100, window = 11):
-  from .database import eisenberg
-  import numpy as np
+    '''
+    # http://emboss.bioinformatics.nl/cgi-bin/emboss/hmoment
+    # SEQUENCE: FLPVLAGLTPSIVPKLVCLLTKKC
+    # ALPHA-HELIX ANGLE=100 : 0.52
+    # BETA-SHEET  ANGLE=160 : 0.271
+    # 
+    # ALPHA HELIX VALUE
+    # hmoment(seq = "FLPVLAGLTPSIVPKLVCLLTKKC", angle = 100, window = 11)
+    # 0.5199226
+    # 
+    # BETA SHEET VALUE
+    # hmoment(seq = "FLPVLAGLTPSIVPKLVCLLTKKC", angle = 160, window = 11)
+    # 0.2705906
+    '''
+    from .database import eisenberg
+    import numpy as np
 
-  wdw = min(window, len(seq))  # if sequence is shorter than window, take the whole sequence instead
-  mtrx = [eisenberg[aa] for aa in seq]
-  mwdw = [[sum(mtrx[i:i + wdw])] for i in range(len(mtrx) - wdw + 1)]
-  mwdw = np.asarray(mwdw)
+    wdw = min(window, len(seq))  # if sequence is shorter than window, take the whole sequence instead
+    mtrx = [eisenberg[aa] for aa in seq]
+    mwdw = [[sum(mtrx[i:i + wdw])] for i in range(len(mtrx) - wdw + 1)]
+    mwdw = np.asarray(mwdw)
   
-  rads = angle * (np.pi / 180) * np.asarray(range(wdw))  # calculate actual moment (radial)
-  vcos = (mwdw * np.cos(rads)).sum(axis=1)
-  vsin = (mwdw * np.sin(rads)).sum(axis=1)
-  moms = np.sqrt(vsin ** 2 + vcos ** 2) / wdw
+    rads = angle * (np.pi / 180) * np.asarray(range(wdw))  # calculate actual moment (radial)
+    vcos = (mwdw * np.cos(rads)).sum(axis=1)
+    vsin = (mwdw * np.sin(rads)).sum(axis=1)
+    moms = np.sqrt(vsin ** 2 + vcos ** 2) / wdw
     
-  return np.max(moms)
+    return np.max(moms)
