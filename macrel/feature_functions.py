@@ -157,8 +157,8 @@ def hmoment(seq, angle = 100, window = 11):
     import numpy as np
 
     wdw = min(window, len(seq))  # if sequence is shorter than window, take the whole sequence instead
-    mtrx = [eisenberg[aa] for aa in seq]
-    mwdw = [[sum(mtrx[i:i + wdw])] for i in range(len(mtrx) - wdw + 1)]
+    mtrx = [eisenberg[aa] for aa in seq]  #[::-1]
+    mwdw = [mtrx[i:i + wdw] for i in range(len(mtrx) - wdw + 1)]
     mwdw = np.asarray(mwdw)
   
     rads = angle * (np.pi / 180) * np.asarray(range(wdw))  # calculate actual moment (radial)
