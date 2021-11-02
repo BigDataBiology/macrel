@@ -7,10 +7,6 @@ if [[ x$PYTHON_VERSION == x ]]; then
     PYTHON_VERSION=3.7
 fi
 
-if [[ y$R_VERSION == y ]]; then
-    R_VERSION=3.6
-fi
-
 
 echo "
 # Macrel - (Meta)genomic AMP Classification and Retrieval
@@ -44,18 +40,16 @@ if ! which mamba > /dev/null; then
     conda install -y \
               ngless \
               megahit \
+              biopython \
               paladin \
               pandas \
               scikit-learn \
               atomicwrites \
-              rpy2 \
               tzlocal \
-              r-base \
-              r-essentials \
-              r-peptides \
               --quiet
 else
     mamba install -y \
+              biopython \
               ngless \
               megahit \
               paladin \
@@ -64,9 +58,6 @@ else
               atomicwrites \
               rpy2 \
               tzlocal \
-              r-base \
-              r-essentials \
-              r-peptides \
               --quiet
 fi
 

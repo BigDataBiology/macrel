@@ -2,51 +2,38 @@
 # _*_coding:utf-8_*_
 
 import sys
+import gzip
+import lzma
 import pandas as pd
 import numpy as np
-from .feature_functions import *
-from .fasta import fasta_iter
-from .database import GROUPS_SA, GROUPS_HB
 
+from Bio import SeqIO
+from .database import GROUPS_SA, GROUPS_HB
+from .macrel_features import MacrelFeatures
+
+def openfile(ifile):
+    if ifile.endswith('.gz'):
+        records = SeqIO.parse(gzip.open(ifile, 'rt', encoding='utf-8'), 'fasta')
+    elif ifile.endswith('.xz'):
+        records = SeqIO.parse(lzma.open(ifile, 'rt', encoding='utf-8'), 'fasta')
+    else:
+        records = SeqIO.parse(ifile, 'fasta')
+
+    return records
+    
 def features(ifile):
-    groups = [set(g) for g in (GROUPS_SA+GROUPS_HB)]
     seqs = []
     headers = []
     encodings = []
     aaComp = []
-    desc_features = []
-    for h, seq in fasta_iter(ifile):
-        if seq[-1] == '*':
-            seq = seq[:-1]
-        if seq[0] == 'M':
-            seq = seq[1:]
-        seqs.append(seq)
-        headers.append(h)
-        encodings.append(ctdd(seq, groups))
-        aaComp.append(amino_acid_composition(seq))
-        if len(seq) < 3:
-            import logging
-            logger = logging.getLogger('macrel')
-            logger.warning("Warning: input sequence '{}' is shorter longer than 3 amino acids."
-                " Macrel models were developed and tested for peptides with at least 10 amino acids and "
-                " results on very short peptides these should be considered unreliable.".format(h))
-
-            encodings[-1] *= 0
-            aaComp[-1] *= 0
-            # This is a major hack, but otherwise, the R code will fail
-            if len(seq) == 1:
-                seq += 'XX'
-            elif len(seq) == 2:
-                seq += 'X'
-            seqs[-1] = seq
-        ch = pep_charge(seq, 7)
-        pI = isoelectric_point(seq)
-        aIndex = aliphatic_index(seq)
-        instaIndex = instability_index(seq)
-        iboman = boman_index(seq)
-        hydroph = hydrophobicity(seq)
-        h_moment = hmoment(seq, angle=100, window=11)
-        desc_features.append([ch, pI, aIndex, instaIndex, iboman, hydroph, h_moment])
+    desc_features = [] 
+    for record in openfile(ifile):
+        features = MacrelFeatures(record.seq)
+        seqs.append(features.checkseq()) 
+        headers.append(record.id)
+        encodings.append(features.ctdd(GROUPS_SA + GROUPS_HB))
+        aaComp.append(features.amino_acid_composition())
+        desc_features.append(features.compute_all())
 
     features = np.hstack([aaComp, desc_features, encodings])
 
