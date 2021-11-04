@@ -60,7 +60,7 @@ Macrel pipeline does:
 
 8. calculate AMPs abundance in meta(genomic) samples by reads mapping.
 
-Macrel is fast and works by coordinating [NGLess](https://github.com/ngless-toolkit/ngless), [megahit](https://github.com/voutcn/megahit), [prodigal](https://github.com/hyattpd/Prodigal) and [PALADIN](https://github.com/ToniWestbrook/paladin). It is implemented in Python and R. Its models were trained with [Scikit-Learn](https://github.com/scikit-learn/scikit-learn) python module, and the descriptors are calculated with the [Peptides](https://cran.r-project.org/web/packages/Peptides/index.html) R package.
+Macrel is fast and works by coordinating [NGLess](https://github.com/ngless-toolkit/ngless), [megahit](https://github.com/voutcn/megahit), [prodigal](https://github.com/hyattpd/Prodigal) and [PALADIN](https://github.com/ToniWestbrook/paladin). It is implemented in Python and R. Its models were trained with [Scikit-Learn](https://github.com/scikit-learn/scikit-learn) python module, and the descriptors are calculated with functions from [modlAMP](https://github.com/alexarnimueller/modlAMP) package.
 
 ## AMPs classification
 
