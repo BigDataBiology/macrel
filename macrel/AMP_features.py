@@ -7,7 +7,7 @@ import lzma
 import pandas as pd
 import numpy as np
 
-from Bio import SeqIO
+from .fasta import fasta_iter
 from .database import GROUPS_SA, GROUPS_HB
 from .macrel_features import MacrelFeatures
 
@@ -27,10 +27,10 @@ def features(ifile):
     encodings = []
     aaComp = []
     desc_features = [] 
-    for record in openfile(ifile):
-        features = MacrelFeatures(record.seq)
+    for h, seq in fasta_iter(ifile):
+        features = MacrelFeatures(seq)
         seqs.append(features.checkseq()) 
-        headers.append(record.id)
+        headers.append(h)
         encodings.append(features.ctdd(GROUPS_SA + GROUPS_HB))
         aaComp.append(features.amino_acid_composition())
         desc_features.append(features.compute_all())

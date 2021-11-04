@@ -40,7 +40,6 @@ if ! which mamba > /dev/null; then
     conda install -y \
               ngless \
               megahit \
-              biopython \
               paladin \
               pandas \
               scikit-learn \
@@ -49,7 +48,6 @@ if ! which mamba > /dev/null; then
               --quiet
 else
     mamba install -y \
-              biopython \
               ngless \
               megahit \
               paladin \
