@@ -28,7 +28,7 @@ def checkseq(seq):
     if seq[-1] == '*':
         seq = seq[:-1]
     return seq
-  
+
 
 def ctdd(seq, groups):
     seq = checkseq(seq)
@@ -54,36 +54,42 @@ def pep_charge(seq, ph=7.0):
     aa_content = dict(Counter(seq))
     aa_content['Nterm'] = 1
     aa_content['Cterm'] = 1
+    return pep_charge_aa(aa_content, ph)
+
+def pep_charge_aa(aa_content, ph):
 
     net_charge = 0.0
 
     for aa, pK in pos_pks.items():
-        c_r = 10 ** (pK - ph)
-        partial_charge = c_r / (c_r + 1.0)
         if aa_content.get(aa):
+            c_r = 10 ** (pK - ph)
+            partial_charge = c_r / (c_r + 1.0)
             net_charge += aa_content.get(aa) * partial_charge
 
     for aa, pK in neg_pks.items():
-        c_r = 10 ** (ph - pK)
-        partial_charge = c_r / (c_r + 1.0)
         if aa_content.get(aa):
+            c_r = 10 ** (ph - pK)
+            partial_charge = c_r / (c_r + 1.0)
             net_charge -= aa_content.get(aa) * partial_charge
 
     return net_charge
 
 
 def isoelectric_point(seq, ph=7.0):
+    aa_content = dict(Counter(seq))
+    aa_content['Nterm'] = 1
+    aa_content['Cterm'] = 1
     ph, ph1, ph2 = float(), float(), float()
     desc = []
-    charge = pep_charge(seq, ph)
+    charge = pep_charge_aa(aa_content, ph)
 
     if charge > 0.0:
         ph1 = ph
         charge1 = charge
         while charge1 > 0.0:
             ph = ph1 + 1.0
-            charge = pep_charge(seq, ph)
-            if charge > 0.0:    
+            charge = pep_charge_aa(aa_content, ph)
+            if charge > 0.0:
                 ph1 = ph
                 charge1 = charge
             else:
@@ -94,7 +100,7 @@ def isoelectric_point(seq, ph=7.0):
          charge2 = charge
          while charge2 < 0.0:
              ph = ph2 - 1.0
-             charge = pep_charge(seq, ph)
+             charge = pep_charge_aa(aa_content, ph)
              if charge < 0.0:
                 ph2 = ph
                 charge2 = charge
@@ -104,7 +110,7 @@ def isoelectric_point(seq, ph=7.0):
 
     while ph2 - ph1 > 0.0001 and charge != 0.0:
         ph = (ph1 + ph2) / 2.0
-        charge = pep_charge(seq, ph)
+        charge = pep_charge_aa(aa_content, ph)
         if charge > 0.0:
             ph1 = ph
         else:
@@ -133,7 +139,6 @@ def hydrophobicity(seq):
 def aliphatic_index(seq):
     aliph = 'AVIL'
     d = {aa: float(seq.count(aa)) / len(seq) for aa in aliph}  # count aa
-    
     return 100*(d['A'] + 2.9 * d['V'] + 3.9 * (d['I'] + d['L']))  # formula for calculating the AI (Ikai, 1980)
 
 
@@ -181,4 +186,4 @@ def compute_all(seq):
             boman_index(seq),
             hydrophobicity(seq),
             hmoment(seq, angle=100, window=11)]
-            
+
