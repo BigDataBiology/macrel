@@ -126,10 +126,9 @@ def instability_index(seq):
 def hydrophobicity(seq):
     hydrophobicity = 0.0
     for aa in seq:
-        if eisenberg.get(aa):
-            hydrophobicity += eisenberg[aa] / len(seq)
+        hydrophobicity += eisenberg.get(aa, 0.0)
 
-    return hydrophobicity
+    return hydrophobicity/len(seq)
 
 
 def aliphatic_index(seq):
