@@ -7,28 +7,22 @@ import numpy as np
 
 from .fasta import fasta_iter
 from .database import GROUPS_SA, GROUPS_HB
-from .macrel_features import *
+from .macrel_features import ctdd, amino_acid_composition, normalize_seq, compute_all
+
 
 def features(ifile):
     seqs = []
     headers = []
-    encodings = []
-    aaComp = []
-    desc_features = [] 
+    features = []
     for h, seq in fasta_iter(ifile):
-        seqs.append(checkseq(seq)) 
+        seq = normalize_seq(seq)
+        seqs.append(seq)
         headers.append(h)
-        encodings.append(ctdd(seq, GROUPS_SA + GROUPS_HB))
-        aaComp.append(amino_acid_composition(seq))
-        desc_features.append(compute_all(seq))
-
-    features = np.hstack([aaComp, desc_features, encodings])
-
-    # This is arguably a Pandas bug (at least inconsistency), but
-    # pd.DataFrame([], ...) works, while pd.DataFrame(np.array([]), ...) does
-    # not:
-    if len(features) == 0:
-        features = []
+        features.append(
+                np.concatenate((
+                    amino_acid_composition(seq),
+                    compute_all(seq),
+                    ctdd(seq, GROUPS_SA + GROUPS_HB))))
 
     features = pd.DataFrame(features, index=headers, columns=[
             "tinyAA",

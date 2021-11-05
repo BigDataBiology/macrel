@@ -12,8 +12,6 @@ The new module for macrel_features, was implemented using some
 functions from [modlAMP](https://github.com/alexarnimueller/modlAMP/)
 which is under BSD3 license which is completely overlapped by Macrel
 licensing under the MIT license.
-
-Nov. 5th, 2021 --
 '''
 
 import numpy as np
@@ -22,7 +20,7 @@ from .database import pos_pks, neg_pks, boman_scale
 from collections import Counter
 
 
-def checkseq(seq):
+def normalize_seq(seq):
     if seq[0] == 'M':
         seq = seq[1:]
     if seq[-1] == '*':
@@ -31,7 +29,6 @@ def checkseq(seq):
 
 
 def ctdd(seq, groups):
-    seq = checkseq(seq)
     code = []
     for group in groups:
         for i, aa in enumerate(seq):
@@ -44,7 +41,6 @@ def ctdd(seq, groups):
 
 
 def amino_acid_composition(seq):
-    seq = checkseq(seq)
     return np.array(
             [sum(map(g.__contains__, seq)) for g in _aa_groups],
             dtype=float)/len(seq)
@@ -178,7 +174,6 @@ def hmoment(seq, angle = 100, window = 11):
     return np.max(moms)
 
 def compute_all(seq):
-    seq = checkseq(seq)
     return [pep_charge(seq, ph=7.0),
             isoelectric_point(seq, ph=7.0),
             aliphatic_index(seq),
