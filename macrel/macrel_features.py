@@ -75,34 +75,20 @@ def isoelectric_point(seq, ph=7.0):
     aa_content = dict(Counter(seq))
     aa_content['Nterm'] = 1
     aa_content['Cterm'] = 1
-    ph, ph1, ph2 = float(), float(), float()
-    desc = []
     charge = pep_charge_aa(aa_content, ph)
 
     if charge > 0.0:
-        ph1 = ph
-        charge1 = charge
-        while charge1 > 0.0:
-            ph = ph1 + 1.0
+        while charge > 0.0:
+            ph += 1.0
             charge = pep_charge_aa(aa_content, ph)
-            if charge > 0.0:
-                ph1 = ph
-                charge1 = charge
-            else:
-                ph2 = ph
-                break
+        ph1 = ph - 1.0
+        ph2 = ph
     else:
-         ph2 = ph
-         charge2 = charge
-         while charge2 < 0.0:
-             ph = ph2 - 1.0
-             charge = pep_charge_aa(aa_content, ph)
-             if charge < 0.0:
-                ph2 = ph
-                charge2 = charge
-             else:
-                ph1 = ph
-                break
+        while charge < 0.0:
+            ph -= 1.0
+            charge = pep_charge_aa(aa_content, ph)
+        ph1 = ph
+        ph2 = ph + 1.0
 
     while ph2 - ph1 > 0.0001 and charge != 0.0:
         ph = (ph1 + ph2) / 2.0
@@ -111,7 +97,6 @@ def isoelectric_point(seq, ph=7.0):
             ph1 = ph
         else:
             ph2 = ph
-
     return ph
 
 
