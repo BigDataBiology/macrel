@@ -52,21 +52,32 @@ def pep_charge(seq, ph=7.0):
     aa_content['Cterm'] = 1
     return pep_charge_aa(aa_content, ph)
 
-def pep_charge_aa(aa_content, ph):
 
+pos_pks10 = {k:10**pk for k,pk in pos_pks.items()}
+neg_pks10 = {k:10**pk for k,pk in neg_pks.items()}
+
+def pep_charge_aa(aa_content, ph):
+    ph10 = 10**ph
     net_charge = 0.0
 
-    for aa, pK in pos_pks.items():
-        if aa_content.get(aa):
-            c_r = 10 ** (pK - ph)
+    for aa, pK10 in pos_pks10.items():
+        c = aa_content.get(aa)
+        if c:
+            # original was
+            # c_r = 10 ** (pK - ph)
+            # But this requires one exponentiation per iteration, while this
+            # approach is slightly faster
+            c_r = pK10 / ph10
             partial_charge = c_r / (c_r + 1.0)
-            net_charge += aa_content.get(aa) * partial_charge
+            net_charge += c * partial_charge
 
-    for aa, pK in neg_pks.items():
-        if aa_content.get(aa):
-            c_r = 10 ** (ph - pK)
+    for aa, pK10 in neg_pks10.items():
+        c = aa_content.get(aa)
+        if c:
+            # See above
+            c_r = ph10 / pK10
             partial_charge = c_r / (c_r + 1.0)
-            net_charge -= aa_content.get(aa) * partial_charge
+            net_charge -= c * partial_charge
 
     return net_charge
 
