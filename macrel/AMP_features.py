@@ -2,15 +2,13 @@
 # _*_coding:utf-8_*_
 
 import sys
-import gzip
-import lzma
 import pandas as pd
 import numpy as np
 
 from .fasta import fasta_iter
 from .database import GROUPS_SA, GROUPS_HB
 from .macrel_features import *
-    
+
 def features(ifile):
     seqs = []
     headers = []
