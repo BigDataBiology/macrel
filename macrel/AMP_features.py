@@ -9,17 +9,7 @@ import numpy as np
 
 from .fasta import fasta_iter
 from .database import GROUPS_SA, GROUPS_HB
-from .macrel_features import MacrelFeatures
-
-def openfile(ifile):
-    if ifile.endswith('.gz'):
-        records = SeqIO.parse(gzip.open(ifile, 'rt', encoding='utf-8'), 'fasta')
-    elif ifile.endswith('.xz'):
-        records = SeqIO.parse(lzma.open(ifile, 'rt', encoding='utf-8'), 'fasta')
-    else:
-        records = SeqIO.parse(ifile, 'fasta')
-
-    return records
+from .macrel_features import *
     
 def features(ifile):
     seqs = []
@@ -28,12 +18,11 @@ def features(ifile):
     aaComp = []
     desc_features = [] 
     for h, seq in fasta_iter(ifile):
-        features = MacrelFeatures(seq)
-        seqs.append(features.checkseq()) 
+        seqs.append(checkseq(seq)) 
         headers.append(h)
-        encodings.append(features.ctdd(GROUPS_SA + GROUPS_HB))
-        aaComp.append(features.amino_acid_composition())
-        desc_features.append(features.compute_all())
+        encodings.append(ctdd(seq, GROUPS_SA + GROUPS_HB))
+        aaComp.append(amino_acid_composition(seq))
+        desc_features.append(compute_all(seq))
 
     features = np.hstack([aaComp, desc_features, encodings])
 

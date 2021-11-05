@@ -17,11 +17,9 @@ If you use this software in a publication please cite
 
 ## License
 
-GPLv3.
+MIT.
 
-While Macrel as a whole is **GPL v3** licensed (to comply with it being used in
-some of its dependencies, namely modlAMP derived code), the macrel-specific code
-is also licensed under the **BSD 3 - Clause License**.
+Macrel as a whole is under the **MIT** license.
 
 ## Install
 
