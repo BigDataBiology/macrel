@@ -5,7 +5,7 @@ set -e
 mkdir -p $PREFIX/bin
 
 cd prodigal_modified
-make CC=$CC --quiet # conda will add $CC to environment
+make CC=$CC # conda will add $CC to environment
 chmod +x prodigal
 cd ..
 
