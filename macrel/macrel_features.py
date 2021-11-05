@@ -165,13 +165,16 @@ def hmoment(seq, angle = 100, window = 11):
     mtrx = [eisenberg[aa] for aa in seq]  #[::-1]
     mwdw = [mtrx[i:i + wdw] for i in range(len(mtrx) - wdw + 1)]
     mwdw = np.asarray(mwdw)
-  
-    rads = angle * (np.pi / 180) * np.asarray(range(wdw))  # calculate actual moment (radial)
-    vcos = (mwdw * np.cos(rads)).sum(axis=1)
-    vsin = (mwdw * np.sin(rads)).sum(axis=1)
-    moms = np.sqrt(vsin ** 2 + vcos ** 2) / wdw
-    
-    return np.max(moms)
+    rads = angle * (np.pi / 180) * np.arange(wdw)  # calculate actual moment (radial)
+
+    vcos = np.dot(mwdw, np.cos(rads))
+    vsin = np.dot(mwdw, np.sin(rads))
+    # The code below is optimized to avoid copies
+    vcos **= 2.
+    vsin **= 2.
+    moms = vsin
+    moms += vcos
+    return np.sqrt(np.max(vsin)) / wdw
 
 def compute_all(seq):
     return [pep_charge(seq, ph=7.0),
