@@ -1,5 +1,5 @@
 from macrel.fasta import fasta_iter
-from macrel.AMP_features import features
+from macrel.AMP_features import fasta_features
 from os import makedirs
 
 makedirs('preproc/', exist_ok=True)
@@ -10,7 +10,7 @@ with open(normalized_fname, 'wt') as output:
         output.write(f">Hemo_{i}\n{seq}\n")
     for i, (_, seq) in enumerate(fasta_iter('data/hemo.training.neg.faa')):
         output.write(f">NonHemo_{i}\n{seq}\n")
-fs = features(normalized_fname)
+fs = fasta_features(normalized_fname)
 fs['group'] = fs.index.map(lambda ix: ix.split('_')[0])
 fs.to_csv('preproc/Hemo.train.tsv', sep='\t')
 
@@ -20,6 +20,6 @@ with open(normalized_fname, 'wt') as output:
         output.write(f">Hemo_{i}\n{seq}\n")
     for i, (_, seq) in enumerate(fasta_iter('data/hemo.validation.neg.faa')):
         output.write(f">NonHemo_{i}\n{seq}\n")
-fs_v = features(normalized_fname)
+fs_v = fasta_features(normalized_fname)
 fs_v['group'] = fs_v.index.map(lambda ix: ix.split('_')[0])
 fs_v.to_csv('preproc/Hemo.test.tsv', sep='\t')

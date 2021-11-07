@@ -17,6 +17,7 @@ licensing under the MIT license.
 import numpy as np
 from .database import eisenberg, instability, _aa_groups
 from .database import pos_pks, neg_pks, boman_scale
+from .database import CTDD_groups
 from collections import Counter
 
 
@@ -37,13 +38,11 @@ def ctdd(seq, groups):
                 break
         else:
             code.append(0)
-    return np.array(code)
+    return code
 
 
 def amino_acid_composition(seq):
-    return np.array(
-            [sum(map(g.__contains__, seq)) for g in _aa_groups],
-            dtype=float)/len(seq)
+    return [sum(map(g.__contains__, seq))/len(seq) for g in _aa_groups]
 
 
 def pep_charge(seq, ph=7.0):
@@ -172,11 +171,14 @@ def hmoment(seq, angle = 100, window = 11):
     return np.sqrt(np.max(vsin)) / wdw
 
 def compute_all(seq):
-    return [pep_charge(seq, ph=7.0),
-            isoelectric_point(seq, ph=7.0),
-            aliphatic_index(seq),
-            instability_index(seq),
-            boman_index(seq),
-            hydrophobicity(seq),
-            hmoment(seq, angle=100, window=11)]
+    return np.array(
+             amino_acid_composition(seq) + [
+               pep_charge(seq, ph=7.0),
+               isoelectric_point(seq, ph=7.0),
+               aliphatic_index(seq),
+               instability_index(seq),
+               boman_index(seq),
+               hydrophobicity(seq),
+               hmoment(seq, angle=100, window=11)] +
+             ctdd(seq, CTDD_groups))
 

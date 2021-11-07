@@ -6,11 +6,11 @@ import pandas as pd
 import numpy as np
 
 from .fasta import fasta_iter
-from .database import GROUPS_SA, GROUPS_HB
-from .macrel_features import ctdd, amino_acid_composition, normalize_seq, compute_all
+from .macrel_features import normalize_seq, compute_all
 
 
-def features(ifile):
+def fasta_features(ifile):
+    '''Compute features for all sequences in a given FASTA file'''
     seqs = []
     headers = []
     features = []
@@ -18,11 +18,7 @@ def features(ifile):
         seq = normalize_seq(seq)
         seqs.append(seq)
         headers.append(h)
-        features.append(
-                np.concatenate((
-                    amino_acid_composition(seq),
-                    compute_all(seq),
-                    ctdd(seq, GROUPS_SA + GROUPS_HB))))
+        features.append(compute_all(seq))
 
     features = pd.DataFrame(features, index=headers, columns=[
             "tinyAA",
@@ -59,7 +55,7 @@ def main(args):
 
     ifile = args[1]
     ofile = args[2]
-    feat = features(ifile)
+    feat = fasta_features(ifile)
     feat.to_csv(ofile, sep='\t', index_label='Access')
 
 if __name__ == '__main__':

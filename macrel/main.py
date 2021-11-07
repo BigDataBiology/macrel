@@ -284,10 +284,10 @@ def do_assembly(args, tdir,logfile):
 
 def do_predict(args, tdir):
     # These imports are slow, so we do them inside the functions
-    from .AMP_features import features
+    from .AMP_features import fasta_features
     from .AMP_predict import predict
     import gzip
-    fs = features(args.fasta_file)
+    fs = fasta_features(args.fasta_file)
     prediction = predict(
                     data_file("models/AMP.pkl.gz"),
                     data_file("models/Hemo.pkl.gz"),

@@ -4,7 +4,7 @@ from macrel.main import data_file
 from os import path
 
 def test_predict():
-    fs = AMP_features.features('tests/peptides/expep.faa.gz')
+    fs = AMP_features.fasta_features('tests/peptides/expep.faa.gz')
     fsp = AMP_predict.predict( data_file("models/AMP.pkl.gz"),
                         data_file("models/Hemo.pkl.gz"),
                         fs)
@@ -15,7 +15,7 @@ def test_predict():
     assert not np.all(fsn.is_AMP)
 
 def test_predict_very_short():
-    fs = AMP_features.features(
+    fs = AMP_features.fasta_features(
             path.join(path.dirname(__file__),
                     'data',
                     'very_short.faa'))

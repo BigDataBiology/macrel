@@ -1,6 +1,8 @@
 GROUPS_SA = ['ALFCGIVW', 'RKQEND', 'MSPTHY'] #solventaccess
 GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
 
+CTDD_groups = GROUPS_SA + GROUPS_HB
+
 #' # http://emboss.bioinformatics.nl/cgi-bin/emboss/pepstats
 #' # Property      Residues              Number  Mole%
 #' # Tiny          (A+C+G+S+T)             4   19.048
@@ -14,15 +16,15 @@ GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
 #' # Acidic        (B+D+E+Z)               0   00.000
 
 _aa_groups = [
-    set('ACGST'),          # Tiny      
-    set('ABCDGNPSTV'),     # Small     
-    set('AILV'),           # Aliphatic 
-    set('FHWY'),           # Aromatic  
-    set('ACFGILMPVWY'),    # Nonpolar  
-    set('DEHKNQRSTZ'),     # Polar     
-    set('BDEHKRZ'),        # Charged   
-    set('HKR'),            # Basic     
-    set('BDEZ'),           # Acidic    
+    frozenset('ACGST'),          # Tiny
+    frozenset('ABCDGNPSTV'),     # Small
+    frozenset('AILV'),           # Aliphatic
+    frozenset('FHWY'),           # Aromatic
+    frozenset('ACFGILMPVWY'),    # Nonpolar
+    frozenset('DEHKNQRSTZ'),     # Polar
+    frozenset('BDEHKRZ'),        # Charged
+    frozenset('HKR'),            # Basic
+    frozenset('BDEZ'),           # Acidic
 ]
 
 pos_pks = {'Nterm': 8.6, 'K': 10.8, 'R': 12.5, 'H': 6.5}
