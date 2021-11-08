@@ -1,10 +1,16 @@
-Version 1.0.2 2021-11-08
+Version 1.1.0 2021-11-08
 	* Fix classifier list for PyPI
 	* Add support for .bz2 & .xz fasta files
 	* Fix abundance/reads modes when single-ended reads were used
 	* Eliminated R dependency
-	* Code tweaks made Macrel about 3.5 times faster than before
 	* Include more extensive testing
+	* Code tweaks made Macrel about 3.5 times faster than before:
+
+| **Time \ Code** | **version 1.0.1** | **version 1.1.0** |
+| :-----: | :-----: | :-----: |
+| Real | 60m 44.380s | 17m 15.313s |
+| User | 33m 37.604s | 9m 38.034s |
+| System | 0m 16.076s | 0m 6.270s |
 
 ### Bugfixes
 
