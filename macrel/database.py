@@ -104,3 +104,9 @@ instability = {
                   'M': 0., 'L': 0., 'N': 0., 'Q': 0., 'P': 0., 'S': 0., 'R': 0., 'T': 0., 'W': 0.,
                   'V': 0., 'Y': 0., 'X': 0.}}
 
+# Transform the above into a simpler-to-use form, a single dictionary that maps dimers
+instability2 = {}
+for k,vs in instability.items():
+    for k2,v in vs.items():
+        if v:
+            instability2[k+k2] = v

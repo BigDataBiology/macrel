@@ -14,8 +14,9 @@ which is under BSD3 license which is completely overlapped by Macrel
 licensing under the MIT license.
 '''
 
+import math
 import numpy as np
-from .database import eisenberg, instability, _aa_groups
+from .database import eisenberg, instability2, _aa_groups
 from .database import pos_pks, neg_pks, boman_scale
 from .database import CTDD_groups
 from collections import Counter
@@ -41,16 +42,10 @@ def ctdd(seq, groups):
     return code
 
 
-def amino_acid_composition(seq):
-    return [sum(map(g.__contains__, seq))/len(seq) for g in _aa_groups]
-
-
-def pep_charge(seq, ph=7.0):
-    aa_content = dict(Counter(seq))
-    aa_content['Nterm'] = 1
-    aa_content['Cterm'] = 1
-    return pep_charge_aa(aa_content, ph)
-
+def amino_acid_composition(seq, aa_content):
+    return [
+            sum(aa_content.get(aa, 0.0) for aa in g)/len(seq)
+            for g in _aa_groups]
 
 pos_pks10 = {k:10**pk for k,pk in pos_pks.items()}
 neg_pks10 = {k:10**pk for k,pk in neg_pks.items()}
@@ -81,10 +76,7 @@ def pep_charge_aa(aa_content, ph):
     return net_charge
 
 
-def isoelectric_point(seq, ph=7.0):
-    aa_content = dict(Counter(seq))
-    aa_content['Nterm'] = 1
-    aa_content['Cterm'] = 1
+def isoelectric_point(aa_content, ph=7.0):
     charge = pep_charge_aa(aa_content, ph)
 
     if charge > 0.0:
@@ -110,34 +102,33 @@ def isoelectric_point(seq, ph=7.0):
     return ph
 
 
+
 def instability_index(seq):
     stabindex = 0.0
     for i in range(len(seq) - 1):
-        stabindex += instability[seq[i]][seq[i+1]]
+        stabindex += instability2.get(seq[i:i+2], 0.0)
 
     return (10.0 / len(seq)) * stabindex
 
 
-def hydrophobicity(seq):
-    hydrophobicity = 0.0
-    for aa in seq:
-        hydrophobicity += eisenberg.get(aa, 0.0)
-
-    return hydrophobicity/len(seq)
+def hydrophobicity(seq, aa_content):
+    return sum(
+            v * eisenberg.get(k, 0.0) for k,v in aa_content.items()
+            ) / len(seq)
 
 
-def aliphatic_index(seq):
-    aliph = 'AVIL'
-    d = {aa: float(seq.count(aa)) / len(seq) for aa in aliph}  # count aa
-    return 100*(d['A'] + 2.9 * d['V'] + 3.9 * (d['I'] + d['L']))  # formula for calculating the AI (Ikai, 1980)
+def aliphatic_index(seq, aa_content):
+    return 100.0*(
+            aa_content.get('A', 0.0) +
+            2.9 * aa_content.get('V', 0.0) +
+            3.9 * (aa_content.get('I', 0.0) + aa_content.get('L', 0.0))
+            ) / len(seq) # formula for calculating the AI (Ikai, 1980)
 
 
-def boman_index(seq):
-    val = []
-    for a in seq:
-        val.append(boman_scale[a])
-
-    return sum(val) / len(val)
+def boman_index(seq, aa_content):
+    return sum(
+            v * boman_scale.get(k, 0.0) for k,v in aa_content.items()
+            ) / len(seq)
 
 
 def hmoment(seq, angle = 100, window = 11):
@@ -156,9 +147,8 @@ def hmoment(seq, angle = 100, window = 11):
     # 0.2705906
     '''
     wdw = min(window, len(seq))  # if sequence is shorter than window, take the whole sequence instead
-    mtrx = [eisenberg[aa] for aa in seq]  #[::-1]
-    mwdw = [mtrx[i:i + wdw] for i in range(len(mtrx) - wdw + 1)]
-    mwdw = np.asarray(mwdw)
+    mtrx = np.array([eisenberg[aa] for aa in seq], dtype=np.float64)  #[::-1]
+    mwdw = np.array([mtrx[i:i + wdw] for i in range(len(mtrx) - wdw + 1)])
     rads = angle * (np.pi / 180) * np.arange(wdw)  # calculate actual moment (radial)
 
     vcos = np.dot(mwdw, np.cos(rads))
@@ -168,17 +158,20 @@ def hmoment(seq, angle = 100, window = 11):
     vsin **= 2.
     moms = vsin
     moms += vcos
-    return np.sqrt(np.max(vsin)) / wdw
+    return math.sqrt(moms.max()) / wdw
 
 def compute_all(seq):
+    aa_content = dict(Counter(seq))
+    aa_content['Nterm'] = 1
+    aa_content['Cterm'] = 1
     return np.array(
-             amino_acid_composition(seq) + [
-               pep_charge(seq, ph=7.0),
-               isoelectric_point(seq, ph=7.0),
-               aliphatic_index(seq),
+             amino_acid_composition(seq, aa_content) + [
+               pep_charge_aa(aa_content, ph=7.0),
+               isoelectric_point(aa_content, ph=7.0),
+               aliphatic_index(seq, aa_content),
                instability_index(seq),
-               boman_index(seq),
-               hydrophobicity(seq),
+               boman_index(seq, aa_content),
+               hydrophobicity(seq, aa_content),
                hmoment(seq, angle=100, window=11)] +
              ctdd(seq, CTDD_groups))
 
