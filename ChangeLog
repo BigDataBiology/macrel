@@ -5,17 +5,7 @@ Version 1.1.0 2021-11-08
 	* Eliminated R dependency
 	* Include more extensive testing
 	* Code tweaks made Macrel about 3.5 times faster than before:
-
-| **Time \ Code** | **version 1.0.1** | **version 1.1.0** |
-| :-----: | :-----: | :-----: |
-| Real | 60m 44.380s | 17m 15.313s |
-| User | 33m 37.604s | 9m 38.034s |
-| System | 0m 16.076s | 0m 6.270s |
-
-### Bugfixes
-
-- Fix abundance/reads modes when single-ended reads were used
-
+	* Fix abundance/reads modes when single-ended reads were used
 
 Version 1.0.1 2021-09-02
 	* No longer crash on very short peptides (1 or 2 amino acids)

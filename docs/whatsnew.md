@@ -7,7 +7,8 @@ Released November 8 2021
 - Add support for bzip2 and xz compressed FASTA files
 - Eliminate R dependency
 - Include more extensive testing
-- Code tweaks made **macrel** about 3.5 times faster than before:
+- New feature computation code (Python implementation) made **macrel** about
+  3.5 times faster than before:
 
 | **Time \ Code** | **version 1.0.1** | **version 1.1.0** |
 | :-----: | :-----: | :-----: |
