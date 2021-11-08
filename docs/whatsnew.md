@@ -1,10 +1,13 @@
 # What's new? (History)
 
-## Unreleased
+## Version 1.0.2
 
-### User-visible improvements
+Released November 8 2021
 
 - Add support for bzip2 and xz compressed FASTA files
+- Code eliminated R dependency
+- Macrel is about 3.5 times faster than before
+- Include more extensive testing
 
 ### Bugfixes
 
