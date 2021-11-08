@@ -1,7 +1,15 @@
-Unreleased
+Version 1.0.2 2021-11-08
 	* Fix classifier list for PyPI
 	* Add support for .bz2 & .xz fasta files
 	* Fix abundance/reads modes when single-ended reads were used
+	* Eliminated R dependency
+	* Code tweaks made Macrel about 3.5 times faster than before
+	* Include more extensive testing
+
+### Bugfixes
+
+- Fix abundance/reads modes when single-ended reads were used
+
 
 Version 1.0.1 2021-09-02
 	* No longer crash on very short peptides (1 or 2 amino acids)
