@@ -21,7 +21,9 @@ jobs:
       run: |
         conda install -y mamba -n base -c conda-forge
         PYTHON_VERSION=${{ matrix.python-version }} ./install.sh
-        mamba install --prefix ./envs/Macrel_env -y pytest
+        source /usr/share/miniconda3/bin/activate envs/Macrel_env/
+        # Using conda/mamba to install pytest can cause other packages to be downgraded!
+        pip install pytest
 
     - name: Test Macrel
       run: |
