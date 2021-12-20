@@ -146,7 +146,7 @@ def do_smorfs(args, tdir,logfile):
                     args.fasta_file,
                     path.join(tdir, 'contigs.fna'))
 
-    stderrout = path.join(args.output, '.stderr.out')
+    stderrout = path.join(tdir, '.stderr.out')
     
     try:
         with open(stderrout, 'w') as fstderr:
@@ -174,7 +174,6 @@ def do_smorfs(args, tdir,logfile):
         print(f'[MACREL ERROR] ::: Prodigal_sm did not finish:\n{stderr.strip()}')
         sys.exit(1)
     else:
-        os.remove(stderrout)
         filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
         args.fasta_file = peptide_file
 
