@@ -132,6 +132,8 @@ def validate_args(args):
 
 def do_smorfs(args, tdir,logfile):
     from .filter_smorfs import filter_smorfs
+    import sys
+    
     if args.output_dir:
         all_peptide_file = path.join(args.output, args.outtag+'.all_orfs.faa')
         peptide_file = path.join(args.output, args.outtag+'.smorfs.faa')
@@ -144,27 +146,37 @@ def do_smorfs(args, tdir,logfile):
                     args.fasta_file,
                     path.join(tdir, 'contigs.fna'))
 
-    subprocess.check_call(
-            ['prodigal_sm',
-                '-c', # Closed ends.  Do not allow genes to run off edges.
-                '-m', # Treat runs of N as masked sequence; don't build genes across them.
-                '-n', # Bypass Shine-Dalgarno trainer and force a full motif scan.
+    stderrout = path.join(args.output, '.stderr.out')
+    
+    try:
+        with open(stderrout, 'w') as fstderr:
+            subprocess.check_call(
+                ['prodigal_sm',
+                    '-c', # Closed ends.  Do not allow genes to run off edges.
+                    '-m', # Treat runs of N as masked sequence; don't build genes across them.
+                    '-n', # Bypass Shine-Dalgarno trainer and force a full motif scan.
+    
+                    '-p', 'meta',
+    
+                     # -f:  Select output format (gbk, gff, or sco).  Default is gbk.
+                    '-f', 'sco',
+    
+                    # -a:  Write protein translations to the selected file.
+                    '-a', all_peptide_file,
 
-                '-p', 'meta',
-
-                # -f:  Select output format (gbk, gff, or sco).  Default is gbk.
-                '-f', 'sco',
-
-                # -a:  Write protein translations to the selected file.
-                '-a', all_peptide_file,
-
-                # input file
-                '-i', fasta_file],
-             stdout=logfile,
-             stderr=subprocess.DEVNULL,
-            )
-    filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
-    args.fasta_file = peptide_file
+                    # input file
+                    '-i', fasta_file],
+                 stdout=logfile,
+                 stderr=fstderr,
+                )
+    except:
+        stderr = open(stderrout, 'r').readlines()[-1]
+        print(f'[MACREL ERROR] ::: Prodigal_sm did not finish:\n{stderr.strip()}')
+        sys.exit(1)
+    else:
+        os.remove(stderrout)
+        filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
+        args.fasta_file = peptide_file
 
 def link_or_uncompress_fasta_file(orig, dest):
     '''
