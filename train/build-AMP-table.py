@@ -18,7 +18,7 @@ with open(normalized_fname, 'wt') as output:
         seen.add(seq)
 fs = fasta_features(normalized_fname)
 fs['group'] = fs.index.map(lambda ix: ix.split('_')[0])
-fs.to_csv('preproc/AMP.train.tsv', sep='\t')
+fs.to_csv('preproc/AMP.train.tsv.gz', sep='\t')
 
 normalized_fname_test = 'preproc/AMP_NAMP.test.faa'
 with open(normalized_fname_test, 'wt') as output:
@@ -29,7 +29,7 @@ with open(normalized_fname_test, 'wt') as output:
 
 fs_t = fasta_features(normalized_fname_test)
 fs_t['group'] = fs_t.index.map(lambda ix: ix.split('_')[0])
-fs_t.to_csv('preproc/AMP.test.tsv', sep='\t')
+fs_t.to_csv('preproc/AMP.test.tsv.gz', sep='\t')
 
 normalized_fname_test = 'preproc/AMP_NAMP.train.bench.faa'
 with open(normalized_fname_test, 'wt') as output:
@@ -40,4 +40,4 @@ with open(normalized_fname_test, 'wt') as output:
 
 fs_bench = fasta_features(normalized_fname_test)
 fs_bench['group'] = fs_bench.index.map(lambda ix: ix.split('_')[0])
-fs_bench.to_csv('preproc/AMP.train_bench.tsv', sep='\t')
+fs_bench.to_csv('preproc/AMP.train_bench.tsv.gz', sep='\t')

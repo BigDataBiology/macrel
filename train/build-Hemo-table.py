@@ -12,7 +12,7 @@ with open(normalized_fname, 'wt') as output:
         output.write(f">NonHemo_{i}\n{seq}\n")
 fs = fasta_features(normalized_fname)
 fs['group'] = fs.index.map(lambda ix: ix.split('_')[0])
-fs.to_csv('preproc/Hemo.train.tsv', sep='\t')
+fs.to_csv('preproc/Hemo.train.tsv.gz', sep='\t')
 
 normalized_fname = 'preproc/Hemo.test.normalized.faa'
 with open(normalized_fname, 'wt') as output:
@@ -22,4 +22,4 @@ with open(normalized_fname, 'wt') as output:
         output.write(f">NonHemo_{i}\n{seq}\n")
 fs_v = fasta_features(normalized_fname)
 fs_v['group'] = fs_v.index.map(lambda ix: ix.split('_')[0])
-fs_v.to_csv('preproc/Hemo.test.tsv', sep='\t')
+fs_v.to_csv('preproc/Hemo.test.tsv.gz', sep='\t')
