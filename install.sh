@@ -65,9 +65,7 @@ env \
         PYTHON=$(which python) \
         SRC_DIR=$PWD \
         PREFIX=$CONDA_PREFIX \
-
-cd $BASEDIR
-$PYTHON -m pip install --disable-pip-version-check --no-cache-dir --ignore-installed --no-deps -vv .
+        $PYTHON -m pip install --disable-pip-version-check --no-cache-dir --ignore-installed --no-deps -vv .
         
 echo "############ Installation procedures finished
 ****** Thank you for installing Macrel ********
