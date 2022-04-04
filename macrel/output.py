@@ -15,7 +15,7 @@ prediction_table_doc = f"""- `macrel.out.prediction.gz`
 
 Compressed tab-separated table with the following columns
 
-1. `Access` Identififiers (arbitrarily assigned by Macrel)
+1. `Access` Identifiers (arbitrarily assigned by Macrel)
 2. `Sequence` Predicted amino acid sequence
 3. `AMP_family`: AMP family classified into anionic/cationic and
    cysteine-containing/linear coded as: `A`/`C` and `D`/`L`, respectively,
@@ -34,46 +34,55 @@ Note that, by default, only peptides predicted to be AMPs are output. If the
 table.
 """
 
-predicted_faas_doc = """- `macrel.out.all_orfs.faa`
+predicted_faas_doc = """- `macrel.out.all_orfs.fna`
 
 Fasta file containing all predicted genes from the contigs (including large
 proteins).
+
+- `macrel.out.all_orfs.faa`
+
+Fasta file containing the peptide sequences for all predicted genes
+from the contigs (including large proteins).
 
 - `macrel.out.smorfs.faa`
 
 Fasta file containing the predicted small ORFs (length filtered ranging from 10
 to 100 amino acids).
 
-In the both files the original header structure from Prodigal indicates the AMP
-gene origins, and is shown if the option `--keep-fasta-headers` is used. The 
-header structure has a consistent notation, e.g.:
+- `macrel.correspondence.tsv`
 
-Header for the 2nd small protein in the contig k77_5:
+Table containing the cluster information as peptide id and corresponding genes
+at 100% of identity at amino acids level.
 
->k77_5_2 # 1984 # 2010 # 1 # ID=2_2;partial=00;
-start_type=ATG;rbs_motif=TAAAAAA;rbs_spacer=7bp;gc_cont=0.487
+- `macrel.genes_coordinates.tsv`
 
-The next three fields in the header, delimited by "#" signs, are the: (1) leftmost coordinate,
-(2) rightmost coordinate, and (3) the strand (1 for forward strand genes, -1 for reverse strand genes).
+The gene prediction using Pyrodigal creates a complete set of information about
+the gene itself and is given as a table:
 
-Following the coordinate information is a semicolon-delimited string with he following fields:
-
-   - ID: unique identifier for each gene, consisting of the ordinal ID of the sequence and an ordinal ID of that
-         gene within the sequence (separated by an underscore).
+   - artificial_name: unique identifier for each gene, consisting of the contig name followed by an ordinal ID
+         of the sequence separated by an underscore.
+         
+   - contig: contig name as given in the original fasta
    
-   - partial: "0" indicates the gene has a true boundary (a start or a stop), whereas a "1" indicates the gene is
-              "unfinished" at that edge (i.e. a partial gene).
+   - start/end: these fields give the leftmost coordinate and the rightmost coordinate of the predicted gene
    
-   - start_type: sequence of the start codon (usually ATG, GTG, TTG, or "Edge" if the gene has no start codon).
+   - strand: information about the sense (1 for forward strand genes, -1 for reverse strand genes).
    
-   - stop_type: sequence of the stop codon (usually TAA, TGA, TAG or "Edge" if the gene has no stop codon).
+   - confidence: confidence from 0 to 100 on the true gene prediction.
+   
+   - partial_begin/partial_end: False indicates the gene has a true boundary (a start or a stop), whereas a
+                                True indicates the gene is "unfinished" at that edge (i.e. a partial gene).
+   
+   - gc_content: GC content of the gene sequence.
+   
+   - translation_table: NCBI translation table used in the prediction and translation
    
    - rbs_motif: RBS motif found by Prodigal (e.g. "AGGA" or "GGA", etc.)
    
    - rbs_spacer: number of bases between the start codon and the observed motif.
    
-   - gc_cont: GC content of the gene sequence.
-   
+   - start_type: sequence of the start codon (usually ATG, GTG, TTG, or "Edge" if the gene has no start codon).
+
 """
 
 megahit_output_doc = """- `example_metag.megahit_output`

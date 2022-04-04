@@ -74,6 +74,7 @@ setuptools.setup(name = 'macrel',
           'scikit-learn',
           'pandas',
           'atomicwrites',
+          'pyrodigal',
       ],
       entry_points={
           'console_scripts': [
