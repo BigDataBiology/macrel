@@ -29,7 +29,7 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo "# Creating new environment for Macrel"
 mkdir -p envs
-conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION r=$R_VERSION ## Fixed 
+conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION ## Fixed 
 source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
@@ -63,9 +63,10 @@ fi
 
 env \
         PYTHON=$(which python) \
-        R=$(which R) \
         SRC_DIR=$PWD \
         PREFIX=$CONDA_PREFIX \
+
+$PYTHON -m pip install --disable-pip-version-check --no-cache-dir --ignore-installed --no-deps -vv .
         
 echo "############ Installation procedures finished
 ****** Thank you for installing Macrel ********
