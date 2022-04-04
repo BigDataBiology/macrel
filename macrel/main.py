@@ -6,7 +6,7 @@ import logging
 import os
 from os import path, makedirs
 import textwrap
-from utils import open_output
+from .utils import open_output
 
 def error_exit(args, errmessage):
     import sys
