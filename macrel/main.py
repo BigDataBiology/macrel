@@ -158,6 +158,9 @@ def do_smorfs(args, tdir, logfile):
                 'end', 'strand', 'confidence', 'partial_begin',
                 'partial_end', 'gc_content', 'translation_table',
                 'rbs_motif', 'rbs_spacer', 'start_type']
+        if args.keep_fasta_headers:
+            n = df[cols].astype('str').apply(' | '.join, axis=1) 
+            df.loc[:, ['artificial_name']] = n
         # save genes coordinates
         df[cols].to_csv(genes_coordinates, sep='\t', header=True, index=None)
         # save gene sequences

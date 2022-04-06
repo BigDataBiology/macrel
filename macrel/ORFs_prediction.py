@@ -11,8 +11,8 @@ def create_pyrodigal_orffinder():
     return gorf, morf_finder
     
 
-def ppyrodigal_out(contig, pred):
-    return [contig, pred.begin, pred.end,
+def ppyrodigal_out(contig, numb, pred):
+    return [f'{contig}_{numb}', contig, pred.begin, pred.end,
             pred.strand, pred.confidence(),
             pred.partial_begin, pred.partial_end, 
             pred.gc_cont, pred.translation_table,
@@ -22,8 +22,10 @@ def ppyrodigal_out(contig, pred):
 
 
 def predict_genes(infile):
+    import random
     import pandas as pd
     from .fasta import fasta_iter
+    random.seed(1991)
     predictions = []
     gorf, morf_finder = create_pyrodigal_orffinder()
     # predict genes
@@ -31,25 +33,25 @@ def predict_genes(infile):
         if len(s) <= 100_000:
             # if contig length less than 100kbp then not suitable for training
             # predict genes using metagenome pretrained models
-            for pred in morf_finder.find_genes(s):
-                predictions.append(ppyrodigal_out(h, pred))
+            for i, pred in enumerate(morf_finder.find_genes(s)):
+                predictions.append(ppyrodigal_out(h, i, pred))
         else:
             # if contig length is above or 100kbp then suitable for training of
             # its own model, therefore proceed in a genome wise way
             # each train procedure updates the predictor automatically
             gorf.train(s)
-            for pred in gorf.find_genes(s):
-                predictions.append(ppyrodigal_out(h, pred))
+            for i, pred in enumerate(gorf.find_genes(s)):
+                predictions.append(ppyrodigal_out(h, i, pred))
     # converting to df
     df = pd.DataFrame(predictions,
-                      columns=['contig', 'start',
+                      columns=['artificial_name',
+                               'contig', 'start',
                                'end', 'strand',
                                'confidence', 'partial_begin',
                                'partial_end', 'gc_content',
                                'translation_table', 'rbs_motif',
                                'rbs_spacer', 'start_type',
                                'sequence', 'peptide'])
-    df['artificial_name'] = df.contig + '_' +df.index.astype('str')
     return df
     
 
@@ -58,7 +60,7 @@ def write_seqs(x):
     return f'>{x[0]}\n{x[1]}\n'
     
     
-def retrieve_smorfs(df, cluster=None, smorfs_out=None, cluster_out=None):
+def retrieve_smorfs(df, cluster, smorfs_out, cluster_out):
     df = df[['artificial_name', 'peptide']]
     smorfs = df[df.peptide.str.len() <= 100]
     if cluster:

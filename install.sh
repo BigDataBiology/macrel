@@ -37,6 +37,7 @@ conda config --env --add channels conda-forge
 
 echo "# Installing packages with MAMBA"
 if ! which mamba > /dev/null; then
+    CONDA_INSTALL_CMD=conda
     conda install -y \
               ngless \
               megahit \
@@ -45,7 +46,6 @@ if ! which mamba > /dev/null; then
               scikit-learn \
               atomicwrites \
               tzlocal \
-              pyrodigal \
               --quiet
 else
     mamba install -y \
@@ -57,7 +57,6 @@ else
               atomicwrites \
               rpy2 \
               tzlocal \
-              pyrodigal \
               --quiet
 fi
 
@@ -65,7 +64,7 @@ env \
         PYTHON=$(which python) \
         SRC_DIR=$PWD \
         PREFIX=$CONDA_PREFIX \
-        ./recipe/build.sh
+        sh ./recipe/build.sh
         
 echo "############ Installation procedures finished
 ****** Thank you for installing Macrel ********
