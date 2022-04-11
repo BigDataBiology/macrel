@@ -131,6 +131,7 @@ def validate_args(args):
             makedirs(os.path.dirname(args.logfile), exist_ok=True)
 
 def do_smorfs(args, tdir,logfile):
+    from .ORFs_prediction import predict_genes
     from .filter_smorfs import filter_smorfs
     import sys
     
@@ -141,41 +142,11 @@ def do_smorfs(args, tdir,logfile):
         all_peptide_file = path.join(tdir, 'all_orfs.faa')
         peptide_file = (args.output_file if args.output_file != '-' else '/dev/stdout')
 
-    # prodigal does not accept compressed input files!
-    fasta_file = link_or_uncompress_fasta_file(
-                    args.fasta_file,
-                    path.join(tdir, 'contigs.fna'))
-
-    stderrout = path.join(tdir, '.stderr.out')
+    # predict genes with pyrodigal
+    predict_genes(args.fasta_file, all_peptide_file)
+    filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
+    args.fasta_file = peptide_file
     
-    try:
-        with open(stderrout, 'w') as fstderr:
-            subprocess.check_call(
-                ['prodigal_sm',
-                    '-c', # Closed ends.  Do not allow genes to run off edges.
-                    '-m', # Treat runs of N as masked sequence; don't build genes across them.
-                    '-n', # Bypass Shine-Dalgarno trainer and force a full motif scan.
-    
-                    '-p', 'meta',
-    
-                     # -f:  Select output format (gbk, gff, or sco).  Default is gbk.
-                    '-f', 'sco',
-    
-                    # -a:  Write protein translations to the selected file.
-                    '-a', all_peptide_file,
-
-                    # input file
-                    '-i', fasta_file],
-                 stdout=logfile,
-                 stderr=fstderr,
-                )
-    except:
-        stderr = open(stderrout, 'r').readlines()[-1]
-        print(f'[MACREL ERROR] ::: Prodigal_sm did not finish:\n{stderr.strip()}')
-        sys.exit(1)
-    else:
-        filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
-        args.fasta_file = peptide_file
 
 def link_or_uncompress_fasta_file(orig, dest):
     '''
@@ -359,20 +330,17 @@ def main(args=None):
         if args.command in ['reads', 'contigs', 'get-smorfs']:
             do_smorfs(args, tdir,logfile)
             if args.output:
-                if args.command != 'reads':
-                    with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                        ofile.write(readme_output_contigs_mode)
+                with open_output(os.path.join(args.output, 'README.md')) as ofile:
+                    ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
             do_predict(args, tdir)
-            if args.command == 'peptides':
-                with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                    ofile.write(readme_output_peptides_mode)
+            with open_output(os.path.join(args.output, 'README.md')) as ofile:
+                ofile.write(readme_output_peptides_mode)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_abundance_mode)
 
-                
 if __name__ == '__main__':
     import sys
     main(sys.argv)
