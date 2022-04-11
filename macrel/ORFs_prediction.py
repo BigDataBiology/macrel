@@ -31,7 +31,6 @@ def predict_genes(infile, ofile):
     import pandas as pd
     from .fasta import fasta_iter
     from atomicwrites import atomic_write
-    predictions = []
     gorf, morf_finder = create_pyrodigal_orffinder()
     # predict genes
     with atomic_write(ofile, overwrite=True) as odb:
@@ -40,7 +39,7 @@ def predict_genes(infile, ofile):
                 # if contig length less than 100kbp then not suitable for training
                 # predict genes using metagenome pretrained models
                 for i, pred in enumerate(morf_finder.find_genes(s)):
-                    t = predictions.append(ppyrodigal_out(h, i+1, idx+1, pred))
+                    t = ppyrodigal_out(h, i+1, idx+1, pred)
                     odb.write(t)
             else:
                 # if contig length is above or 100kbp then suitable for training of
@@ -48,6 +47,6 @@ def predict_genes(infile, ofile):
                 # each train procedure updates the predictor automatically
                 gorf.train(s)
                 for i, pred in enumerate(gorf.find_genes(s)):
-                    t = predictions.append(ppyrodigal_out(h, i+1, idx+1, pred))
+                    t = ppyrodigal_out(h, i+1, idx+1, pred)
                     odb.write(t)
     
