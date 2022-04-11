@@ -20,7 +20,7 @@ def ppyrodigal_out(contig, ind, idx, pred):
     st = f'start_type={pred.start_type}'
     motif = f'rbs_motif={pred.rbs_motif}'
     sp = f'rbs_spacer={pred.rbs_spacer}'
-    gc = f'gc_cont={pred.gc_cont}'
+    gc = f'gc_cont={round(pred.gc_cont, 3)}'
     last = ';'.join([seconid, part, st, motif, sp, gc])
     header = f'>{orfid} # {pred.begin} # {pred.end} # {pred.strand} # {last}'
     return (header, pred.translate())
