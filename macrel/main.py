@@ -359,17 +359,20 @@ def main(args=None):
         if args.command in ['reads', 'contigs', 'get-smorfs']:
             do_smorfs(args, tdir,logfile)
             if args.output:
-                with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                    ofile.write(readme_output_contigs_mode)
+                if args.command != 'reads':
+                    with open_output(os.path.join(args.output, 'README.md')) as ofile:
+                        ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
             do_predict(args, tdir)
-            with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                ofile.write(readme_output_peptides_mode)
+            if args.command == 'peptides':
+                with open_output(os.path.join(args.output, 'README.md')) as ofile:
+                    ofile.write(readme_output_peptides_mode)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_abundance_mode)
 
+                
 if __name__ == '__main__':
     import sys
     main(sys.argv)
