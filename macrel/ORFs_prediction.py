@@ -12,7 +12,7 @@ def create_pyrodigal_orffinder():
     
 
 def ppyrodigal_out(contig, ind, idx, pred):
-    orfid = f'{h}_{ind}'
+    orfid = f'{contig}_{ind}'
     seconid = f'ID={idx}_{ind}'
     part = ''.join([str(int(pred.partial_begin)),
                     str(int(pred.partial_end))])
