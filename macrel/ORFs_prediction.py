@@ -20,35 +20,34 @@ def ppyrodigal_out(contig, ind, idx, pred):
     st = f'start_type={pred.start_type}'
     motif = f'rbs_motif={pred.rbs_motif}'
     sp = f'rbs_spacer={pred.rbs_spacer}'
-    gc = f'gc_cont={round(pred.gc_cont, 3)}'
+    gc = f'gc_cont={pred.gc_cont:.3f}'
     last = ';'.join([seconid, part, st, motif, sp, gc])
     header = f'>{orfid} # {pred.begin} # {pred.end} # {pred.strand} # {last}'
-    return (header, pred.translate())
+    return f'{header}\n{pred.translate()}\n'
 
 
 def predict_genes(infile, ofile):
     import random
     import pandas as pd
     from .fasta import fasta_iter
-    random.seed(1991)
+    from atomicwrites import atomic_write
     predictions = []
     gorf, morf_finder = create_pyrodigal_orffinder()
     # predict genes
-    for idx, (h, s) in enumerate(fasta_iter(infile)):
-        if len(s) <= 100_000:
-            # if contig length less than 100kbp then not suitable for training
-            # predict genes using metagenome pretrained models
-            for i, pred in enumerate(morf_finder.find_genes(s)):
-                predictions.append(ppyrodigal_out(h, i+1, idx+1, pred))
-        else:
-            # if contig length is above or 100kbp then suitable for training of
-            # its own model, therefore proceed in a genome wise way
-            # each train procedure updates the predictor automatically
-            gorf.train(s)
-            for i, pred in enumerate(gorf.find_genes(s)):
-                predictions.append(ppyrodigal_out(h, i+1, idx+1, pred))
-    # saving sequences
-    with open(ofile, 'w') as odb:
-        for h, s in predictions:
-            odb.write(f'{h}\n{s}\n')
+    with atomic_write(ofile, overwrite=True) as odb:
+        for idx, (h, s) in enumerate(fasta_iter(infile)):
+            if len(s) <= 100_000:
+                # if contig length less than 100kbp then not suitable for training
+                # predict genes using metagenome pretrained models
+                for i, pred in enumerate(morf_finder.find_genes(s)):
+                    t = predictions.append(ppyrodigal_out(h, i+1, idx+1, pred))
+                    odb.write(t)
+            else:
+                # if contig length is above or 100kbp then suitable for training of
+                # its own model, therefore proceed in a genome wise way
+                # each train procedure updates the predictor automatically
+                gorf.train(s)
+                for i, pred in enumerate(gorf.find_genes(s)):
+                    t = predictions.append(ppyrodigal_out(h, i+1, idx+1, pred))
+                    odb.write(t)
     

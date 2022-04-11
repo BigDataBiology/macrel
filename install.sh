@@ -29,13 +29,13 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo "# Creating new environment for Macrel"
 mkdir -p envs
-conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION ## Fixed 
+conda create --yes -p $BASEDIR/envs/Macrel_env python=$PYTHON_VERSION
+
 source activate $BASEDIR/envs/Macrel_env
 conda config --env --add channels defaults
 conda config --env --add channels bioconda
 conda config --env --add channels conda-forge
 
-echo "# Installing packages with MAMBA"
 if ! which mamba > /dev/null; then
     CONDA_INSTALL_CMD=conda
     conda install -y \
@@ -46,8 +46,11 @@ if ! which mamba > /dev/null; then
               scikit-learn \
               atomicwrites \
               tzlocal \
+              pyrodigal>=0.7.3 \
               --quiet
 else
+    echo "# Installing packages with MAMBA"
+    CONDA_INSTALL_CMD=conda
     mamba install -y \
               ngless \
               megahit \
@@ -57,6 +60,7 @@ else
               atomicwrites \
               rpy2 \
               tzlocal \
+              pyrodigal>=0.7.3 \
               --quiet
 fi
 
@@ -64,7 +68,7 @@ env \
         PYTHON=$(which python) \
         SRC_DIR=$PWD \
         PREFIX=$CONDA_PREFIX \
-        sh ./recipe/build.sh
+        ./recipe/build.sh
         
 echo "############ Installation procedures finished
 ****** Thank you for installing Macrel ********
