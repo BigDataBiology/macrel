@@ -50,7 +50,7 @@ if ! which mamba > /dev/null; then
               --quiet
 else
     echo "# Installing packages with MAMBA"
-    CONDA_INSTALL_CMD=conda
+    CONDA_INSTALL_CMD=mamba
     mamba install -y \
               ngless \
               megahit \
