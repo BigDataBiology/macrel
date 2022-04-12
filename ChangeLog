@@ -1,3 +1,7 @@
+Version 1.1.1 2022-04-12
+	* Implement pyrodigal v.0.7.3 instead of using Prodigal_sm for gene prediction    
+	* Correct bug in the generation of README files in the output folder
+
 Version 1.1.0 2021-11-08
 	* Fix classifier list for PyPI
 	* Add support for .bz2 & .xz fasta files
