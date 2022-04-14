@@ -1,6 +1,6 @@
 # What's new? (History)
 
-## Version 1.1.1
+## Version 1.2.0
 
 Released April 12 2022
 
