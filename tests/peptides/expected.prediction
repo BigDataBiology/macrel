@@ -1,4 +1,4 @@
-# Prediction from macrel v1.1.0
+# Prediction from macrel v1.2.0
 Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability
 AP00002|AMP	YVPLPNVPQPGRRPFPTFPGQGPFNPKIKWPQGY	CLP	0.861	Hemo	0.663
 AP00007|AMP	GNNRPVYIPQPRPPHPRL	CLP	0.970	Hemo	0.515

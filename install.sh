@@ -10,9 +10,7 @@ fi
 
 echo "
 # Macrel - (Meta)genomic AMP Classification and Retrieval
-
 AUTHORS: Célio Dias Santos Júnior, Luis Pedro Coelho
-
 "
 
 if ! which conda > /dev/null; then
@@ -40,9 +38,11 @@ else
     echo "# Installing packages with MAMBA"
     CONDA_INSTALL_CMD=mamba
 fi
+
 ${CONDA_INSTALL_CMD} install -y \
           --prefix $BASEDIR/envs/Macrel_env \
           ngless \
+          pyrodigal>=0.7.3 \
           megahit \
           paladin \
           pandas \
@@ -68,8 +68,6 @@ echo "############ Installation procedures finished
 ****** Thank you for installing Macrel ********
 --- Please submit bugreports/comments to
 celio.diasjunior@gmail.com
-
 or
-
 https://github.com/BigDataBiology/macrel/issues
 "

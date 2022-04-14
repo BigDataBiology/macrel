@@ -48,7 +48,7 @@ Macrel pipeline does:
 
 2. assembly of reads into contigs
 
-3. small genes prediction,
+3. small genes prediction with [pyrodigal](https://github.com/althonos/pyrodigal),
 
 4. clustering of peptides at 100% of similarity and 100% coverage,
 
