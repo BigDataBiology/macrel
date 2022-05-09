@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -v
 set -e
 
 # This is set in travis
@@ -48,9 +49,7 @@ ${CONDA_INSTALL_CMD} install -y \
           pandas \
           scikit-learn \
           atomicwrites \
-          tzlocal \
-          make \
-          c-compiler
+          tzlocal
 
 # only activate AFTER install all the packages to get the right environmental variables
 source activate $BASEDIR/envs/Macrel_env
