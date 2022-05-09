@@ -2,11 +2,11 @@
 
 ## Version 1.2.0
 
-Released April 12 2022
+*Released May 9 2022*
 
 - Adopt pyrodigal v.0.7.3 to predict genes
 - Implement a hybrid gene prediction system: training mode
-  for contigs>100kbp and use pre-trained models for contigs smaller
+  for contigs &gt; 100kbp and use pre-trained models for smaller contigs
 
 ### Bugfixes
 
