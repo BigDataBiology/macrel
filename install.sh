@@ -47,7 +47,7 @@ ${CONDA_INSTALL_CMD} install -y \
           megahit \
           paladin \
           pandas \
-          scikit-learn \
+          scikit-learn==0.22.1 \
           atomicwrites \
           tzlocal
 
