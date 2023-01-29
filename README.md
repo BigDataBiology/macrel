@@ -14,6 +14,7 @@ If you use this software in a publication please cite
 >   Macrel: antimicrobial peptide screening in genomes and metagenomes.
 >   PeerJ 8:e10555. DOI: [10.7717/peerj.10555](https://doi.org/10.7717/peerj.10555)
 
+Run Macrel online: [https://big-data-biology.org/software/macrel](https://big-data-biology.org/software/macrel)
 
 ## License
 
@@ -27,8 +28,7 @@ The recommended method of installation is through
 [bioconda](https://anaconda.org/bioconda/macrel):
 
 ```bash
-conda install mamba -n base -c conda-forge 
-mamba install macrel -c bioconda
+conda install -c bioconda macrel
 ```
 
 To install from source, [read the docs](https://macrel.readthedocs.io/en/latest/install)
@@ -80,7 +80,7 @@ file with nucleotide sequences, writing the output to `out_contigs`.
 An example of output using this mode can be found at `test/contigs/expected.prediction`.
 Additionally to the prediction table, this mode also produces two files containing
 general gene prediction information in the contigs and a fasta file containing the
-predicted and filtered small genes (<= 100 amino acids).
+predicted and filtered small genes (≤ 100 amino acids).
 
 To run Macrel on paired-end reads, use the `reads` subcommand:
 
@@ -98,7 +98,7 @@ the `-2` argument. An example of outputs using this mode can be found at
 `test/reads/expected.prediction` and `test/reads/expected.smorfs.faa`.
 Additionally to the prediction table, this mode also produces a contigs fasta file, 
 and the two files containing general gene prediction coordinates and a fasta file
-containing the predicted and filtered small genes (<= 100 amino acids).
+containing the predicted and filtered small genes (≤ 100 amino acids).
 
 To run Macrel to get abundance profiles, you only need the short reads file
 and a reference with peptide sequences. Use the `abundance` subcommand:
@@ -128,7 +128,3 @@ much more. Please pay us a visit:
 
 *Technical issues still are encouraged to be preferentialy sent to the reserved space in the
 Macrel github repository.*
-
----
-
-This is a project hosted by the **Big Data Biology Research Group**, follow this [link](big-data-biology.org/) to know us more.
