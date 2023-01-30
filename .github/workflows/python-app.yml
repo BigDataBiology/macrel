@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checking code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v2
