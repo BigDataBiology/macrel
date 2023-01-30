@@ -5,8 +5,9 @@ Pipeline to mine antimicrobial peptides (AMPs) from (meta)genomes.
 [![Build Status](https://github.com/BigDataBiology/macrel/workflows/Build%20Status/badge.svg)](https://github.com/BigDataBiology/macrel/workflows/Build%20Status/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/macrel/badge/?version=latest)](https://macrel.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Install with Bioconda](https://anaconda.org/bioconda/macrel/badges/installer/conda.svg)](https://anaconda.org/bioconda/macrel)
+
 [![Install with Bioconda](https://anaconda.org/bioconda/macrel/badges/downloads.svg)](https://anaconda.org/bioconda/macrel)
+[![Install with Bioconda](https://anaconda.org/bioconda/macrel/badges/installer/conda.svg)](https://anaconda.org/bioconda/macrel)
 
 If you use this software in a publication please cite
 
