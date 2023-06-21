@@ -95,7 +95,7 @@ The table contains a header (as comments marked with the `#` character at the
 start of the line) identifying the version of macrel used to generate these
 results.
 
-Note that, by default, only when not using cluster option it is printed.
+Note that, it is only printed when not using cluster option or get-smorfs mode.
 """
 
 readme_output_abundance_mode = f"""{header}
