@@ -330,7 +330,7 @@ def main(args=None):
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_reads_mode)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
-            clen, smorfs = do_smorfs(args, tdir,logfile)
+            clen, orfs = do_smorfs(args, tdir,logfile)
             if args.output:
                 with open_output(os.path.join(args.output, 'README.md')) as ofile:
                     ofile.write(readme_output_contigs_mode)
@@ -340,7 +340,7 @@ def main(args=None):
                 ofile.write(readme_output_peptides_mode)
         if args.command in ['reads', 'contigs']:
             density = namps/clen
-            print(f'It was verified a total of {smorfs} ORFs,')
+            print(f'It was verified a total of {orfs} ORFs,')
             print(f'out of {smorfs} smORFs, we classified {namps} as AMPs,')
             print(f'in a density of {density:4f} AMPs per assembled Mbp.\n')
         if args.command == 'abundance':
