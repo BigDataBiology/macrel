@@ -345,8 +345,10 @@ def main(args=None):
 
         creadme = {'reads': readme_output_reads_mode,
                    'contigs': readme_output_contigs_mode,
+                   'get-smorfs': readme_output_contigs_mode,
                    'peptides': readme_output_peptides_mode,
-                   'abundance': readme_output_abundance_mode}
+                   'abundance': readme_output_abundance_mode,
+                  }
         
         # print readme
         with open_output(os.path.join(args.output, 'README.md')) as ofile:
