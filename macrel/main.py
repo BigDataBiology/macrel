@@ -356,7 +356,8 @@ def main(args=None):
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_peptides_mode)
         if args.command in ['reads', 'contigs']:
-            do_density(args, clen, prediction)
+            if not args.cluster:
+                do_density(args, clen, prediction)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
