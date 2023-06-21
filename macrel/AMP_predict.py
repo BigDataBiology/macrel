@@ -51,8 +51,11 @@ def predict(model1, model2, data, keep_negatives=False):
                 'AMP_probability' : amp_prob,
                 'Hemolytic': is_hemo,
                 'Hemolytic_probability': hemo_prob})
+    
     namps = final['is_AMP'].sum()
+    
     if not keep_negatives:
         final = final.query('is_AMP').drop('is_AMP', axis=1)
+    
     return final, namps
 
