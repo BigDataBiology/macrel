@@ -143,10 +143,10 @@ def do_smorfs(args, tdir,logfile):
         peptide_file = (args.output_file if args.output_file != '-' else '/dev/stdout')
 
     # predict genes with pyrodigal
-    clen, orfs = predict_genes(args.fasta_file, all_peptide_file)
+    clen = predict_genes(args.fasta_file, all_peptide_file)
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
-    return clen, orfs
+    return clen
     
 
 def link_or_uncompress_fasta_file(orig, dest):
@@ -271,18 +271,36 @@ def do_predict(args, tdir):
     from .AMP_predict import predict
     import gzip
     fs = fasta_features(args.fasta_file)
-    prediction, namps, smorfs = predict(
-                                data_file("models/AMP.pkl.gz"),
-                                data_file("models/Hemo.pkl.gz"),
-                                fs,
-                                args.keep_negatives)
+    prediction = predict(
+                         data_file("models/AMP.pkl.gz"),
+                         data_file("models/Hemo.pkl.gz"),
+                         fs,
+                         args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
             from .macrel_version import __version__
             out.write('# Prediction from macrel v{}\n'.format(__version__))
             prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
-    return namps, smorfs
+    return prediction
+
+def do_density(args, clen, prediction):
+    tpred = prediction.reset_index()
+    tpred['contig'] = tpred['index'].apply(lambda x: '_'.join(x.split('_')[:-1]))
+    tpred = tpred[tpred['AMP_probability'] > 0.5]
+    tpred = tpred.groupby('contig').agg('size')
+    tpred = tpred.reset_index()
+    tpred = tpred.rename({0: 'AMPs'}, axis=1)
+    clen = clen.merge(on='contig', right=tpred, how='outer').fillna(0)
+    clen.loc[len(clen)] = ['Sample'] + clen.set_index('contig').sum(axis=0).tolist()
+    clen['AMP_density'] = clen.AMPs * 1e6 / clen.length
+    clen[clen.columns[1:-1]] = clen[clen.columns[1:-1]].astype(int)
+    ofile = path.join(args.output, args.outtag + '.density.gz')
+    with open_output(ofile, mode='wb') as raw_out:
+        with gzip.open(raw_out, 'wt') as out:
+            from macrel_version import __version__
+            out.write('# Prediction from macrel v{}\n'.format(__version__))
+            clen.to_csv(out, sep='\t', index=False, float_format="%.3f")
 
 def do_get_examples(args):
     try:
@@ -305,7 +323,6 @@ def do_get_examples(args):
         print('Retrieving {}...'.format(f))
         urlretrieve(BASEURL + f, 'example_seqs/'+f)
 
-
 def main(args=None):
     if args is None:
         import sys
@@ -323,26 +340,23 @@ def main(args=None):
         return
 
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
-        from .output import readme_output_abundance_mode,readme_output_contigs_mode,\
+        from output import readme_output_abundance_mode,readme_output_contigs_mode,\
             readme_output_peptides_mode,readme_output_reads_mode
         if args.command == 'reads':
             do_assembly(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_reads_mode)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
-            clen, orfs = do_smorfs(args, tdir,logfile)
+            clen = do_smorfs(args, tdir,logfile)
             if args.output:
                 with open_output(os.path.join(args.output, 'README.md')) as ofile:
                     ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
-            namps, smorfs = do_predict(args, tdir)
+            prediction = do_predict(args, tdir)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_peptides_mode)
         if args.command in ['reads', 'contigs']:
-            density = namps/clen
-            print(f'It was verified a total of {orfs} ORFs,')
-            print(f'out of {smorfs} smORFs, we classified {namps} as AMPs,')
-            print(f'in a density of {density:4f} AMPs per assembled Mbp.\n')
+            do_density(args, clen, prediction)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
