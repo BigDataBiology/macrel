@@ -7,4 +7,4 @@ macrel reads \
     -o out
 
 gunzip out/macrel.out.prediction.gz
-
+gunzip out/macrel.out.density.gz
