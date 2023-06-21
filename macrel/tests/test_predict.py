@@ -11,7 +11,8 @@ def test_predict():
     fsn = AMP_predict.predict( data_file("models/AMP.pkl.gz"),
                         data_file("models/Hemo.pkl.gz"),
                         fs, keep_negatives=True)
-    assert len(fsp) < len(fsn)
+    assert len(fsp) == len(fsn)
+    assert len(fsp[0]) < len(fsn[0])
     assert not np.all(fsn[0].is_AMP)
 
 def test_predict_very_short():
