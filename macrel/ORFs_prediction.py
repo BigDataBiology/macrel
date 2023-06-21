@@ -60,5 +60,5 @@ def predict_genes(infile, ofile):
             
             clen.append([h, len(s), orfs, smorfs]) 
 
-    return clen
+    return pd.DataFrame(clen, columns=['contig', 'length', 'ORFs', 'smORFs'])
     
