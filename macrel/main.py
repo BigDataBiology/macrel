@@ -271,7 +271,7 @@ def do_predict(args, tdir):
     from .AMP_predict import predict
     import gzip
     fs = fasta_features(args.fasta_file)
-    prediction, namps = predict(
+    prediction, namps, smorfs = predict(
                                 data_file("models/AMP.pkl.gz"),
                                 data_file("models/Hemo.pkl.gz"),
                                 fs,
@@ -282,7 +282,7 @@ def do_predict(args, tdir):
             from .macrel_version import __version__
             out.write('# Prediction from macrel v{}\n'.format(__version__))
             prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
-    return namps
+    return namps, smorfs
 
 def do_get_examples(args):
     try:
@@ -335,13 +335,13 @@ def main(args=None):
                 with open_output(os.path.join(args.output, 'README.md')) as ofile:
                     ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
-            namps = do_predict(args, tdir)
+            namps, smorfs = do_predict(args, tdir)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_peptides_mode)
         if args.command in ['reads', 'contigs']:
             density = namps/clen
             print(f'It was verified a total of {smorfs} ORFs,')
-            print(f'with {namps} classified as AMPs,')
+            print(f'out of {smorfs} smORFs, we classified {namps} as AMPs,')
             print(f'in a density of {density:4f} AMPs per assembled Mbp.\n')
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
