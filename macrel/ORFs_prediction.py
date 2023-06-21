@@ -33,11 +33,11 @@ def predict_genes(infile, ofile):
     from atomicwrites import atomic_write
     gorf, morf_finder = create_pyrodigal_orffinder()
     clen = 0
+    orfs = 0
     # predict genes
     with atomic_write(ofile, overwrite=True) as odb:
         for idx, (h, s) in enumerate(fasta_iter(infile)):
             clen += len(s)
-            orfs = 0
             if len(s) <= 100_000:
                 # if contig length less than 100kbp then not suitable for training
                 # predict genes using metagenome pretrained models
