@@ -342,26 +342,28 @@ def main(args=None):
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
         from .output import readme_output_abundance_mode,readme_output_contigs_mode,\
             readme_output_peptides_mode,readme_output_reads_mode
+
+        creadme = {'reads': readme_output_reads_mode,
+                   'contigs': readme_output_contigs_mode,
+                   'peptides': readme_output_peptides_mode,
+                   'abundance': readme_output_abundance_mode}
+        
+        # print readme
+        with open_output(os.path.join(args.output, 'README.md')) as ofile:
+            ofile.write(creadme[args.command])
+        
+        # commands
         if args.command == 'reads':
             do_assembly(args, tdir,logfile)
-            with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                ofile.write(readme_output_reads_mode)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
             clen = do_smorfs(args, tdir,logfile)
-            if args.output:
-                with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                    ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
             prediction = do_predict(args, tdir)
-            with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                ofile.write(readme_output_peptides_mode)
         if args.command in ['reads', 'contigs']:
             if not args.cluster:
                 do_density(args, clen, prediction)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
-            with open_output(os.path.join(args.output, 'README.md')) as ofile:
-                ofile.write(readme_output_abundance_mode)
 
 if __name__ == '__main__':
     import sys
