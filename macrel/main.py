@@ -338,7 +338,7 @@ def main(args=None):
             namps = do_predict(args, tdir)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_peptides_mode)
-        if args.command in ['reads', 'contigs', 'get-smorfs']:
+        if args.command in ['reads', 'contigs']:
             density = namps/clen
             print(f'\nIt was verified a total of {smorfs} ORFs, with {namps} classified as AMPs, in a density of {density} AMPs per assembled Mbp.\n')
         if args.command == 'abundance':
