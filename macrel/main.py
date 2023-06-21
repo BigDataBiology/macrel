@@ -340,7 +340,7 @@ def main(args=None):
         return
 
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
-        from output import readme_output_abundance_mode,readme_output_contigs_mode,\
+        from .output import readme_output_abundance_mode,readme_output_contigs_mode,\
             readme_output_peptides_mode,readme_output_reads_mode
         if args.command == 'reads':
             do_assembly(args, tdir,logfile)
