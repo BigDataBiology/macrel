@@ -143,9 +143,10 @@ def do_smorfs(args, tdir,logfile):
         peptide_file = (args.output_file if args.output_file != '-' else '/dev/stdout')
 
     # predict genes with pyrodigal
-    predict_genes(args.fasta_file, all_peptide_file)
+    clen, smorfs = predict_genes(args.fasta_file, all_peptide_file)
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
+    return clen, smorfs
     
 
 def link_or_uncompress_fasta_file(orig, dest):
@@ -328,14 +329,19 @@ def main(args=None):
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_reads_mode)
         if args.command in ['reads', 'contigs', 'get-smorfs']:
-            do_smorfs(args, tdir,logfile)
+            clen, smorfs = do_smorfs(args, tdir,logfile)
             if args.output:
                 with open_output(os.path.join(args.output, 'README.md')) as ofile:
                     ofile.write(readme_output_contigs_mode)
         if args.command in ['reads', 'contigs', 'peptides']:
-            do_predict(args, tdir)
+            namps = do_predict(args, tdir)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(readme_output_peptides_mode)
+        if args.command in ['reads', 'contigs', 'get-smorfs']:
+            density = namps/clen
+            if args.output:
+                with open_output(os.path.join(args.output, 'README.md'), 'a+') as ofile:
+                    ofile.write(f'\nIt was verified a total of {smorfs}, with {namps} classified as AMPs, in a density of {density} AMPs per assembled Mbp.')
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
