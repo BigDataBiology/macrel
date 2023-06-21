@@ -351,8 +351,9 @@ def main(args=None):
                   }
         
         # print readme
-        with open_output(os.path.join(args.output, 'README.md')) as ofile:
-            ofile.write(creadme[args.command])
+        if args.output_file != '-':
+            with open_output(os.path.join(args.output, 'README.md')) as ofile:
+                ofile.write(creadme[args.command])
         
         # commands
         if args.command == 'reads':
