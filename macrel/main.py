@@ -143,10 +143,10 @@ def do_smorfs(args, tdir,logfile):
         peptide_file = (args.output_file if args.output_file != '-' else '/dev/stdout')
 
     # predict genes with pyrodigal
-    clen, smorfs = predict_genes(args.fasta_file, all_peptide_file)
+    clen, orfs = predict_genes(args.fasta_file, all_peptide_file)
     filter_smorfs(all_peptide_file, peptide_file, args.cluster, args.keep_fasta_headers)
     args.fasta_file = peptide_file
-    return clen, smorfs
+    return clen, orfs
     
 
 def link_or_uncompress_fasta_file(orig, dest):
@@ -271,17 +271,18 @@ def do_predict(args, tdir):
     from .AMP_predict import predict
     import gzip
     fs = fasta_features(args.fasta_file)
-    prediction = predict(
-                    data_file("models/AMP.pkl.gz"),
-                    data_file("models/Hemo.pkl.gz"),
-                    fs,
-                    args.keep_negatives)
+    prediction, namps = predict(
+                                data_file("models/AMP.pkl.gz"),
+                                data_file("models/Hemo.pkl.gz"),
+                                fs,
+                                args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
             from .macrel_version import __version__
             out.write('# Prediction from macrel v{}\n'.format(__version__))
             prediction.to_csv(out, sep='\t', index_label='Access', float_format="%.3f")
+    return namps
 
 def do_get_examples(args):
     try:
@@ -341,7 +342,7 @@ def main(args=None):
             density = namps/clen
             if args.output:
                 with open_output(os.path.join(args.output, 'README.md'), 'a+') as ofile:
-                    ofile.write(f'\nIt was verified a total of {smorfs}, with {namps} classified as AMPs, in a density of {density} AMPs per assembled Mbp.')
+                    ofile.write(f'\nIt was verified a total of {smorfs} ORFs, with {namps} classified as AMPs, in a density of {density} AMPs per assembled Mbp.\n')
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
