@@ -298,7 +298,7 @@ def do_density(args, clen, prediction):
     ofile = path.join(args.output, args.outtag + '.density.gz')
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
-            from macrel_version import __version__
+            from .macrel_version import __version__
             out.write('# Prediction from macrel v{}\n'.format(__version__))
             clen.to_csv(out, sep='\t', index=False, float_format="%.3f")
 
