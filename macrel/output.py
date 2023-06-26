@@ -80,7 +80,7 @@ megahit_output_doc = """- `example_metag.megahit_output`
 
 This folder contains the full outputs of running megahit for assembly."""
 
-density_table_doc = f"""- `macrel.out.density.gz`
+percontigs_table_doc = f"""- `macrel.out.percontigs.gz`
 
 Compressed tab-separated table with the following columns
 
@@ -89,7 +89,6 @@ Compressed tab-separated table with the following columns
 3. `ORFs`: Number of ORFs found
 4. `smORFs`: Number of small ORFs found
 5. `AMPs`: Number of sequences predicted as AMPs
-6. `AMP_density`: Density of AMP genes per assembled Mbp
 
 The table contains a header (as comments marked with the `#` character at the
 start of the line) identifying the version of macrel used to generate these
@@ -118,7 +117,7 @@ readme_output_contigs_mode = f"""{header}
 
 {prediction_table_doc}
 {predicted_faas_doc}
-{density_table_doc}
+{percontigs_table_doc}
 
 {footer}
 """
@@ -139,7 +138,7 @@ readme_output_reads_mode = f"""{header}
 {prediction_table_doc}
 {predicted_faas_doc}
 {megahit_output_doc}
-{density_table_doc}
+{percontigs_table_doc}
 
 {footer}
 """

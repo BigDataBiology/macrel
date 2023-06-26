@@ -89,10 +89,15 @@ macrel contigs \
 
 In this example, we use the example file `excontigs.fna.gz` which is a FASTA
 file with nucleotide sequences, writing the output to `out_contigs`.
-An example of output using this mode can be found at `test/contigs/expected.prediction`.
+An example of output using this mode can be found at `test/contigs/expected.prediction`
+and `test/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
+
+Note that the results per contig are only produced when not using the option 
+`cluster`.
+
 Additionally to the prediction table, this mode also produces two files containing
-general gene prediction information in the contigs and a fasta file containing the
-predicted and filtered small genes (<= 100 amino acids).
+general gene prediction information in the contigs and a fasta file containing the predicted
+and filtered small genes (<= 100 amino acids).
 
 To run Macrel on paired-end reads, use the `reads` subcommand:
 
@@ -107,7 +112,9 @@ macrel reads \
 The paired-end reads are given as paired files (here, `example_seqs/R1.fq.gz`
 and `example_seqs/R2.fq.gz`). If you only have single-end reads, you can omit
 the `-2` argument. An example of outputs using this mode can be found at
-`test/reads/expected.prediction` and `test/reads/expected.smorfs.faa`.
+`test/reads/expected.prediction`, `test/reads/expected.smorfs.faa` and
+`test/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
+
 Additionally to the prediction table, this mode also produces a contigs fasta file, 
 and the two files containing general gene prediction coordinates and a fasta file
 containing the predicted and filtered small genes (<= 100 amino acids).
