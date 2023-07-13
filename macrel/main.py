@@ -294,13 +294,14 @@ def do_density(args, clen, prediction):
     clen = clen.merge(on='contig', right=tpred, how='outer').fillna(0)
     clen[clen.columns[1:]] = clen[clen.columns[1:]].astype(int)   
     ofile = path.join(args.output, args.outtag + '.percontigs.gz')
-    with open_output(ofile, mode='wb') as raw_out:
-        with gzip.open(raw_out, 'wt') as out:
-            from macrel_version import __version__
-            out.write('# Prediction from macrel v{}\n'.format(__version__))
-            clen.to_csv(out, sep='\t', index=False, float_format="%.3f")
     sample = clen.set_index('contig').sum(axis=0).tolist()
     sample_density = sample[-1] * 1e6 / sample[0]
+    with open_output(ofile, mode='wb') as raw_out:
+        with gzip.open(raw_out, 'wt') as out:
+            from .macrel_version import __version__
+            out.write('# Prediction from macrel v{}\n'.format(__version__))
+            out.write(f'# Macrel calculated for the sample a density of {sample_density:.3f} AMPs / Mbp.\n')
+            clen.to_csv(out, sep='\t', index=False, float_format="%.3f")
     print(f'Macrel processed the sample and verified a density of {sample_density:.3f} AMPs / Mbp.')
 
 def do_get_examples(args):
