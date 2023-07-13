@@ -80,6 +80,23 @@ megahit_output_doc = """- `example_metag.megahit_output`
 
 This folder contains the full outputs of running megahit for assembly."""
 
+percontigs_table_doc = f"""- `macrel.out.percontigs.gz`
+
+Compressed tab-separated table with the following columns
+
+1. `contig`: Identififiers (same in the fasta or assembled contigs, also include Sample - the sum of all results)
+2. `length`: The length in base pairs
+3. `ORFs`: Number of ORFs found
+4. `smORFs`: Number of small ORFs found
+5. `AMPs`: Number of sequences predicted as AMPs
+
+The table contains a header (as comments marked with the `#` character at the
+start of the line) identifying the version of macrel used to generate these
+results.
+
+Note that, it is only printed when not using cluster option or get-smorfs mode.
+"""
+
 readme_output_abundance_mode = f"""{header}
 
 ## Outputs for `abundance` mode
@@ -100,10 +117,10 @@ readme_output_contigs_mode = f"""{header}
 
 {prediction_table_doc}
 {predicted_faas_doc}
+{percontigs_table_doc}
 
 {footer}
 """
-
 
 readme_output_peptides_mode = f"""{header}
 
@@ -121,7 +138,7 @@ readme_output_reads_mode = f"""{header}
 {prediction_table_doc}
 {predicted_faas_doc}
 {megahit_output_doc}
+{percontigs_table_doc}
 
 {footer}
 """
-

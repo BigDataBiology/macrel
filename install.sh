@@ -43,11 +43,12 @@ fi
 ${CONDA_INSTALL_CMD} install -y \
           --prefix $BASEDIR/envs/Macrel_env \
           ngless \
-          pyrodigal>=0.7.3 \
+          "pyrodigal>=0.7.3" \
           megahit \
           paladin \
           pandas \
-          scikit-learn \
+          "scikit-learn<1.3.0" \
+          "joblib<1.3.0" \
           atomicwrites \
           tzlocal
 

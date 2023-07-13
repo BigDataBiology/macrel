@@ -6,4 +6,4 @@ macrel contigs \
     -o out
 
 gunzip out/macrel.out.prediction.gz
-
+gunzip out/macrel.out.percontigs.gz
