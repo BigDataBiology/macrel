@@ -1,7 +1,4 @@
-# Tutorial for AMP density
-
-If you have not yet installed macrel, see [install](install) and for a 
-detailed usage, please see our [manual](usage).
+# AMP density tutorial
 
 In this tutorial, we will show how to use the `expected.percontigs` output
 produced in the `contigs` and `reads` mode to obtain the density of AMPs

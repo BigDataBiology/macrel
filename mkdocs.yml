@@ -17,16 +17,15 @@ theme:
         help: 191    # ?
         next: 78     # n
         previous: 80 # p
-        search: 83   # s        
-        
+        search: 83   # s
+
 nav:
     - 'Macrel': index.md
     - 'Install': install.md
     - 'Usage': usage.md
-    - 'Tutorial': tutorial.md
+    - 'AMP Density Tutorial': amp-density-tutorial.md
     - "What's New (history)": whatsnew.md
     - 'Contacts': contact.md
     - 'FAQ': faq.md
     - 'Cite us': cite.md
-    
 
