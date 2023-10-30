@@ -29,6 +29,14 @@ The recommended method of installation is through
 [bioconda](https://anaconda.org/bioconda/macrel):
 
 ```bash
+conda create --name env_macrel macrel
+conda activate env_macrel
+macrel -h
+```
+
+Alternatively, just:
+
+```bash
 conda install -c bioconda macrel
 ```
 
