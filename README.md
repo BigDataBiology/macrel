@@ -29,7 +29,7 @@ The recommended method of installation is through
 [bioconda](https://anaconda.org/bioconda/macrel):
 
 ```bash
-conda create --name env_macrel macrel
+conda create --name env_macrel -c bioconda macrel
 conda activate env_macrel
 macrel -h
 ```
