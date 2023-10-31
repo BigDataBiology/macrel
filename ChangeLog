@@ -1,3 +1,6 @@
+Unreleased
+	* Add density estimates to output
+
 Version 1.2.0 2022-05-09
 	* Use pyrodigal instead of Prodigal_sm for gene prediction
 	* Correct bug in the generation of README files in the output folder
