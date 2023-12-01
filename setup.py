@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019-2022, MACREL Authors
+# Copyright (C) 2019-2023, MACREL Authors
 # vim: set ts=4 sts=4 sw=4 expandtab smartindent:
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -51,6 +51,7 @@ classifiers = [
 'Programming Language :: Python :: 3.8',
 'Programming Language :: Python :: 3.9',
 'Programming Language :: Python :: 3.10',
+'Programming Language :: Python :: 3.11',
 'Operating System :: OS Independent',
 'License :: OSI Approved :: MIT License',
 ]
