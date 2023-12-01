@@ -1,15 +1,20 @@
-def create_pyrodigal_orffinder():
-    # generating orf_finder
+def create_pyrodigal_orffinders():
     import pyrodigal
-    gorf = pyrodigal.OrfFinder(closed=True,
-                               min_gene=33,
-                               max_overlap=0)       
-    morf_finder = pyrodigal.OrfFinder(meta=True,
-                                      closed=True,
-                                      min_gene=33,
-                                      max_overlap=0)
+    # Prior to version 3.0, pyrodigal called the GeneFinder class
+    # OrfFinder. This little bit of code allows us to use either
+    if hasattr(pyrodigal, 'OrfFinder'):
+        GeneFinder = pyrodigal.OrfFinder
+    else:
+        GeneFinder = pyrodigal.GeneFinder
+    gorf = GeneFinder(closed=True,
+                      min_gene=33,
+                      max_overlap=0)
+    morf_finder = GeneFinder(meta=True,
+                      closed=True,
+                      min_gene=33,
+                      max_overlap=0)
     return gorf, morf_finder
-    
+
 
 def ppyrodigal_out(contig, ind, idx, pred):
     orfid = f'{contig}_{ind}'
@@ -31,9 +36,9 @@ def predict_genes(infile, ofile):
     import pandas as pd
     from .fasta import fasta_iter
     from atomicwrites import atomic_write
-    
+
     clen = []
-    gorf, morf_finder = create_pyrodigal_orffinder()
+    gorf, morf_finder = create_pyrodigal_orffinders()
 
     # predict genes
     with atomic_write(ofile, overwrite=True) as odb:
@@ -57,8 +62,8 @@ def predict_genes(infile, ofile):
                     odb.write(t)
                     orfs += 1
                     if len(pred.translate()) <= 100: smorfs += 1
-            
-            clen.append([h, len(s), orfs, smorfs]) 
+
+            clen.append([h, len(s), orfs, smorfs])
 
     return pd.DataFrame(clen, columns=['contig', 'length', 'ORFs', 'smORFs'])
-    
+

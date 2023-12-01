@@ -43,7 +43,7 @@ fi
 ${CONDA_INSTALL_CMD} install -y \
           --prefix $BASEDIR/envs/Macrel_env \
           ngless \
-          "pyrodigal<3.0.0" \
+          pyrodigal \
           megahit \
           paladin \
           pandas \
