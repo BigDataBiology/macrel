@@ -128,12 +128,13 @@ at `test/abundances/expected.abundance.txt`.
 
 ### Community
 
-Macrel is actively developed to fix all issues and assimilate all suggestions we get from 
-users. To make this communication more dynamic and even more colaborative, we created a google
-community. There, Macrel users can discuss issues, ongoing projects, colaborations and
-much more. Please pay us a visit:
+Macrel is actively maintained to fix all issues and assimilate suggestions we
+get from users (see [our commitments to high-quality
+software](https://www.big-data-biology.org/software/commitments/)).
 
-[**Go to AMPSphere community now!**](https://groups.google.com/g/ampsphere-users?pli=1)
+For general questions about macrel, we ask that you use the
+[**AMPSphere Google Group (mailing list)**](https://groups.google.com/g/ampsphere-users).
 
-*Technical issues still are encouraged to be preferentialy sent to the reserved space in the
-Macrel github repository.*
+Technical issues can be reported using [Github
+issues](https://github.com/BigDataBiology/macrel/issues/).
+
