@@ -1,5 +1,13 @@
 # What's new? (History)
 
+## Version 1.3.0
+
+*Released 5 December 2023*
+
+- Adds density estimates to output
+- Adds compatibility with Pyrodigal ≥3
+
+
 ## Version 1.2.0
 
 *Released May 9 2022*
