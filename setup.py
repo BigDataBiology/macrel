@@ -80,6 +80,5 @@ setuptools.setup(name = 'macrel',
               'macrel= macrel.main:main',
           ],
       },
-      test_suite = 'nose.collector',
       )
 
