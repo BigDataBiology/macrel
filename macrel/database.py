@@ -3,7 +3,7 @@ GROUPS_HB = ['ILVWAMGT', 'FYSQCN', 'PHKEDR'] # HEIJNE&BLOMBERG1979
 
 CTDD_groups = GROUPS_SA + GROUPS_HB
 
-#' # http://emboss.bioinformatics.nl/cgi-bin/emboss/pepstats
+#' # https://www.ebi.ac.uk/jdispatcher/seqstats/emboss_pepstats
 #' # Property      Residues              Number  Mole%
 #' # Tiny          (A+C+G+S+T)             4   19.048
 #' # Small         (A+B+C+D+G+N+P+S+T+V)   4   19.048
