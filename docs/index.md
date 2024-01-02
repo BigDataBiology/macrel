@@ -1,9 +1,9 @@
 # Macrel
 
-Macrel is a computational pipeline which can
+Macrel is a computational pipeline which
 
-1. classify peptides into antimicrobial/non-antimicrobial,
-2. classify peptides into hemolytic/non-hemolytic,
+1. classifies peptides into antimicrobial/non-antimicrobial,
+2. classifies peptides into hemolytic/non-hemolytic,
 3. predict peptides from genomes (provided as contigs) or metagenomes (provided
    as short-reads) and output all the predicted anti-microbial peptides found.
 
@@ -15,18 +15,12 @@ If you use this software in a publication please cite
 >   Macrel: antimicrobial peptide screening in genomes and metagenomes.
 >   PeerJ 8:e10555. DOI:[10.7717/peerj.10555](https://doi.org/10.7717/peerj.10555)
 
-**NOTE**: This is still a _work in progress_ and, while the results of the tool
-should be correct, we are still working on making Macrel easier to install and
-use.
+**IMPORTANT**: Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel).
 
-**IMPORTANT**: Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel),
-please pay a visit to us.
-
-Macrel represents a joint effort of [Celio Dias Santos Jr.](https://www.researchgate.net/profile/Celio_Santos_Junior), Shaojun Pan,
-[Xing-Ming Zhao](http://comp-sysbio.org/members/intro_zxm.html), and [Luis Pedro
-Coelho](http://luispedro.org) from the _Institute of Science and Technology for
-Brain-Inspired Intelligence (ISTBI)_ at Fudan University (Shanghai, China).
-
+Macrel represents a joint effort of [Celio Dias Santos
+Jr.](https://www.researchgate.net/profile/Celio_Santos_Junior), Shaojun Pan,
+[Xing-Ming Zhao](https://comp-sysbio.org/members/intro_zxm.html), and [Luis
+Pedro Coelho](https://luispedro.org).
 
 ## Background
 

@@ -12,9 +12,6 @@ Macrel was developed by:
 
 - [Dr. Célio Dias Santos Júnior](https://www.researchgate.net/profile/Celio_Santos_Junior)
 - [Shaojun Pan](mailto:shaojun1997777@gmail.com)
-- [Dr. Xing-Ming Zhao](http://comp-sysbio.org/members/intro_zxm.html)
-- [Dr. Luis Pedro Coelho](http://luispedro.org/)
-
-All authors are affilliated to the **Institute of Science and Technology for
-Brain-Inspired Intelligence (ISTBI) at Fudan University**
+- [Dr. Xing-Ming Zhao](https://comp-sysbio.org/members/intro_zxm.html)
+- [Dr. Luis Pedro Coelho](https://luispedro.org/)
 
