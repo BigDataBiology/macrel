@@ -15,9 +15,9 @@ If you use this software in a publication please cite
 >   Macrel: antimicrobial peptide screening in genomes and metagenomes.
 >   PeerJ 8:e10555. DOI:[10.7717/peerj.10555](https://doi.org/10.7717/peerj.10555)
 
-**IMPORTANT**: Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel).
+Macrel is also available as a [webserver](http://big-data-biology.org/software/macrel).
 
-Macrel represents a joint effort of [Celio Dias Santos
+Macrel was created by [Celio Dias Santos
 Jr.](https://www.researchgate.net/profile/Celio_Santos_Junior), Shaojun Pan,
 [Xing-Ming Zhao](https://comp-sysbio.org/members/intro_zxm.html), and [Luis
 Pedro Coelho](https://luispedro.org).
@@ -36,25 +36,18 @@ Macrel can be used in a wide-ranging of scenarios, such as screening for novel A
 
 ## Pipeline overview
 
-Macrel pipeline does:
+Macrel pipeline performs
 
 1. quality trimming of single- and paired-end reads,
-
 2. assembly of reads into contigs
-
 3. small genes prediction with [pyrodigal](https://github.com/althonos/pyrodigal),
-
 4. clustering of peptides at 100% of similarity and 100% coverage,
-
 5. calculation of the features of the predicted peptides,
-
 6. classification of peptides into AMPs by using Random Forests,
-
 7. classification of AMPs accordingly to their hemolytic activity also using Random Forests,
-
 8. calculate AMPs abundance in meta(genomic) samples by reads mapping.
 
-Macrel is fast and works by coordinating [NGLess](https://github.com/ngless-toolkit/ngless), [megahit](https://github.com/voutcn/megahit), [prodigal](https://github.com/hyattpd/Prodigal) and [PALADIN](https://github.com/ToniWestbrook/paladin). It is implemented in Python and R. Its models were trained with [Scikit-Learn](https://github.com/scikit-learn/scikit-learn) python module, and the descriptors are calculated with functions from [modlAMP](https://github.com/alexarnimueller/modlAMP) package.
+Macrel is fast and works by coordinating [NGLess](https://github.com/ngless-toolkit/ngless), [megahit](https://github.com/voutcn/megahit), [prodigal](https://github.com/hyattpd/Prodigal) and [PALADIN](https://github.com/ToniWestbrook/paladin). It is implemented in Python. Its models were trained with [Scikit-Learn](https://github.com/scikit-learn/scikit-learn) python module, and the descriptors are calculated with functions from [modlAMP](https://github.com/alexarnimueller/modlAMP) package.
 
 ## AMPs classification
 
