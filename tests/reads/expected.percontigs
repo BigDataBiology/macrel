@@ -1,11 +1,6 @@
 # Prediction from macrel v1.3.0
 # Macrel calculated for the sample a density of 57.627 AMPs / Mbp.
 contig	length	ORFs	smORFs	AMPs
-k77_3	1270	1	0	0
-k77_5	5202	6	3	0
-k77_6	3527	2	2	0
-k77_7	6058	9	4	0
-k77_8	1009	2	1	0
 k77_11	1303	2	1	0
 k77_12	3374	1	1	1
 k77_13	2920	4	1	0
@@ -13,3 +8,8 @@ k77_15	3457	2	1	1
 k77_16	1790	3	1	0
 k77_20	1380	2	1	0
 k77_23	3416	4	2	0
+k77_3	1270	1	0	0
+k77_5	5202	6	3	0
+k77_6	3527	2	2	0
+k77_7	6058	9	4	0
+k77_8	1009	2	1	0

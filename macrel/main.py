@@ -287,15 +287,16 @@ def do_predict(args, tdir):
 def do_density(args, clen, prediction):
     tpred = prediction.reset_index()
     tpred['contig'] = tpred['index'].apply(lambda x: '_'.join(x.split('_')[:-1]))
-    tpred = tpred[tpred['AMP_probability'] > 0.5]
+    tpred = tpred.query('AMP_probability > 0.5')
     tpred = tpred.groupby('contig').agg('size')
     tpred = tpred.reset_index()
     tpred = tpred.rename({0: 'AMPs'}, axis=1)
     clen = clen.merge(on='contig', right=tpred, how='outer').fillna(0)
-    clen[clen.columns[1:]] = clen[clen.columns[1:]].astype(int)   
+    clen[clen.columns[1:]] = clen[clen.columns[1:]].astype(int)
     ofile = path.join(args.output, args.outtag + '.percontigs.gz')
     sample = clen.set_index('contig').sum(axis=0).tolist()
     sample_density = sample[-1] * 1e6 / sample[0]
+    clen.sort_values('contig', inplace=True)
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:
             from .macrel_version import __version__
