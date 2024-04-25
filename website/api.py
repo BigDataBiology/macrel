@@ -37,10 +37,8 @@ def predict():
         try:
             subprocess.check_call(args)
             tfile = path.join(tdir, 'macrel.out', 'macrel.out.prediction.gz')
-            data = pd.read_table(tfile)
-            data.rename(inplace=True, columns={
-                'Unnamed: 0': 'access',
-                'group': 'amp_family',})
+            data = pd.read_table(tfile, comment='#')
+
 
             # is_AMP is a boolean, but is of type bool_ which is not JSON
             # serializable. Since it's redundant with AMP_probability, we can
