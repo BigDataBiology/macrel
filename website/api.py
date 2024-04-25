@@ -64,9 +64,6 @@ def predict():
                 'code': 0,
                 'message': 'Error running Macrel',
                 })
-        r.headers.add('Access-Control-Allow-Origin', '*')
-        r.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        r.headers.add('Access-Control-Allow-Methods', 'GET,POST')
         return r
 
 if __name__ == '__main__':
