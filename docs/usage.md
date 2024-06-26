@@ -44,7 +44,7 @@ Also, `macrel --version` will show the version of macrel installed.
 ### Examples
 
 To run these examples, first download the example sequences from
-[github](https://github.com/BigDataBiology/macrel/tree/master/example_seqs), or
+[github](https://github.com/BigDataBiology/macrel/tree/main/example_seqs), or
 by running:
 
 ```bash

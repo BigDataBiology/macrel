@@ -318,7 +318,7 @@ def do_get_examples(args):
         'R2.fq.gz',
         'ref.faa.gz',
         ]
-    BASEURL = 'https://github.com/BigDataBiology/macrel/raw/master/example_seqs/'
+    BASEURL = 'https://github.com/BigDataBiology/macrel/raw/main/example_seqs/'
     if path.exists('example_seqs') and not args.force:
         error_exit(args, 'example_seqs/ directory already exists')
     makedirs('example_seqs', exist_ok=True)
