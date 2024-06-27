@@ -1,6 +1,8 @@
 # What's new? (History)
 
-## Unreleased
+## Version 1.4.0
+
+*Released 27 June 2024*
 
 - Adds `query-ampsphere` command to query the [AMPsphere database](https://ampsphere.big-data-biology.org/) (described in [Santos-Júnior et al., 2024](https://doi.org/10.1016/j.cell.2024.05.013)).
 
