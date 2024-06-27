@@ -136,3 +136,19 @@ This mode returns a table of abundances containing two columns, the first with t
 name of the AMPs and the second with the number of reads mapped back to each peptide
 using the given reference. An example of this output using the example file can be found
 at `test/abundances/expected.abundance.txt`.
+
+### AMPSphere Querying
+
+Macrel also supports querying the [AMPSphere database](https://ampsphere.big-data-biology.org/) (described in [Santos-Júnior et al., 2024](https://doi.org/10.1016/j.cell.2024.05.013)). To do so, use the `query-ampsphere` subcommand:
+
+```bash
+macrel query-ampsphere \
+    --fasta example_seqs/pep8.faa \
+    --output out_ampsphere
+```
+
+Note that this command requires internet access as it uses the AMPSphere API. Future versions of macrel will allow you to use a local database.
+
+By default it performs exact matching (equivalent to passing in `--query-mode=exact`), but you can also use MMSeqs2 to perform approximate matching by using the `--query-mode=mmseqs` (or `--query-mode=hmm` for HMMER).
+
+Note that since these use the API, you do not need to have the AMPSphere database downloaded locally or installed MMSeqs2/HMMER.

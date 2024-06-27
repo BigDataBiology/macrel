@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Adds `query-ampsphere` command to query the AMPsphere database
+- Adds `query-ampsphere` command to query the [AMPsphere database](https://ampsphere.big-data-biology.org/) (described in [Santos-Júnior et al., 2024](https://doi.org/10.1016/j.cell.2024.05.013)).
 
 ## Version 1.3.0
 
