@@ -357,7 +357,7 @@ def do_ampsphere_query(args):
             if sys.stdout.isatty():
                 print('Note that to avoid overloading the AMPSphere API, this script will pause a bit after every query')
     results = pd.concat(results)
-    results['result'].fillna('No_Hit', inplace=True)
+    results.fillna({'result': 'No_Hit'}, inplace=True)
     ofile = (args.output_file if args.output_file != '-' else '/dev/stdout')
     if ofile is None:
         ofile = path.join(args.output,
