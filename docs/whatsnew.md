@@ -1,5 +1,9 @@
 # What's new? (History)
 
+## Unreleased
+
+- Adds `query-ampsphere` command to query the AMPsphere database
+
 ## Version 1.3.0
 
 *Released 5 December 2023*

@@ -12,6 +12,7 @@ If you have not yet installed macrel, see [install](install).
 - `reads`: to input reads in fastQ format (Macrel accepts single- and paired-end reads),
 - `abundance`: to measure abundance of a peptides fasta file using a given fastQ file,
 - `get-smorfs`: to predict small genes from a contigs fasta file.
+- `query-ampsphere`: to query the AMPsphere database.
 
 ## Mandatory input flags
 
@@ -97,7 +98,7 @@ Note that the results per contig are only produced when not using the option
 
 Additionally to the prediction table, this mode also produces two files containing
 general gene prediction information in the contigs and a fasta file containing the predicted
-and filtered small genes (<= 100 amino acids).
+and filtered small genes (&le; 100 amino acids).
 
 To run Macrel on paired-end reads, use the `reads` subcommand:
 
@@ -117,7 +118,7 @@ the `-2` argument. An example of outputs using this mode can be found at
 
 Additionally to the prediction table, this mode also produces a contigs fasta file, 
 and the two files containing general gene prediction coordinates and a fasta file
-containing the predicted and filtered small genes (<= 100 amino acids).
+containing the predicted and filtered small genes (&le; 100 amino acids).
 
 To run Macrel to get abundance profiles, you only need the short reads file
 and a reference with peptide sequences. Use the `abundance` subcommand:

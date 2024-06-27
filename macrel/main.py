@@ -26,7 +26,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description='macrel v{}'.format(__version__), epilog=textwrap.dedent('''\
              Examples:
-                 run Macrel on peptides:  
+                 run Macrel on peptides:
                  macrel peptides --fasta example_seqs/expep.faa.gz --output out_peptides
                  
                  run Macrel on contigs:
@@ -35,8 +35,11 @@ def parse_args(args):
                  run Macrel on paired-end reads:
                  macrel reads -1 example_seqs/R1.fq.gz -2 example_seqs/R2.fq.gz --output out_metag --outtag example_metag
                  
-                 run Macrel to get abundance profiles: 
+                 run Macrel to get abundance profiles:
                  macrel abundance -1 example_seqs/R1.fq.gz --fasta example_seqs/ref.faa.gz --output out_abundance --outtag example_abundance
+
+                 Query the AMPSphere database
+                 macrel query-ampsphere --query-mode mmseqs --fasta peptides.faa
                  
                  For more information,please read the docs: https://macrel.readthedocs.io/en/latest/
              '''))
@@ -76,6 +79,9 @@ def parse_args(args):
             default=False, dest='logfile_append',
             help='If set, then the log file is appended to (default: overwrite existing file)')
 
+    parser.add_argument('--query-mode', required=False, default='exact',
+                        help='Query mode to use in the AMPSphere query (options: exact, mmseqs, hhm)', dest='query_mode')
+
     return parser.parse_args()
 
 def validate_args(args):
@@ -106,6 +112,11 @@ def validate_args(args):
     elif args.command == 'get-smorfs':
         if not args.fasta_file:
             error_exit(args, "Fasta file is necessary for 'get-smorfs' command.")
+    elif args.command == 'query-ampsphere':
+        if not args.fasta_file:
+            error_exit(args, "Fasta file is necessary for 'query-ampsphere' command.")
+        if args.query_mode not in ['exact', 'mmseqs', 'hmmer']:
+            error_exit(args, f"Unknown query mode {args.query_mode} (options: exact, mmseqs, hmmer)")
     else:
         error_exit(args, "Unknown command {}".format(args.command))
     if not args.output and not args.output_file:
@@ -326,6 +337,36 @@ def do_get_examples(args):
         print('Retrieving {}...'.format(f))
         urlretrieve(BASEURL + f, 'example_seqs/'+f)
 
+def do_ampsphere_query(args):
+    from . import ampsphere
+    from .fasta import fasta_iter
+    from time import sleep
+    import pandas as pd
+    match_function = {
+            'exact': ampsphere.get_ampsphere_exact_match,
+            'mmseqs': ampsphere.get_ampsphere_mmseqs_match,
+            'hmmer': ampsphere.get_ampsphere_hmmer_match,
+            }[args.query_mode]
+    results = []
+    logging.debug(f'Calling the AMPSphere API in {args.query_mode} mode')
+    for h,seq in fasta_iter(args.fasta_file):
+        results.append(match_function(seq, h))
+        sleep(0.1)
+        if len(results) == 20:
+            import sys
+            if sys.stdout.isatty():
+                print('Note that to avoid overloading the AMPSphere API, this script will pause a bit after every query')
+    results = pd.concat(results)
+    results['result'].fillna('No_Hit', inplace=True)
+    ofile = (args.output_file if args.output_file != '-' else '/dev/stdout')
+    if ofile is None:
+        ofile = path.join(args.output,
+                          f'{args.outtag}.ampsphere_{args.query_mode}.tsv.gz')
+    with open_output(ofile, mode='wb') as raw_out:
+        with gzip.open(raw_out, 'wt') as out:
+            out.write(f'# AMPSphere query results (mode: {args.query_mode})\n')
+            results.to_csv(out, sep='\t', index=True)
+
 def main(args=None):
     if args is None:
         import sys
@@ -344,15 +385,15 @@ def main(args=None):
 
     with tempfile.TemporaryDirectory(dir=args.tmpdir) as tdir:
         from .output import readme_output_abundance_mode,readme_output_contigs_mode,\
-            readme_output_peptides_mode,readme_output_reads_mode
+            readme_output_peptides_mode,readme_output_reads_mode, readme_output_ampsphere_mode
 
         creadme = {'reads': readme_output_reads_mode,
                    'contigs': readme_output_contigs_mode,
                    'get-smorfs': readme_output_contigs_mode,
                    'peptides': readme_output_peptides_mode,
                    'abundance': readme_output_abundance_mode,
+                   'query-ampsphere': readme_output_ampsphere_mode,
                   }
-        
         # print readme
         if args.output_file != '-':
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
@@ -370,6 +411,8 @@ def main(args=None):
                 do_density(args, clen, prediction)
         if args.command == 'abundance':
             do_abundance(args, tdir,logfile)
+        if args.command == 'query-ampsphere':
+            do_ampsphere_query(args)
 
 if __name__ == '__main__':
     import sys

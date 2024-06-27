@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019-2023, MACREL Authors
+# Copyright (C) 2019-2024, MACREL Authors
 # vim: set ts=4 sts=4 sw=4 expandtab smartindent:
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -73,6 +73,7 @@ setuptools.setup(name = 'macrel',
       install_requires=[
           'scikit-learn',
           'pandas',
+          'requests',
           'atomicwrites'
       ],
       entry_points={
