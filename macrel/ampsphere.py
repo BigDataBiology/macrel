@@ -12,9 +12,9 @@ def get_cache_directory(args):
         cache_dir = args.cache_dir
     else:
         if 'XDG_CACHE_HOME' in environ:
-            cache_dir = path.join(environ['XDG_CACHE_HOME'], 'ampsphere')
+            cache_dir = path.join(environ['XDG_CACHE_HOME'], 'macrel')
         else:
-            cache_dir = path.join(path.expanduser("~"), '.cache', 'ampsphere')
+            cache_dir = path.join(path.expanduser("~"), '.cache', 'macrel')
     if not path.exists(cache_dir):
         from os import makedirs
         makedirs(cache_dir, exist_ok=True)
