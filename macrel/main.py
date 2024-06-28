@@ -352,9 +352,13 @@ def do_ampsphere_query(args):
     from time import sleep
     import pandas as pd
     if args.local:
-        if args.query_mode != 'exact':
-            error_exit(args, 'Local mode only supports exact query mode (for now)')
-        results = ampsphere.get_ampsphere_exact_match_local(args, fasta_iter(args.fasta_file))
+        if args.query_mode == 'hmmer':
+            error_exit(args, 'Local mode does not support HMMER queries')
+        match_function = {
+                'exact': ampsphere.get_ampsphere_exact_match_local,
+                'mmseqs': ampsphere.get_ampsphere_mmseqs_match_local,
+                }[args.query_mode]
+        results = match_function(args, fasta_iter(args.fasta_file))
     else:
         match_function = {
             'exact': ampsphere.get_ampsphere_exact_match,
@@ -370,7 +374,7 @@ def do_ampsphere_query(args):
                 import sys
                 if sys.stdout.isatty():
                     print('Note that to avoid overloading the AMPSphere API, this script will pause a bit after every query')
-                    if args.query_mode == 'exact':
+                    if args.query_mode != 'hmmer':
                         print('You can use the --local flag to download and use a local version of the AMPSphere database')
         results = pd.concat(results)
         results.index.name = 'query_name'

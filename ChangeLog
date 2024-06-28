@@ -1,5 +1,5 @@
 Unreleased
-	* Add support for local match (exact only for now)
+	* Add support for local match (exact and MMSeqs modes)
 	* Slightly change output format for AMPSphere matching
 
 Version 1.4.0 2024-06-27

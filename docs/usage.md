@@ -153,5 +153,9 @@ macrel query-ampsphere \
 2. MMSeqs2: This mode uses MMSeqs2 to perform approximate matching of the input sequences in the AMPSphere database. This is slower than exact matching but can find more matches. To use this mode, pass the `--query-mode=mmseqs` flag.
 3. HMMER: This mode uses HMMER to search for homologs of the input sequences in the AMPSphere database. This is the slowest mode but can find more distant homologs. To use this mode, pass the `--query-mode=hmm` flag.
 
-Note that since these use the API, you do not need to have the AMPSphere database downloaded locally or installed MMSeqs2/HMMER. On the other hand, you need an internet connection to use this feature. At the moment (version 1.5.0), only exact matching can be used with a local database (use the `--local` flag).
+Note that since these use the API, you do not need to have the AMPSphere database downloaded locally or installed MMSeqs2/HMMER. On the other hand, you need an internet connection to use this feature. At the moment (version 1.5.0), exact matching and MMSeqs can be used with a local database (use the `--local` flag).
+
+As MMSeqs2 is a heuristic method, the results may vary slightly between the local and remote mode (as versions of MMSeqs2 may differ).
+
+
 

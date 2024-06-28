@@ -1,3 +1,4 @@
+import tempfile
 import requests
 import pandas as pd
 from os import path
@@ -24,6 +25,80 @@ def get_cache_directory(args):
             f.write('# For information about cache directory tags, see:\n')
             f.write('#\thttp://www.brynosaurus.com/cachedir/\n')
     return cache_dir
+
+def maybe_download_ampsphere_mmseqs(args):
+    import tarfile
+    import shutil
+    target = path.join(get_cache_directory(args), 'AMPSphere_latest.mmseqsdb')
+    if path.exists(target):
+        logging.debug(f'AMPSphere MMSeqs2 database already downloaded to {target}')
+        if not args.no_download_database and args.force:
+            logging.debug(f'Force download enabled, re-downloading AMPSphere MMSeqs2 database')
+            shutil.rmtree(target)
+        else:
+            return target
+    AMPSPHERE_MMSEQS2_URL = 'https://ampsphere-api.big-data-biology.org/v1/downloads/AMPSphere_latest.mmseqsdb.tar.xz'
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tfile = path.join(tmpdir, 'AMPSphere_latest.mmseqsdb.tar.xz')
+        r = requests.get(AMPSPHERE_MMSEQS2_URL, stream=True)
+        with open(tfile, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+        logging.debug(f'Downloaded AMPSphere MMSeqs2 database to {tfile}')
+        with tarfile.open(tfile) as tar:
+            tar.extractall(tmpdir)
+        logging.debug(f'Extracted AMPSphere MMSeqs2 database to {tmpdir}')
+        logging.debug(f'Moving AMPSphere MMSeqs2 database to {target}')
+        return shutil.move(path.join(tmpdir, 'mmseqs_db'), target)
+
+
+MMSEQS2_OUTPUT_FORMAT = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qseq,tseq'
+
+def _logged_subprocess_call(cmd):
+    import subprocess
+    logging.debug(f'Running command: {" ".join(cmd)}')
+    subprocess.check_call(cmd)
+
+def get_ampsphere_mmseqs_match_local(args, seqs):
+    import shutil
+    mmseqs_bin = shutil.which('mmseqs')
+    if not mmseqs_bin:
+        logging.error('MMSeqs2 not found. Please install it first (you can use `conda install -c bioconda mmseqs2`)')
+        sys.exit(1)
+    logging.debug(f'Using MMSeqs2 binary at {mmseqs_bin}')
+
+    mmseqs_db = maybe_download_ampsphere_mmseqs(args)
+    if not mmseqs_db:
+        logging.error('AMPSphere MMSeqs2 database not found. Please download it first (use the --download-database flag) or provide the path to the database using the --cache-dir flag')
+        sys.exit(1)
+    mmseqs_db = path.join(mmseqs_db, 'AMPSphere_latest.mmseqsdb')
+    logging.info(f'Using AMPSphere MMSeqs2 database at {mmseqs_db}')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        query_file = path.join(tmpdir, 'query.faa')
+        output_file = path.join(tmpdir, 'output.tsv')
+        with open(query_file, 'wt') as f:
+            for (query_name, seq) in seqs:
+                f.write(f'>{query_name}\n{seq}\n')
+        _logged_subprocess_call(
+            ['mmseqs', 'createdb', query_file, f'{query_file}.mmseqsdb'])
+        _logged_subprocess_call(
+            ['mmseqs', 'search',
+                f'{query_file}.mmseqsdb', mmseqs_db,
+             output_file + '.mmseqsdb',
+             tmpdir + '/tmp'])
+
+        _logged_subprocess_call(
+            ['mmseqs', 'convertalis',
+             f'{query_file}.mmseqsdb',
+             mmseqs_db,
+             output_file + '.mmseqsdb',
+             output_file,
+             '--format-output', MMSEQS2_OUTPUT_FORMAT])
+
+        return pd.read_csv(output_file, sep='\t', header=None,
+                    names=MMSEQS2_OUTPUT_FORMAT.split(','))\
+            .set_index('query') \
+            .sort_values('evalue').sort_index(kind='stable')
 
 def maybe_download_ampsphere_faa(args):
     target = path.join(get_cache_directory(args), 'AMPSphere_v.2022-03.faa.gz')
