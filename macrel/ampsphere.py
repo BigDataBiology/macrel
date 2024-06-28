@@ -37,8 +37,8 @@ def maybe_download_ampsphere_mmseqs(args):
     target = path.join(get_cache_directory(args), 'AMPSphere_latest.mmseqsdb')
     if path.exists(target):
         logging.debug(f'AMPSphere MMSeqs2 database already downloaded to {target}')
-        if not args.no_download_database and args.force:
-            logging.debug(f'Force download enabled, re-downloading AMPSphere MMSeqs2 database')
+        if args.re_download_database:
+            logging.debug(f'Forced redownload enabled, re-downloading AMPSphere MMSeqs2 database')
             shutil.rmtree(target)
         else:
             return target
@@ -74,7 +74,7 @@ def get_ampsphere_mmseqs_match_local(args, seqs):
 
     mmseqs_db = maybe_download_ampsphere_mmseqs(args)
     if not mmseqs_db:
-        logging.error('AMPSphere MMSeqs2 database not found. Please download it first (use the --download-database flag) or provide the path to the database using the --cache-dir flag')
+        logging.error('AMPSphere MMSeqs2 database not found. Please download it first or provide the path to the database using the --cache-dir flag')
         sys.exit(1)
     mmseqs_db = path.join(mmseqs_db, 'AMPSphere_latest.mmseqsdb')
     logging.info(f'Using AMPSphere MMSeqs2 database at {mmseqs_db}')
@@ -109,8 +109,8 @@ def maybe_download_ampsphere_faa(args):
     target = path.join(get_cache_directory(args), 'AMPSphere_v.2022-03.faa.gz')
     if path.exists(target):
         logging.debug(f'AMPSphere database already downloaded to {target}')
-        if not args.no_download_database and args.force:
-            logging.debug(f'Force download enabled, re-downloading AMPSphere database')
+        if args.re_download_database:
+            logging.debug(f'Force re-download enabled, re-downloading AMPSphere database')
         else:
             return target
     if args.no_download_database:
@@ -126,7 +126,7 @@ def get_ampsphere_exact_match_local(args, seqs):
     from macrel.fasta import fasta_iter
     faa = maybe_download_ampsphere_faa(args)
     if not faa:
-        logging.error('AMPSphere database not found. Please download it first (use the --download-database flag) or provide the path to the database using the --cache-dir flag')
+        logging.error('AMPSphere database not found. Please download it first or provide the path to the database using the --cache-dir flag')
         sys.exit(1)
     seq2id = {}
     for h,seq in fasta_iter(faa):

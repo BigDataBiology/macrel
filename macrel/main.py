@@ -85,6 +85,8 @@ def parse_args(args):
     parser.add_argument('--local', required=False, default=False, action='store_true',
                         help='Use local AMPSphere database', dest='local')
 
+    parser.add_argument('--re-download-database', required=False, default=False, action='store_true',
+                        help='Download the AMPSphere database even if it already was downloaded before', dest='re_download_database')
     parser.add_argument('--no-download-database', required=False, default=False, action='store_true',
                         help='Do not download the AMPSphere database', dest='no_download_database')
 
