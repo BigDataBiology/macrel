@@ -3,7 +3,7 @@ import pandas as pd
 from os import path
 import logging
 
-from .utils import open_output
+from macrel.utils import open_output
 
 def get_cache_directory(args):
     '''Get cache directory'''
@@ -62,7 +62,7 @@ def get_ampsphere_exact_match_local(args, seqs):
             results.append((query_name, seq, h))
         else:
             results.append((query_name, seq, 'No_Hit'))
-    return pd.DataFrame(results, columns=['query_name', 'query', 'hit'])\
+    return pd.DataFrame(results, columns=['query_name', 'query', 'result'])\
             .set_index('query_name')
 
 

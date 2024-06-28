@@ -373,6 +373,7 @@ def do_ampsphere_query(args):
                     if args.query_mode == 'exact':
                         print('You can use the --local flag to download and use a local version of the AMPSphere database')
         results = pd.concat(results)
+        results.index.name = 'query_name'
         results.fillna({'result': 'No_Hit'}, inplace=True)
     ofile = (args.output_file if args.output_file != '-' else '/dev/stdout')
     if ofile is None:
