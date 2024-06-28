@@ -102,7 +102,7 @@ def get_ampsphere_hmmer_match_local(args, seqs):
             for (query_name, seq) in seqs:
                 f.write(f'>{query_name}\n{seq}\n')
         _logged_subprocess_call(
-            ['hmmsearch', '--tblout', output_file, hmm, query_file])
+            ['hmmscan', '--domtblout', output_file, hmm, query_file])
         return pd.read_csv(output_file, sep='\s+', comment='#', header=None,
                 names=['target', 'target_accession', 'query_name',
                     'query_accession', 'evalue', 'score', 'bias',
