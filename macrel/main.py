@@ -326,10 +326,7 @@ def do_density(args, clen, prediction):
     print(f'Macrel processed the sample and verified a density of {sample_density:.3f} AMPs / Mbp.')
 
 def do_get_examples(args):
-    try:
-        from urllib.request import urlretrieve
-    except:
-        from urllib2 import urlretrieve
+    from urllib.request import urlretrieve
 
     DATA_FILES = [
         'excontigs.fna.gz',
