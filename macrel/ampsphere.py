@@ -5,6 +5,11 @@ from os import path
 import logging
 
 from macrel.utils import open_output
+from macrel.macrel_version import __version__
+
+REQUESTS_HEADER = {
+        'User-Agent': f'macrel/{__version__} (python-requests)'
+        }
 
 def get_cache_directory(args):
     '''Get cache directory'''
@@ -40,7 +45,7 @@ def maybe_download_ampsphere_mmseqs(args):
     AMPSPHERE_MMSEQS2_URL = 'https://ampsphere-api.big-data-biology.org/v1/downloads/AMPSphere_latest.mmseqsdb.tar.xz'
     with tempfile.TemporaryDirectory() as tmpdir:
         tfile = path.join(tmpdir, 'AMPSphere_latest.mmseqsdb.tar.xz')
-        r = requests.get(AMPSPHERE_MMSEQS2_URL, stream=True)
+        r = requests.get(AMPSPHERE_MMSEQS2_URL, stream=True, headers=REQUESTS_HEADER)
         with open(tfile, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
@@ -111,7 +116,7 @@ def maybe_download_ampsphere_faa(args):
     if args.no_download_database:
         return None
     URL = 'https://zenodo.org/records/6511404/files/AMPSphere_v.2022-03.faa.gz?download=1'
-    r = requests.get(URL, stream=True)
+    r = requests.get(URL, stream=True, headers=REQUESTS_HEADER)
     with open_output(target, 'wb') as f:
         for chunk in r.iter_content(chunk_size=8192):
             f.write(chunk)
@@ -144,7 +149,7 @@ def get_ampsphere_exact_match_local(args, seqs):
 def get_ampsphere_exact_match(seq, query_name):
     '''Get exact match from AMPSphere API'''
     URL = f'https://ampsphere-api.big-data-biology.org/v1/search/sequence-match?query={seq}'
-    response = requests.get(URL)
+    response = requests.get(URL, headers=REQUESTS_HEADER)
     data = response.json()
     return pd.DataFrame.from_dict({query_name : data}, orient='index')
 
@@ -152,7 +157,7 @@ def get_ampsphere_mmseqs_match(seq, query_name):
     '''Get MMSeqs2 match from AMPSphere API'''
     query = f'>{query_name}\n{seq}'
     URL = f'https://ampsphere-api.big-data-biology.org/v1/search/mmseqs?query={query}'
-    response = requests.get(URL)
+    response = requests.get(URL, headers=REQUESTS_HEADER)
     data = response.json()
     return pd.DataFrame.from_dict(data)\
             .drop("alignment_strings", axis=1)\
@@ -162,7 +167,7 @@ def get_ampsphere_hmmer_match(seq, query_name):
     '''Get HMMER match from AMPSphere API'''
     query = f'>{query_name}\n{seq}'
     URL = f'https://ampsphere-api.big-data-biology.org/v1/search/hmmer?query={query}'
-    response = requests.get(URL)
+    response = requests.get(URL, headers=REQUESTS_HEADER)
     data = response.json()
     if not data:
         return pd.DataFrame()
