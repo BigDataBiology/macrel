@@ -351,11 +351,10 @@ def do_ampsphere_query(args):
     from time import sleep
     import pandas as pd
     if args.local:
-        if args.query_mode == 'hmmer':
-            error_exit(args, 'Local mode does not support HMMER queries')
         match_function = {
                 'exact': ampsphere.get_ampsphere_exact_match_local,
                 'mmseqs': ampsphere.get_ampsphere_mmseqs_match_local,
+                'hmmer': ampsphere.get_ampsphere_hmmer_match_local,
                 }[args.query_mode]
         results = match_function(args, fasta_iter(args.fasta_file))
     else:

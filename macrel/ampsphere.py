@@ -1,3 +1,4 @@
+import shutil
 import tempfile
 import requests
 import pandas as pd
@@ -33,7 +34,6 @@ def get_cache_directory(args):
 
 def maybe_download_ampsphere_mmseqs(args):
     import tarfile
-    import shutil
     target = path.join(get_cache_directory(args), 'AMPSphere_latest.mmseqsdb')
     if path.exists(target):
         logging.debug(f'AMPSphere MMSeqs2 database already downloaded to {target}')
@@ -57,6 +57,58 @@ def maybe_download_ampsphere_mmseqs(args):
         return shutil.move(path.join(tmpdir, 'mmseqs_db'), target)
 
 
+def maybe_download_ampsphere_hmm(args):
+    target_dir = path.join(get_cache_directory(args), 'hmm_db')
+    target = path.join(target_dir, 'AMPSphere_latest.hmm')
+    if path.exists(target):
+        logging.debug(f'AMPSphere HMM database already downloaded to {target}')
+        if args.re_download_database:
+            logging.debug(f'Force redownload enabled, re-downloading AMPSphere HMM database')
+            shutil.rmtree(target)
+        else:
+            return target
+    HMM_URL = 'https://ampsphere-api.big-data-biology.org/v1/downloads/AMPSphere_latest.hmm'
+    if not shutil.which('hmmpress'):
+        logging.error('HMMER not found. Please install it first (you can use `conda install -c bioconda hmmer`)')
+        sys.exit(1)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tfile = path.join(tmpdir, 'AMPSphere_latest.hmm')
+        r = requests.get(HMM_URL, stream=True, headers=REQUESTS_HEADER)
+        with open(tfile, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+        logging.debug(f'Downloaded AMPSphere HMM database to {tfile}')
+        _logged_subprocess_call(['hmmpress', tfile])
+        logging.debug(f'Indexed AMPSphere HMM database')
+        logging.debug(f'Moving AMPSphere HMM database to {target}')
+        # move all files in tmpdir to target
+        from os import listdir, makedirs
+        makedirs(target_dir, exist_ok=True)
+        for f in listdir(tmpdir):
+            shutil.move(path.join(tmpdir, f), target_dir)
+        return target
+
+def get_ampsphere_hmmer_match_local(args, seqs):
+    from macrel.fasta import fasta_iter
+    hmm = maybe_download_ampsphere_hmm(args)
+    if not hmm:
+        logging.error('AMPSphere HMM database not found. Please download it first or provide the path to the database using the --cache-dir flag')
+        sys.exit(1)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        query_file = path.join(tmpdir, 'query.faa')
+        output_file = path.join(tmpdir, 'output.tsv')
+        with open(query_file, 'wt') as f:
+            for (query_name, seq) in seqs:
+                f.write(f'>{query_name}\n{seq}\n')
+        _logged_subprocess_call(
+            ['hmmsearch', '--tblout', output_file, hmm, query_file])
+        return pd.read_csv(output_file, sep='\s+', comment='#', header=None,
+                names=['target', 'target_accession', 'query_name',
+                    'query_accession', 'evalue', 'score', 'bias',
+                    'domain_score', 'domain_bias', 'exp', 'reg', 'clu',
+                    'ov', 'env', 'dom', 'rep', 'inc', 'description'])\
+            .set_index('query_name')
+
 MMSEQS2_OUTPUT_FORMAT = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qseq,tseq'
 
 def _logged_subprocess_call(cmd):
@@ -65,7 +117,6 @@ def _logged_subprocess_call(cmd):
     subprocess.check_call(cmd)
 
 def get_ampsphere_mmseqs_match_local(args, seqs):
-    import shutil
     mmseqs_bin = shutil.which('mmseqs')
     if not mmseqs_bin:
         logging.error('MMSeqs2 not found. Please install it first (you can use `conda install -c bioconda mmseqs2`)')

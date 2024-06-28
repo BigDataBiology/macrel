@@ -153,9 +153,23 @@ macrel query-ampsphere \
 2. MMSeqs2: This mode uses MMSeqs2 to perform approximate matching of the input sequences in the AMPSphere database. This is slower than exact matching but can find more matches. To use this mode, pass the `--query-mode=mmseqs` flag.
 3. HMMER: This mode uses HMMER to search for homologs of the input sequences in the AMPSphere database. This is the slowest mode but can find more distant homologs. To use this mode, pass the `--query-mode=hmm` flag.
 
-Note that since these use the API, you do not need to have the AMPSphere database downloaded locally or installed MMSeqs2/HMMER. On the other hand, you need an internet connection to use this feature. At the moment (version 1.5.0), exact matching and MMSeqs can be used with a local database (use the `--local` flag).
+
+#### Remote vs. local
+
+By default, macrel uses the remote API to query the AMPSphere database. This is the fastest way to query the database for a small number of peptides, but it requires an internet connection.
+
+If you want to use a local database use the `--local` flag:
+
+```bash
+macrel query-ampsphere \
+    --fasta example_seqs/pep8.faa \
+    --query-mode mmseqs \
+    --local \
+    --output out_ampsphere
+```
+
+This will download the AMPSphere database and use it to query the input sequences. The database will stored in `~/.cache/macrel/ampsphere` (you can change it with the `--cache-dir` flag). To use the MMSeqs2 or HHMER modes, you need to have the respective software installed on your system (`conda install bioconda::mmseqs2` or `conda install bioconda::hmmer`).
 
 As MMSeqs2 is a heuristic method, the results may vary slightly between the local and remote mode (as versions of MMSeqs2 may differ).
-
 
 
