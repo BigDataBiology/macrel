@@ -1,6 +1,7 @@
 Unreleased
 	* Add support for local searching
 	* Slightly change output format for AMPSphere matching
+	* Add --verbose and --quiet flags
 
 Version 1.4.0 2024-06-27
 	* Query AMPSphere online

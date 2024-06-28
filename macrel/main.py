@@ -7,6 +7,9 @@ import os
 from os import path, makedirs
 import textwrap
 from .utils import open_output
+from .macrel_version import __version__
+
+logger = logging.getLogger('macrel')
 
 def error_exit(args, errmessage):
     import sys
@@ -73,6 +76,8 @@ def parse_args(args):
             help='Whether to keep non-AMPs in the output')
     parser.add_argument('--version', '-v', action='version',
                     version='%(prog)s {version}'.format(version=__version__))
+    parser.add_argument('--verbose', '-V', action='store_true', default=False, dest='verbose', help='Print debug information')
+    parser.add_argument('--quiet', '-q', action='store_true', default=False, dest='quiet', help='Print only errors')
     parser.add_argument('--log-file', required=False, default=None, dest='logfile',
             help='Path to the output logfile')
     parser.add_argument('--log-append', required=False, action='store_true',
@@ -176,7 +181,7 @@ def link_or_uncompress_fasta_file(orig, dest):
     If the input is compress, uncompress it. Otherwise, link it to `dest`
     '''
     if orig.endswith('.gz'):
-        logging.debug('Uncompressing FASTA file ({})'.format(orig))
+        logger.debug('Uncompressing FASTA file ({})'.format(orig))
         with open(dest, 'wb') as ofile:
             with gzip.open(orig, 'rb') as ifile:
                 while True:
@@ -213,7 +218,7 @@ def do_abundance(args, tdir,logfile):
         '-r3',
         fasta_file],
         stdout=logfile)
-    logging.debug('Mapping reads against references')
+    logger.debug('Mapping reads against references')
     with open(sam_file, 'wb') as sout:
         subprocess.check_call([
             'paladin', 'align',
@@ -364,7 +369,7 @@ def do_ampsphere_query(args):
             'hmmer': ampsphere.get_ampsphere_hmmer_match,
             }[args.query_mode]
         results = []
-        logging.debug(f'Calling the AMPSphere API in {args.query_mode} mode')
+        logger.debug(f'Calling the AMPSphere API in {args.query_mode} mode')
         for h,seq in fasta_iter(args.fasta_file):
             results.append(match_function(seq, h))
             sleep(0.1)
@@ -397,7 +402,24 @@ def main(args=None):
         logfile = open(args.logfile, ('a' if args.logfile_append else 'w'))
     else:
         logfile = None
+    logger.setLevel(logging.DEBUG)
+    if args.verbose:
+        loglevel = logging.DEBUG
+    elif args.quiet:
+        loglevel = logging.ERROR
+    else:
+        loglevel = logging.INFO
+    try:
+        import coloredlogs
+        coloredlogs.install(level=loglevel, logger=logger)
+    except ImportError:
+        sh = logging.StreamHandler()
+        sh.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s'))
+        sh.setLevel(loglevel)
+        logger.addHandler(sh)
 
+    logger.debug(f'Running Macrel v{__version__}')
+    logger.debug(f'Command line arguments: {args}')
     if args.command == 'get-examples':
         do_get_examples(args)
         return
@@ -415,6 +437,7 @@ def main(args=None):
                   }
         # print readme
         if args.output_file != '-':
+            logger.debug(f'Writing README to {args.output}')
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(creadme[args.command])
         

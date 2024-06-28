@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 from os import path
 import logging
+logger = logging.getLogger('macrel')
 
 from macrel.utils import open_output
 from macrel.macrel_version import __version__
@@ -36,9 +37,9 @@ def maybe_download_ampsphere_mmseqs(args):
     import tarfile
     target = path.join(get_cache_directory(args), 'AMPSphere_latest.mmseqsdb')
     if path.exists(target):
-        logging.debug(f'AMPSphere MMSeqs2 database already downloaded to {target}')
+        logger.debug(f'AMPSphere MMSeqs2 database already downloaded to {target}')
         if args.re_download_database:
-            logging.debug(f'Forced redownload enabled, re-downloading AMPSphere MMSeqs2 database')
+            logger.debug(f'Forced redownload enabled, re-downloading AMPSphere MMSeqs2 database')
             shutil.rmtree(target)
         else:
             return target
@@ -49,11 +50,11 @@ def maybe_download_ampsphere_mmseqs(args):
         with open(tfile, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
-        logging.debug(f'Downloaded AMPSphere MMSeqs2 database to {tfile}')
+        logger.debug(f'Downloaded AMPSphere MMSeqs2 database to {tfile}')
         with tarfile.open(tfile) as tar:
             tar.extractall(tmpdir)
-        logging.debug(f'Extracted AMPSphere MMSeqs2 database to {tmpdir}')
-        logging.debug(f'Moving AMPSphere MMSeqs2 database to {target}')
+        logger.debug(f'Extracted AMPSphere MMSeqs2 database to {tmpdir}')
+        logger.debug(f'Moving AMPSphere MMSeqs2 database to {target}')
         return shutil.move(path.join(tmpdir, 'mmseqs_db'), target)
 
 
@@ -61,15 +62,15 @@ def maybe_download_ampsphere_hmm(args):
     target_dir = path.join(get_cache_directory(args), 'hmm_db')
     target = path.join(target_dir, 'AMPSphere_latest.hmm')
     if path.exists(target):
-        logging.debug(f'AMPSphere HMM database already downloaded to {target}')
+        logger.debug(f'AMPSphere HMM database already downloaded to {target}')
         if args.re_download_database:
-            logging.debug(f'Force redownload enabled, re-downloading AMPSphere HMM database')
+            logger.debug(f'Force redownload enabled, re-downloading AMPSphere HMM database')
             shutil.rmtree(target)
         else:
             return target
     HMM_URL = 'https://ampsphere-api.big-data-biology.org/v1/downloads/AMPSphere_latest.hmm'
     if not shutil.which('hmmpress'):
-        logging.error('HMMER not found. Please install it first (you can use `conda install -c bioconda hmmer`)')
+        logger.error('HMMER not found. Please install it first (you can use `conda install -c bioconda hmmer`)')
         sys.exit(1)
     with tempfile.TemporaryDirectory() as tmpdir:
         tfile = path.join(tmpdir, 'AMPSphere_latest.hmm')
@@ -77,10 +78,10 @@ def maybe_download_ampsphere_hmm(args):
         with open(tfile, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
-        logging.debug(f'Downloaded AMPSphere HMM database to {tfile}')
+        logger.debug(f'Downloaded AMPSphere HMM database to {tfile}')
         _logged_subprocess_call(['hmmpress', tfile])
-        logging.debug(f'Indexed AMPSphere HMM database')
-        logging.debug(f'Moving AMPSphere HMM database to {target}')
+        logger.debug(f'Indexed AMPSphere HMM database')
+        logger.debug(f'Moving AMPSphere HMM database to {target}')
         # move all files in tmpdir to target
         from os import listdir, makedirs
         makedirs(target_dir, exist_ok=True)
@@ -92,7 +93,7 @@ def get_ampsphere_hmmer_match_local(args, seqs):
     from macrel.fasta import fasta_iter
     hmm = maybe_download_ampsphere_hmm(args)
     if not hmm:
-        logging.error('AMPSphere HMM database not found. Please download it first or provide the path to the database using the --cache-dir flag')
+        logger.error('AMPSphere HMM database not found. Please download it first or provide the path to the database using the --cache-dir flag')
         sys.exit(1)
     with tempfile.TemporaryDirectory() as tmpdir:
         query_file = path.join(tmpdir, 'query.faa')
@@ -113,22 +114,22 @@ MMSEQS2_OUTPUT_FORMAT = 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend
 
 def _logged_subprocess_call(cmd):
     import subprocess
-    logging.debug(f'Running command: {" ".join(cmd)}')
+    logger.debug(f'Running command: {" ".join(cmd)}')
     subprocess.check_call(cmd)
 
 def get_ampsphere_mmseqs_match_local(args, seqs):
     mmseqs_bin = shutil.which('mmseqs')
     if not mmseqs_bin:
-        logging.error('MMSeqs2 not found. Please install it first (you can use `conda install -c bioconda mmseqs2`)')
+        logger.error('MMSeqs2 not found. Please install it first (you can use `conda install -c bioconda mmseqs2`)')
         sys.exit(1)
-    logging.debug(f'Using MMSeqs2 binary at {mmseqs_bin}')
+    logger.debug(f'Using MMSeqs2 binary at {mmseqs_bin}')
 
     mmseqs_db = maybe_download_ampsphere_mmseqs(args)
     if not mmseqs_db:
-        logging.error('AMPSphere MMSeqs2 database not found. Please download it first or provide the path to the database using the --cache-dir flag')
+        logger.error('AMPSphere MMSeqs2 database not found. Please download it first or provide the path to the database using the --cache-dir flag')
         sys.exit(1)
     mmseqs_db = path.join(mmseqs_db, 'AMPSphere_latest.mmseqsdb')
-    logging.info(f'Using AMPSphere MMSeqs2 database at {mmseqs_db}')
+    logger.info(f'Using AMPSphere MMSeqs2 database at {mmseqs_db}')
     with tempfile.TemporaryDirectory() as tmpdir:
         query_file = path.join(tmpdir, 'query.faa')
         output_file = path.join(tmpdir, 'output.tsv')
@@ -159,9 +160,9 @@ def get_ampsphere_mmseqs_match_local(args, seqs):
 def maybe_download_ampsphere_faa(args):
     target = path.join(get_cache_directory(args), 'AMPSphere_v.2022-03.faa.gz')
     if path.exists(target):
-        logging.debug(f'AMPSphere database already downloaded to {target}')
+        logger.debug(f'AMPSphere database already downloaded to {target}')
         if args.re_download_database:
-            logging.debug(f'Force re-download enabled, re-downloading AMPSphere database')
+            logger.debug(f'Force re-download enabled, re-downloading AMPSphere database')
         else:
             return target
     if args.no_download_database:
@@ -177,7 +178,7 @@ def get_ampsphere_exact_match_local(args, seqs):
     from macrel.fasta import fasta_iter
     faa = maybe_download_ampsphere_faa(args)
     if not faa:
-        logging.error('AMPSphere database not found. Please download it first or provide the path to the database using the --cache-dir flag')
+        logger.error('AMPSphere database not found. Please download it first or provide the path to the database using the --cache-dir flag')
         sys.exit(1)
     seq2id = {}
     for h,seq in fasta_iter(faa):
