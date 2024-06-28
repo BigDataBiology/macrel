@@ -147,8 +147,11 @@ macrel query-ampsphere \
     --output out_ampsphere
 ```
 
-Note that this command requires internet access as it uses the AMPSphere API. Future versions of macrel will allow you to use a local database.
+#### Querying Modes
 
-By default it performs exact matching (equivalent to passing in `--query-mode=exact`), but you can also use MMSeqs2 to perform approximate matching by using the `--query-mode=mmseqs` (or `--query-mode=hmm` for HMMER).
+1. Exact matching: This is the default mode, and it will search for exact matches of the input sequences in the AMPSphere database. This is the fastest mode (starting with version 1.5.0, can be called with the `--local` flag to use a local database).
+2. MMSeqs2: This mode uses MMSeqs2 to perform approximate matching of the input sequences in the AMPSphere database. This is slower than exact matching but can find more matches. To use this mode, pass the `--query-mode=mmseqs` flag.
+3. HMMER: This mode uses HMMER to search for homologs of the input sequences in the AMPSphere database. This is the slowest mode but can find more distant homologs. To use this mode, pass the `--query-mode=hmm` flag.
 
-Note that since these use the API, you do not need to have the AMPSphere database downloaded locally or installed MMSeqs2/HMMER.
+Note that since these use the API, you do not need to have the AMPSphere database downloaded locally or installed MMSeqs2/HMMER. On the other hand, you need an internet connection to use this feature. At the moment (version 1.5.0), only exact matching can be used with a local database (use the `--local` flag).
+

@@ -82,6 +82,15 @@ def parse_args(args):
     parser.add_argument('--query-mode', required=False, default='exact',
                         help='Query mode to use in the AMPSphere query (options: exact, mmseqs, hhm)', dest='query_mode')
 
+    parser.add_argument('--local', required=False, default=False, action='store_true',
+                        help='Use local AMPSphere database', dest='local')
+
+    parser.add_argument('--no-download-database', required=False, default=False, action='store_true',
+                        help='Do not download the AMPSphere database', dest='no_download_database')
+
+    parser.add_argument('--cache-dir', required=False, default=None, dest='cache_dir',
+                        help='Directory to use for caching AMPSphere data')
+
     return parser.parse_args()
 
 def validate_args(args):
@@ -342,22 +351,29 @@ def do_ampsphere_query(args):
     from .fasta import fasta_iter
     from time import sleep
     import pandas as pd
-    match_function = {
+    if args.local:
+        if args.query_mode != 'exact':
+            error_exit(args, 'Local mode only supports exact query mode (for now)')
+        results = ampsphere.get_ampsphere_exact_match_local(args, fasta_iter(args.fasta_file))
+    else:
+        match_function = {
             'exact': ampsphere.get_ampsphere_exact_match,
             'mmseqs': ampsphere.get_ampsphere_mmseqs_match,
             'hmmer': ampsphere.get_ampsphere_hmmer_match,
             }[args.query_mode]
-    results = []
-    logging.debug(f'Calling the AMPSphere API in {args.query_mode} mode')
-    for h,seq in fasta_iter(args.fasta_file):
-        results.append(match_function(seq, h))
-        sleep(0.1)
-        if len(results) == 20:
-            import sys
-            if sys.stdout.isatty():
-                print('Note that to avoid overloading the AMPSphere API, this script will pause a bit after every query')
-    results = pd.concat(results)
-    results.fillna({'result': 'No_Hit'}, inplace=True)
+        results = []
+        logging.debug(f'Calling the AMPSphere API in {args.query_mode} mode')
+        for h,seq in fasta_iter(args.fasta_file):
+            results.append(match_function(seq, h))
+            sleep(0.1)
+            if len(results) == 20:
+                import sys
+                if sys.stdout.isatty():
+                    print('Note that to avoid overloading the AMPSphere API, this script will pause a bit after every query')
+                    if args.query_mode == 'exact':
+                        print('You can use the --local flag to download and use a local version of the AMPSphere database')
+        results = pd.concat(results)
+        results.fillna({'result': 'No_Hit'}, inplace=True)
     ofile = (args.output_file if args.output_file != '-' else '/dev/stdout')
     if ofile is None:
         ofile = path.join(args.output,
