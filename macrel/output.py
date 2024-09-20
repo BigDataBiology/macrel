@@ -5,7 +5,7 @@ header = """If you find Macrel useful, please cite:
 > https://doi.org/10.7717/peerj.10555
 
 For more information, please read [the macrel
-documentation](https://macrel.readthedocs.io) and use the [AMPsphere mailing
+documentation](https://macrel.readthedocs.io) and use the [AMPSphere mailing
 list](https://groups.google.com/g/ampsphere-users) for questions."""
 
 footer = f"""If you used the `--outtag` argument, then the above files will be named using
@@ -145,7 +145,8 @@ readme_output_reads_mode = f"""{header}
 
 readme_output_ampsphere_mode = f"""{header}
 
-For results for this mode, please see more information and cite the AMPSphere manuscript:
+For results related to the AMPSphere, please see more information and cite the
+AMPSphere manuscript:
 
 > **Discovery of antimicrobial peptides in the global microbiome with machine
 > learning** by Célio Dias Santos Júnior, Marcelo D.T. Torres, Yiqian Duan,
