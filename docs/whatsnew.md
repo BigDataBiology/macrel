@@ -1,5 +1,13 @@
 # What's new? (History)
 
+## Version 1.5.0
+
+*Released 20 September 2024*
+
+- Add support for local searching when querying the [AMPSphere database](https://ampsphere.big-data-biology.org/)
+- Slightly change output format for AMPSphere matching
+- Add --verbose and --quiet flags
+
 ## Version 1.4.0
 
 *Released 27 June 2024*

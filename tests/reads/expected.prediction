@@ -1,4 +1,4 @@
-# Prediction from macrel v1.5.0.dev0
+# Prediction from macrel v1.5.0
 Access	Sequence	AMP_family	AMP_probability	Hemolytic	Hemolytic_probability
 k77_12_1	RFLIKMVKVNLMNGKLIRKISLM	CLP	0.634	Hemo	0.871
 k77_15_1	FFNDGKGTIYYGIKKYFRIYF	CLP	0.673	Hemo	0.822

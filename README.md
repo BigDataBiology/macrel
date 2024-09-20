@@ -128,7 +128,10 @@ at `test/abundances/expected.abundance.txt`.
 
 ### AMPSphere Querying
 
-Macrel also supports querying the [AMPSphere database](https://ampsphere.big-data-biology.org/) (described in [Santos-Júnior et al., 2024](https://doi.org/10.1016/j.cell.2024.05.013)). To do so, use the `query-ampsphere` subcommand:
+Macrel also supports querying the [AMPSphere
+database](https://ampsphere.big-data-biology.org/) (described in [Santos-Júnior
+et al., 2024](https://doi.org/10.1016/j.cell.2024.05.013)). To do so, use the
+`query-ampsphere` subcommand:
 
 ```bash
 macrel query-ampsphere \
@@ -136,9 +139,21 @@ macrel query-ampsphere \
     --output out_ampsphere
 ```
 
-Note that this command requires internet access as it uses the AMPSphere API.
+Note that, by default, this command requires internet access as it uses the
+AMPSphere API. Alternatively, you can use the `--local` flag to download a copy
+of the database and run the queries locally. This only requires the network the
+first time.
 
-By default it performs exact matching, but you can also use MMSeqs2 to perform approximate matching by using the `--query-mode=mmseqs` (or `--query-mode=hmm` for HMMER).
+```bash
+macrel query-ampsphere \
+    --local \
+    --fasta example_seqs/pep8.faa \
+    --output out_ampsphere
+```
+
+By default it performs exact matching, but you can also use MMSeqs2 to perform
+approximate matching by using the `--query-mode=mmseqs` (or `--query-mode=hmm`
+for HMMER).
 
 ### Community
 
