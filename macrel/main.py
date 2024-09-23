@@ -299,8 +299,8 @@ def do_predict(args, tdir):
     import gzip
     fs = fasta_features(args.fasta_file)
     prediction = predict(
-                         data_file("models/AMP.pkl.gz"),
-                         data_file("models/Hemo.pkl.gz"),
+                         data_file("models/AMP.onnx.gz"),
+                         data_file("models/Hemo.onnx.gz"),
                          fs,
                          args.keep_negatives)
     ofile = path.join(args.output, args.outtag + '.prediction.gz')

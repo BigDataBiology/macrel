@@ -1,3 +1,6 @@
+Unreleased
+	* Switch to ONNX for model storage
+
 Version 1.5.0 2024-09-20
 	* Add support for local searching
 	* Slightly change output format for AMPSphere matching

@@ -1,8 +1,10 @@
 import pandas as pd
 from sklearn import metrics, ensemble
 from os import makedirs
-import pickle
 import gzip
+
+from skl2onnx.common.data_types import FloatTensorType
+from skl2onnx import convert_sklearn
 
 makedirs('models/', exist_ok=True)
 def report(name, y_true, y_pred):
@@ -31,16 +33,16 @@ rf_wout_oob = ensemble.RandomForestClassifier(
         n_estimators=101,
         random_state=12345,
         n_jobs=8)
-rf_w_oob.fit(ampep_train.iloc[:, 3:], ampep_train['group'])
-rf_wout_oob.fit(ampep_train.iloc[:, 3:], ampep_train['group'])
+rf_w_oob.fit(ampep_train.iloc[:, 2:], ampep_train['group'])
+rf_wout_oob.fit(ampep_train.iloc[:, 2:], ampep_train['group'])
 
-# In testing, using joblib.dump was actually slightly worse than standard pickle in
-# terms of diskspace
-pickle.dump(rf_wout_oob, gzip.open('models/AMP.pkl.gz', 'wb'))
-
+input_features = [("input_features", FloatTensorType([None, rf_w_oob.n_features_in_]))]
+onx_model = convert_sklearn(rf_w_oob, initial_types=input_features)
+with gzip.open("models/AMP.onnx.gz", "wb") as f:
+    f.write(onx_model.SerializeToString())
 
 oob_pred = rf_w_oob.classes_[(rf_w_oob.oob_decision_function_.T[1] > .5).astype(int)]
-xiao_pred = rf_w_oob.predict(xiao_test.iloc[:, 3:])
+xiao_pred = rf_w_oob.predict(xiao_test.iloc[:, 2:])
 
 # As xiao_test & ampep_test overlap in sequences, we need to do a bit of
 # surgery to the predictions. Namely, we replace the test predictions on those
@@ -54,15 +56,19 @@ pred = xiao_test.sequence.map(lambda seq: oob_pred.get(seq, xiao_pred[seq]))
 report('AMP (unbalanced training)', xiao_test['group'], pred)
 
 xiao_train = pd.read_table('preproc/AMP.train_bench.tsv.gz', index_col=0)
-rf_wout_oob.fit(xiao_train.iloc[:,3:], xiao_train['group'])
-xiao_pred = rf_wout_oob.predict(xiao_test.iloc[:, 3:])
+rf_wout_oob.fit(xiao_train.iloc[:,2:], xiao_train['group'])
+xiao_pred = rf_wout_oob.predict(xiao_test.iloc[:, 2:])
 report('AMP (benchmark training)', xiao_test['group'], xiao_pred)
 
 hemo_train = pd.read_table('preproc/Hemo.train.tsv.gz', index_col=0)
 hemo_test = pd.read_table('preproc/Hemo.test.tsv.gz', index_col=0)
-rf_w_oob.fit(hemo_train.iloc[:,3:], hemo_train['group'])
-rf_wout_oob.fit(hemo_train.iloc[:,3:], hemo_train['group'])
-pickle.dump(rf_wout_oob, gzip.open('models/Hemo.pkl.gz', 'wb'))
+rf_w_oob.fit(hemo_train.iloc[:,2:], hemo_train['group'])
+rf_wout_oob.fit(hemo_train.iloc[:,2:], hemo_train['group'])
 
 
-report('Hemo', hemo_test['group'], rf_w_oob.predict(hemo_test.iloc[:, 3:]))
+input_features = [("input_features", FloatTensorType([None, rf_w_oob.n_features_in_]))]
+onx_model = convert_sklearn(rf_w_oob, initial_types=input_features)
+with gzip.open("models/Hemo.onnx.gz", "wb") as f:
+    f.write(onx_model.SerializeToString())
+
+report('Hemo', hemo_test['group'], rf_w_oob.predict(hemo_test.iloc[:, 2:]))

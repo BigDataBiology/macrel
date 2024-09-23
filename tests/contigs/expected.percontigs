@@ -1,5 +1,5 @@
-# Prediction from macrel v1.5.0
-# Macrel calculated for the sample a density of 45.062 AMPs / Mbp.
+# Prediction from macrel v1.6.0.dev0
+# Macrel calculated for the sample a density of 90.125 AMPs / Mbp.
 contig	length	ORFs	smORFs	AMPs
 C4060843_1_MH0058	518	1	1	0
 C4067509_1_MH0058	534	1	1	0
@@ -11,7 +11,7 @@ scaffold107406_2_MH0058	1401	2	1	0
 scaffold16564_1_MH0058	992	2	2	0
 scaffold20234_2_MH0058	2926	4	1	0
 scaffold24504_2_MH0058	505	1	1	0
-scaffold2530_2_MH0058	717	2	2	0
+scaffold2530_2_MH0058	717	2	2	1
 scaffold30291_4_MH0058	824	2	1	0
 scaffold33693_17_MH0058	3481	2	1	1
 scaffold34596_7_MH0058	1345	1	0	0
@@ -20,7 +20,7 @@ scaffold7019_2_MH0058	5218	6	3	0
 scaffold75223_9_MH0058	3597	2	2	0
 scaffold75334_1_MH0058	3424	1	1	1
 scaffold76045_5_MH0058	960	3	3	0
-scaffold77554_3_MH0058	6086	9	4	0
+scaffold77554_3_MH0058	6086	9	4	1
 scaffold8449_1_MH0058	1037	2	1	0
 scaffold90770_1_MH0058	1031	2	2	0
 scaffold95393_2_MH0058	995	2	1	0

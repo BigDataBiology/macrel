@@ -36,7 +36,7 @@ package_dir = {
         'macrel': 'macrel/',
     }
 package_data = {
-        'macrel': ['data/*', 'data/scripts/*.ngl', 'data/models/*.pkl.gz'],
+        'macrel': ['data/*', 'data/scripts/*.ngl', 'data/models/*.onnx.gz'],
         }
 
 packages = setuptools.find_packages()
@@ -46,12 +46,11 @@ classifiers = [
 'Intended Audience :: Science/Research',
 'Programming Language :: Python',
 'Programming Language :: Python :: 3',
-'Programming Language :: Python :: 3.6',
-'Programming Language :: Python :: 3.7',
 'Programming Language :: Python :: 3.8',
 'Programming Language :: Python :: 3.9',
 'Programming Language :: Python :: 3.10',
 'Programming Language :: Python :: 3.11',
+'Programming Language :: Python :: 3.12',
 'Operating System :: OS Independent',
 'License :: OSI Approved :: MIT License',
 ]
@@ -71,7 +70,7 @@ setuptools.setup(name = 'macrel',
       package_data = package_data,
       zip_safe = False, # We want the model files to be installed as files
       install_requires=[
-          'scikit-learn',
+          'onnxruntime',
           'pandas',
           'requests',
           'atomicwrites'

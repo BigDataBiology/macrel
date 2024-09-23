@@ -9,12 +9,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version:
-          - "3.6"
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
 
     steps:
     - name: Checking code
@@ -30,8 +29,7 @@ jobs:
       shell: bash -l {0}
       run : |
         conda install -c bioconda -c conda-forge \
-          ngless pyrodigal megahit paladin pandas requests atomium tzlocal \
-          "scikit-learn<1.3.0" "joblib<1.3.0"
+          ngless pyrodigal megahit paladin pandas requests atomium tzlocal onnxruntime
         conda install pytest
         pip install .
     - name: Test with pytest
