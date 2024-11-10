@@ -35,13 +35,13 @@ def predict_genes(infile, ofile):
     import random
     import pandas as pd
     from .fasta import fasta_iter
-    from atomicwrites import atomic_write
+    from .utils import open_output
 
     clen = []
     gorf, morf_finder = create_pyrodigal_orffinders()
 
     # predict genes
-    with atomic_write(ofile, overwrite=True) as odb:
+    with open_output(ofile) as odb:
         for idx, (h, s) in enumerate(fasta_iter(infile)):
             orfs, smorfs = [0, 0]
             if len(s) <= 100_000:
