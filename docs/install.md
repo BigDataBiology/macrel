@@ -24,8 +24,7 @@ conda install -y \
           paladin \
           pandas \
           requests \
-          "scikit-learn<1.3.0" \
-          "joblib<1.3.0" \
+          onnxruntime \
           atomicwrites \
           tzlocal
 

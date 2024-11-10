@@ -29,7 +29,7 @@ jobs:
       shell: bash -l {0}
       run : |
         conda install -c bioconda -c conda-forge \
-          ngless pyrodigal megahit paladin pandas requests atomium tzlocal onnxruntime
+          ngless pyrodigal megahit paladin pandas requests atomicwrites tzlocal onnxruntime
         conda install pytest
         pip install .
     - name: Test with pytest
