@@ -1,6 +1,6 @@
 This is the code running at
 
-http://big-data-biology.org/software/macrel/
+https://big-data-biology.org/software/macrel/
 
 # Frontend
 
