@@ -3,7 +3,7 @@ ngless "1.0"
 input = samfile(ARGV[1], name='MACREL')
 
 # Filter to keep only primary alignments (equivalent to -F 256)
-filtered = filter(input, keep_if="not secondary")
+filtered = select(input, keep_if=[!is_secondary])
 
 # Count features from filtered alignments
 counts = count(filtered,
