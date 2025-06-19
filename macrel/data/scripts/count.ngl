@@ -13,5 +13,4 @@ counts = count(filtered,
     normalization={raw},
     multiple={unique_only})
 
-counts = as_integer(round(counts))
 write(counts, ofile=ARGV[2])
