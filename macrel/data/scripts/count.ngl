@@ -4,6 +4,7 @@ input = samfile(ARGV[1], name='MACREL')
 counts = count(input,
     features=["seqname"],
     include_minus1=False,
+    counts = as_integer(round(counts))
     normalization={raw})
 
 write(counts, ofile=ARGV[2])
