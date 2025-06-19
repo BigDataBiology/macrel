@@ -1,16 +1,17 @@
 ngless "1.0"
 
-input = samfile(ARGV[1], name="MACREL")
+input = samfile(ARGV[1],
+             name="MACREL")
 
 # Keep only primary alignments
-filtered = select(input, keep_if=[is_primary(read)])
+filtered = select(input, keep_if=[{unique}])
 
 # Count features from filtered alignments
 counts = count(filtered,
     features=["seqname"],
     include_minus1=False,
-    normalization={raw})
+    normalization={raw},
+    multiple={unique_only})
 
-# Ensure integer counts
 counts = as_integer(round(counts))
 write(counts, ofile=ARGV[2])
