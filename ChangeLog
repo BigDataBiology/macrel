@@ -2,6 +2,7 @@ Unreleased
 	* Fix crash in `get-smorfs --file-output` when writing the README
 	* Fix missing `import sys` in ampsphere.py error paths
 	* Fix wrong accession returned by local M-stripped exact match in ampsphere.py
+	* Fix `parse_args` ignoring its argument, breaking programmatic invocation
 
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage

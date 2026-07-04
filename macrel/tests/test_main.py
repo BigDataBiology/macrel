@@ -4,6 +4,23 @@ from os import path
 from macrel import main
 
 
+def test_parse_args_uses_argument():
+    '''parse_args must parse the list it is given, not the process argv
+
+    Regression for improvements #2: parse_args() ignored its `args`
+    parameter and always parsed sys.argv, breaking programmatic invocation.
+    '''
+    args = main.parse_args(
+            ['macrel', 'peptides',
+             '--fasta', 'example.faa',
+             '--output', 'out_dir',
+             '--threads', '4'])
+    assert args.command == ['peptides']
+    assert args.fasta_file == 'example.faa'
+    assert args.output == 'out_dir'
+    assert args.threads == '4'
+
+
 def test_get_smorfs_file_output(tmp_path, monkeypatch):
     '''`get-smorfs --file-output <file>` used to crash writing the README
 

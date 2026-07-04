@@ -104,7 +104,7 @@ def parse_args(args):
     parser.add_argument('--cache-dir', required=False, default=None, dest='cache_dir',
                         help='Directory to use for caching AMPSphere data')
 
-    return parser.parse_args()
+    return parser.parse_args(args[1:])
 
 def validate_args(args):
     '''Checks that args are consistent
