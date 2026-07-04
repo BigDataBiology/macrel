@@ -5,6 +5,8 @@ Unreleased
 	* Fix `parse_args` ignoring its argument, breaking programmatic invocation
 	* Add missing `pyrodigal` dependency to `pyproject.toml`
 	* Align Python-version claims on 3.10+ across docs/comments
+	* Use `requests` with error handling for `get-examples` downloads
+	* URL-encode sequences in remote AMPSphere queries
 
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage

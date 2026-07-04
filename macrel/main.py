@@ -339,7 +339,7 @@ def do_density(args, clen, prediction):
     print(f'Macrel processed the sample and verified a density of {sample_density:.3f} AMPs / Mbp.')
 
 def do_get_examples(args):
-    from urllib.request import urlretrieve
+    import requests
 
     DATA_FILES = [
         'excontigs.fna.gz',
@@ -354,7 +354,17 @@ def do_get_examples(args):
     makedirs('example_seqs', exist_ok=True)
     for f in DATA_FILES:
         print('Retrieving {}...'.format(f))
-        urlretrieve(BASEURL + f, 'example_seqs/'+f)
+        target = path.join('example_seqs', f)
+        try:
+            r = requests.get(BASEURL + f, stream=True)
+            r.raise_for_status()
+            with open(target, 'wb') as out:
+                for chunk in r.iter_content(chunk_size=8192):
+                    out.write(chunk)
+        except requests.RequestException as e:
+            if path.exists(target):
+                os.remove(target)
+            error_exit(args, 'Failed to download {}: {}'.format(f, e))
 
 def do_ampsphere_query(args):
     from . import ampsphere
