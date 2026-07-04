@@ -41,13 +41,14 @@ Macrel pipeline performs
 1. quality trimming of single- and paired-end reads,
 2. assembly of reads into contigs
 3. small genes prediction with [pyrodigal](https://github.com/althonos/pyrodigal),
-4. clustering of peptides at 100% of similarity and 100% coverage,
+4. optional clustering of peptides at 100% of similarity and 100% coverage
+   (enabled with `--cluster`; note that this disables the per-contig/AMP-density output),
 5. calculation of the features of the predicted peptides,
 6. classification of peptides into AMPs by using Random Forests,
 7. classification of AMPs accordingly to their hemolytic activity also using Random Forests,
 8. calculate AMPs abundance in meta(genomic) samples by reads mapping.
 
-Macrel is fast and works by coordinating [NGLess](https://github.com/ngless-toolkit/ngless), [megahit](https://github.com/voutcn/megahit), [prodigal](https://github.com/hyattpd/Prodigal) and [PALADIN](https://github.com/ToniWestbrook/paladin). It is implemented in Python. Its models were trained with [Scikit-Learn](https://github.com/scikit-learn/scikit-learn) python module, and the descriptors are calculated with functions from [modlAMP](https://github.com/alexarnimueller/modlAMP) package.
+Macrel is fast and works by coordinating [NGLess](https://github.com/ngless-toolkit/ngless), [megahit](https://github.com/voutcn/megahit), and [PALADIN](https://github.com/ToniWestbrook/paladin), and it predicts small genes with the [pyrodigal](https://github.com/althonos/pyrodigal) Python library. It is implemented in Python. Its models were trained with the [Scikit-Learn](https://github.com/scikit-learn/scikit-learn) python module and are shipped and executed as [ONNX](https://onnx.ai/) models (via `onnxruntime`), so Scikit-Learn is not required at runtime. The descriptors are computed by in-house Python code adapted from the [modlAMP](https://github.com/alexarnimueller/modlAMP) package.
 
 ## AMPs classification
 

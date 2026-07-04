@@ -1,4 +1,10 @@
 Unreleased
+	* Fix docs: correct thread-count and per-contig example-path claims in
+	  `usage.md`; update `index.md` (pyrodigal instead of prodigal, ONNX-shipped
+	  models, modlAMP-adapted descriptors, clustering marked optional); pin
+	  conda channels and add the optional MMSeqs2/HMMER note in `install.md`;
+	  clarify peptide-length bounds and document non-standard-residue handling
+	  in `faq.md`
 	* Fix docs: correct the `usage.md` flag reference (document `--output`/`-o`
 	  instead of `--out`, list `get-examples`, note `--file-output` also works
 	  for `query-ampsphere`, fix the `--mem`/`--cluster`/`--keep-fasta-headers`

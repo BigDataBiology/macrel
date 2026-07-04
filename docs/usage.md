@@ -94,8 +94,9 @@ macrel peptides \
 
 In this case, we use `example_seqs/expep.faa.gz` as the input sequence. This should
 be an amino-acid FASTA file. The outputs will be written into a folder called
-`out_peptides`, and Macrel will 4 threads. An example of output using
-this mode can be found at `tests/peptides/expected.prediction`.
+`out_peptides`, and Macrel will run on a single thread (pass `-t`/`--threads` to
+use more). An example of output using this mode can be found at
+`tests/peptides/expected.prediction`.
 
 To run Macrel on contigs, use the `contigs` subcommand:
 
@@ -131,7 +132,7 @@ The paired-end reads are given as paired files (here, `example_seqs/R1.fq.gz`
 and `example_seqs/R2.fq.gz`). If you only have single-end reads, you can omit
 the `-2` argument. An example of outputs using this mode can be found at
 `tests/reads/expected.prediction`, `tests/reads/expected.smorfs.faa` and
-`tests/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
+`tests/reads/expected.percontigs`, with the latter you can also calculate AMP density.
 
 Additionally to the prediction table, this mode also produces a contigs fasta file, 
 and the two files containing general gene prediction coordinates and a fasta file
