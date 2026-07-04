@@ -64,3 +64,22 @@ def test_features():
             print(c)
             assert np.allclose(computed[c], expected[c])
 
+
+def test_features_skips_bad_sequences(tmp_path):
+    fna = tmp_path / 'input.faa'
+    fna.write_text(
+            '>good\n'
+            'FLPVLAGLTPSIVPKLVCLLTKKC\n'
+            '>empty\n'
+            '\n'
+            '>ambiguous\n'
+            'FLPVLXGLTPSIVPKLB\n'
+            '>internal_stop\n'
+            'FLPVL*GLTPSIVPKL\n'
+            '>only_leading_M_trailing_star\n'
+            'M*\n')
+    computed = fasta_features(str(fna))
+    # Only the single valid sequence should survive QC.
+    assert list(computed.index) == ['good']
+    assert computed.loc['good', 'sequence'] == 'FLPVLAGLTPSIVPKLVCLLTKKC'
+
