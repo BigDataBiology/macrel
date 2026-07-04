@@ -87,4 +87,4 @@ matching locally with MMSeqs2/HMMER.
 - Commits should go to the `main` branch; releases are tagged with `v<version>`
   and pushed to PyPI and Bioconda.
 
-  Linux/macOS/Windows and Python 3.8–3.13.
+  Linux/macOS/Windows and Python 3.10–3.13.

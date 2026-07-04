@@ -28,6 +28,7 @@ classifiers = [
 dependencies = [
     "onnxruntime",
     "pandas",
+    "pyrodigal",
     "requests",
     "atomicwrites",
 ]

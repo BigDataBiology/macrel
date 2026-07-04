@@ -3,6 +3,8 @@ Unreleased
 	* Fix missing `import sys` in ampsphere.py error paths
 	* Fix wrong accession returned by local M-stripped exact match in ampsphere.py
 	* Fix `parse_args` ignoring its argument, breaking programmatic invocation
+	* Add missing `pyrodigal` dependency to `pyproject.toml`
+	* Align Python-version claims on 3.10+ across docs/comments
 
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage

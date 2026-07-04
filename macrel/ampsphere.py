@@ -186,12 +186,9 @@ def get_ampsphere_exact_match_local(args, seqs):
         seq2id[seq] = h
     results = []
     for (query_name, seq) in seqs:
-        # Walrus operator would be nice here, but it's Python 3.8+ (and we support 3.6)
-        if seq in seq2id:
-            hit = seq2id[seq]
+        if (hit := seq2id.get(seq)) is not None:
             results.append((query_name, seq, hit))
-        elif seq[0] == 'M' and (seq[1:] in seq2id):
-            hit = seq2id[seq[1:]]
+        elif seq[0] == 'M' and (hit := seq2id.get(seq[1:])) is not None:
             results.append((query_name, seq, hit))
         else:
             results.append((query_name, seq, 'No_Hit'))

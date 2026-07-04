@@ -2441,6 +2441,7 @@ packages:
   requires_dist:
   - onnxruntime
   - pandas
+  - pyrodigal
   - requests
   - atomicwrites
   requires_python: '>=3.10'
