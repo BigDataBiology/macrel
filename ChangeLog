@@ -8,6 +8,7 @@ Unreleased
 	* Use `requests` with error handling for `get-examples` downloads
 	* URL-encode sequences in remote AMPSphere queries
 	* Check HTTP status on all AMPSphere API requests and downloads
+	* Add missing newline to the `--force` "output folder already exists" warning
 
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage

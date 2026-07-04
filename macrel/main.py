@@ -153,7 +153,7 @@ def validate_args(args):
             makedirs(args.output, exist_ok=True)
         elif args.force:
             import sys
-            sys.stderr.write("Output folder already exists, but --force flag was used")
+            sys.stderr.write("Output folder already exists, but --force flag was used\n")
         else:
             error_exit(args, "Output folder [{}] already exists".format(args.output_dir))
     elif args.command != 'get-smorfs':
