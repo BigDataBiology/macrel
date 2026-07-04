@@ -47,3 +47,42 @@ include = ["macrel*"]
 
 [tool.setuptools.package-data]
 macrel = ["data/*", "data/scripts/*.ngl", "data/models/*.onnx.gz"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+macrel = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+python = ">=3.10"
+onnxruntime = "<=1.25.1"
+ngless = "*"
+pyrodigal = "*"
+megahit = "*"
+paladin = "*"
+pandas = "*"
+requests = "*"
+atomicwrites = "*"
+tzlocal = "*"
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+[tool.pixi.feature.py313.dependencies]
+python = "3.13.*"
+
+[tool.pixi.environments]
+test310 = ["py310", "test"]
+test311 = ["py311", "test"]
+test312 = ["py312", "test"]
+test313 = ["py313", "test"]

@@ -5,39 +5,19 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version:
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-          - "3.14"
-
+        environment: [test310, test311, test312, test313]
     steps:
-    - name: Checking code
-      uses: actions/checkout@v6
-
-    - name: Setup miniconda
-      uses: conda-incubator/setup-miniconda@v2
+    - uses: actions/checkout@v6
+    - uses: prefix-dev/setup-pixi@v0.10.0
       with:
-        activate-environment: test
-        python-version: ${{ matrix.python-version }}
-        auto-activate-base: false
-    - name: Install dependencies
-      shell: bash -l {0}
-      run : |
-        conda install -c bioconda -c conda-forge \
-          ngless pyrodigal megahit paladin pandas requests atomicwrites tzlocal onnxruntime
-        conda install pytest
-        pip install .
+        environments: ${{ matrix.environment }}
+        activate-environment: true
     - name: Test with pytest
-      shell: bash -l {0}
       run: |
         python -m pytest macrel/tests
-
-    - name: Test Macrel CLI
-      shell: bash -l {0}
+    - name: Run integration tests
       run: |
         ./run-tests.sh

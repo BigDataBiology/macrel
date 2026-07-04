@@ -3,3 +3,6 @@ __pycache__/
 /macrel.egg-info
 /dist/
 /envs/
+# pixi environments
+.pixi/*
+!.pixi/config.toml
