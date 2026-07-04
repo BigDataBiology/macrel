@@ -442,7 +442,7 @@ def main(args=None):
                    'query-ampsphere': readme_output_ampsphere_mode,
                   }
         # print readme
-        if args.output_file != '-':
+        if args.output_dir:
             logger.debug(f'Writing README to {args.output}')
             with open_output(os.path.join(args.output, 'README.md')) as ofile:
                 ofile.write(creadme[args.command])

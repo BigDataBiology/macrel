@@ -1,4 +1,5 @@
 Unreleased
+	* Fix crash in `get-smorfs --file-output` when writing the README
 	* Fix missing `import sys` in ampsphere.py error paths
 	* Fix wrong accession returned by local M-stripped exact match in ampsphere.py
 
