@@ -1,3 +1,6 @@
+Unreleased
+	* Fix missing `import sys` in ampsphere.py error paths
+
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage
 	* Fix float counts in Paladin mapping (#74)
