@@ -328,7 +328,12 @@ def do_density(args, clen, prediction):
     clen[clen.columns[1:]] = clen[clen.columns[1:]].astype(int)
     ofile = path.join(args.output, args.outtag + '.percontigs.gz')
     sample = clen.set_index('contig').sum(axis=0).tolist()
-    sample_density = sample[-1] * 1e6 / sample[0]
+    if sample[0] > 0:
+        sample_density = sample[-1] * 1e6 / sample[0]
+    else:
+        # No contig length was counted (empty or fully-filtered input);
+        # density is undefined, so report zero instead of dividing by zero.
+        sample_density = 0.0
     clen.sort_values('contig', inplace=True)
     with open_output(ofile, mode='wb') as raw_out:
         with gzip.open(raw_out, 'wt') as out:

@@ -12,6 +12,7 @@ Unreleased
 	* Support `--file-output` for the `query-ampsphere` command
 	* Skip empty sequences and sequences with non-standard amino acids during
 	  feature computation (with a warning) instead of crashing
+	* Avoid ZeroDivisionError in AMP-density calculation on empty input
 
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage
