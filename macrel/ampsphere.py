@@ -192,7 +192,7 @@ def get_ampsphere_exact_match_local(args, seqs):
             results.append((query_name, seq, hit))
         elif seq[0] == 'M' and (seq[1:] in seq2id):
             hit = seq2id[seq[1:]]
-            results.append((query_name, seq, h))
+            results.append((query_name, seq, hit))
         else:
             results.append((query_name, seq, 'No_Hit'))
     return pd.DataFrame(results, columns=['query_name', 'query', 'result'])\
