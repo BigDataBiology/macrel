@@ -25,8 +25,7 @@ conda install -y \
           pandas \
           requests \
           onnxruntime \
-          atomicwrites \
-          tzlocal
+          atomicwrites
 
 pip install .
 ```

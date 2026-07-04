@@ -2,6 +2,7 @@ Unreleased
 	* Accept `--outtag` as an alias for `--tag` (matches the docs and help examples)
 	* Fix docs: AMPSphere HMMER mode is `--query-mode=hmmer` (not `hmm`) and
 	  example-output paths live under `tests/` (not `test/`)
+	* Drop the unused `tzlocal` dependency (from `pyproject.toml` and the docs)
 	* Fix crash in `get-smorfs --file-output` when writing the README
 	* Fix missing `import sys` in ampsphere.py error paths
 	* Fix wrong accession returned by local M-stripped exact match in ampsphere.py

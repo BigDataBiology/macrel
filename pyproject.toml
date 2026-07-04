@@ -68,7 +68,6 @@ paladin = "*"
 pandas = "*"
 requests = "*"
 atomicwrites = "*"
-tzlocal = "*"
 
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
