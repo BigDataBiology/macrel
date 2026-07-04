@@ -41,8 +41,8 @@ proteins).
 
 - `macrel.out.smorfs.faa`
 
-Fasta file containing the predicted small ORFs (length filtered ranging from 10
-to 100 amino acids).
+Fasta file containing the predicted small ORFs (length filtered to at most 100
+amino acids).
 
 In the both files the original header structure from Prodigal indicates the AMP
 gene origins, and is shown if the option `--keep-fasta-headers` is used. The 
@@ -84,7 +84,7 @@ percontigs_table_doc = f"""- `macrel.out.percontigs.gz`
 
 Compressed tab-separated table with the following columns
 
-1. `contig`: Identififiers (same in the fasta or assembled contigs, also include Sample - the sum of all results)
+1. `contig`: Identifiers (same as in the input fasta or assembled contigs)
 2. `length`: The length in base pairs
 3. `ORFs`: Number of ORFs found
 4. `smORFs`: Number of small ORFs found
@@ -92,7 +92,8 @@ Compressed tab-separated table with the following columns
 
 The table contains a header (as comments marked with the `#` character at the
 start of the line) identifying the version of macrel used to generate these
-results.
+results, as well as the sample-wide AMP density (the sum over all contigs is
+reported only in this comment header, not as a row in the table).
 
 Note that, it is only printed when not using cluster option or get-smorfs mode.
 """
@@ -101,7 +102,7 @@ readme_output_abundance_mode = f"""{header}
 
 ## Outputs for `abundance` mode
 
-- `macrel.out.out.abundance.txt`
+- `macrel.out.abundance.txt`
 
 This file contains a table with two columns:
 

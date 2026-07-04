@@ -1,4 +1,9 @@
 Unreleased
+	* Fix output-directory READMEs (`macrel/output.py`): correct the abundance
+	  output filename (`macrel.out.abundance.txt`, not the double-`.out`
+	  `macrel.out.out.abundance.txt`), stop claiming the `percontigs` table has a
+	  `Sample` row (the sample total is only in the `#`-comment header), and drop
+	  the non-existent 10-aa lower bound from the smORFs description
 	* Fix docs: correct thread-count and per-contig example-path claims in
 	  `usage.md`; update `index.md` (pyrodigal instead of prodigal, ONNX-shipped
 	  models, modlAMP-adapted descriptors, clustering marked optional); pin
