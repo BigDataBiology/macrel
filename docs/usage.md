@@ -13,31 +13,48 @@ If you have not yet installed macrel, see [install](install).
 - `abundance`: to measure abundance of a peptides fasta file using a given fastQ file,
 - `get-smorfs`: to predict small genes from a contigs fasta file.
 - `query-ampsphere`: to query the AMPsphere database.
+- `get-examples`: download the example data used in this manual.
 
 ## Mandatory input flags
 
-- `--out`: Folder destination to output [for all subcommands]
-- `--file-output`: Can be used in the `get-smorfs` subcommand to output just
-  the final file. If this is used, `--out` is no longer mandatory
-- `--fasta`: Path to the input FASTA file. This is used in both the `peptides`
-  subcommands (where the file is expected to contain short amino-acid
-  sequences) and in the `contigs/get-smorfs` subcommands (where the file is
-  expected to contain longer nucleotide contigs)
-- `--reads1/--reads2`: Path to the input FastQ files [for `reads` subcommand]
+- `--output` (`-o`): Folder destination to output [for all subcommands]
+- `--file-output`: Can be used in the `get-smorfs` and `query-ampsphere`
+  subcommands to output just the final file. If this is used, `--output` is no
+  longer mandatory
+- `--fasta` (`-f`): Path to the input FASTA file. This is used in the `peptides`
+  subcommand (where the file is expected to contain short amino-acid sequences),
+  in the `contigs/get-smorfs` subcommands (where the file is expected to contain
+  longer nucleotide contigs), and in the `abundance` and `query-ampsphere`
+  subcommands (where it holds the reference/query peptide sequences)
+- `--reads1/--reads2` (`-1`/`-2`): Path to the input FastQ files [for the
+  `reads` and `abundance` subcommands]
 
 
 ## Optional flags
 
 - `--threads` (`-t`): Specify the number of cpus used
-- `--cluster`: Pre-cluster the smORFs (at 100%% identity) to avoid repeats
+- `--cluster`: Pre-cluster the smORFs (at 100% identity) to avoid repeats
 - `--tag`: If used, then all the output files will incorporate it.
-- `--mem`: Used during assembly to specify the percent of RAM used (1-0)
+- `--mem`: Used during assembly to specify the fraction of RAM used, as a value
+  between 0 and 1 (default: `0.75`)
 - `--tmpdir`: Temporary directory to use (default: `$TMPDIR` in the environment or /tmp)
 - `--force`: Potentially over-write existing output files
-- `--keep-fasta-headers`: Keep complete FASTA headers [get-smorfs command]
+- `--keep-fasta-headers`: Keep complete FASTA headers [for the `contigs`,
+  `reads`, and `get-smorfs` commands]
 - `--keep-negatives`: Output a table with **all** sequences (default is to only output putative AMPs)
+- `--verbose` (`-V`): Print debug information
+- `--quiet` (`-q`): Print only errors
 - `--log-file`: Output a logfile with log information from macrel (instead of printing to the console)
 - `--log-append`: If set, the log file is appended to (rather than overwritten)
+
+The following flags control AMPSphere querying (see the [AMPSphere
+Querying](#ampsphere-querying) section below):
+
+- `--query-mode`: One of `exact` (default), `mmseqs`, or `hmmer`
+- `--local`: Use a locally downloaded AMPSphere database instead of the remote API
+- `--cache-dir`: Directory for the downloaded local database (default: `~/.cache/macrel/ampsphere`)
+- `--re-download-database`: Force re-downloading the local database
+- `--no-download-database`: Do not download the database (fail if it is not already present)
 
 Also, `macrel --version` will show the version of macrel installed.
 
