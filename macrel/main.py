@@ -156,8 +156,8 @@ def validate_args(args):
             sys.stderr.write("Output folder already exists, but --force flag was used\n")
         else:
             error_exit(args, "Output folder [{}] already exists".format(args.output_dir))
-    elif args.command != 'get-smorfs':
-        error_exit(args, '--file-output is only possible for `get-smorfs` command')
+    elif args.command not in ('get-smorfs', 'query-ampsphere'):
+        error_exit(args, '--file-output is only possible for `get-smorfs` and `query-ampsphere` commands')
 
     if args.logfile:
         if not path.exists(os.path.dirname(args.logfile)) and os.path.dirname(args.logfile) != '':

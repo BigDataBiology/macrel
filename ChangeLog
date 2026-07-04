@@ -9,6 +9,7 @@ Unreleased
 	* URL-encode sequences in remote AMPSphere queries
 	* Check HTTP status on all AMPSphere API requests and downloads
 	* Add missing newline to the `--force` "output folder already exists" warning
+	* Support `--file-output` for the `query-ampsphere` command
 
 Version 1.6.0 2025-11-24
 	* Switch to ONNX for model storage
