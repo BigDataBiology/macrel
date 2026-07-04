@@ -29,9 +29,12 @@ def parse_args(args):
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description='macrel v{}'.format(__version__), epilog=textwrap.dedent('''\
              Examples:
+                 download the example data:
+                 macrel get-examples
+
                  run Macrel on peptides:
                  macrel peptides --fasta example_seqs/expep.faa.gz --output out_peptides
-                 
+
                  run Macrel on contigs:
                  macrel contigs --fasta example_seqs/excontigs.fna.gz --output out_contigs
                  
@@ -41,9 +44,12 @@ def parse_args(args):
                  run Macrel to get abundance profiles:
                  macrel abundance -1 example_seqs/R1.fq.gz --fasta example_seqs/ref.faa.gz --output out_abundance --outtag example_abundance
 
+                 get smORFs (predicted genes) from contigs:
+                 macrel get-smorfs --fasta example_seqs/excontigs.fna.gz --output out_smorfs
+
                  Query the AMPSphere database
                  macrel query-ampsphere --query-mode mmseqs --fasta peptides.faa
-                 
+
                  For more information,please read the docs: https://macrel.readthedocs.io/en/latest/
              '''))
 
@@ -85,7 +91,7 @@ def parse_args(args):
             help='If set, then the log file is appended to (default: overwrite existing file)')
 
     parser.add_argument('--query-mode', required=False, default='exact',
-                        help='Query mode to use in the AMPSphere query (options: exact, mmseqs, hhm)', dest='query_mode')
+                        help='Query mode to use in the AMPSphere query (options: exact, mmseqs, hmmer)', dest='query_mode')
 
     parser.add_argument('--local', required=False, default=False, action='store_true',
                         help='Use local AMPSphere database', dest='local')
