@@ -35,21 +35,30 @@ percontigs = percontigs.groupby('taxonomy').agg('sum')
 
 By now, you should have a table with the species and the total
 of assembled base pairs per species as well as their total number of ORFs,
-smORFs and redundant AMPs. Now you just calculate the density as follows:
+smORFs and AMPs. Now you just calculate the density as follows:
 
 ```
 percontigs['AMP_density'] = percontigs.AMPs * 1e6 / percontigs.length
 percontigs.to_csv('expected.density',
                   sep='\t',
                   header=True,
-                  index=None)
+                  index=True)
 ```
+
+Note that `taxonomy` is the index of the grouped table, so we write with
+`index=True` to keep it in the output.
 
 The resulting `expected.density` table should be as follows:
 
 | **taxonomy** | **length** | **ORFs** | **smORFs** | **AMPs** | **AMP_density** |
 | :---: | :---: | :---: | :---: | :---: | :---: | 
-| speciesA | 4208 | 11 | 10 | 0 | 0.000 | 
-| speciesB | 11876 | 15 | 8 | 1 | 84.203 |
+| speciesA | 4208 | 11 | 10 | 1 | 237.643 | 
+| speciesB | 11876 | 15 | 8 | 2 | 168.407 |
 | speciesC | 5679 | 8 | 6 | 0 | 0.000 |
+
+This per-species density is different from the sample-wide density that
+`contigs` and `reads` modes already report on their own (the
+`# Macrel calculated for the sample a density of … AMPs / Mbp.` comment line at
+the top of the `*.percontigs.gz` output, also printed to the console). Here we break that
+figure down by species instead of computing a single value for the whole sample.
 

@@ -1,4 +1,8 @@
 Unreleased
+	* Fix AMP-density tutorial: refresh the stale `expected.density` table to
+	  match the current (ONNX) model predictions, write the grouped table with
+	  `index=True` so the `taxonomy` column is retained, and cross-reference the
+	  built-in sample-wide density
 	* Accept `--outtag` as an alias for `--tag` (matches the docs and help examples)
 	* Fix docs: AMPSphere HMMER mode is `--query-mode=hmmer` (not `hmm`) and
 	  example-output paths live under `tests/` (not `test/`)
