@@ -62,7 +62,7 @@ def parse_args(args):
             help='path to the output directory', dest='output')
     parser.add_argument('--file-output', required=False, default=None,
             help='path to the output file', dest='output_file')
-    parser.add_argument('--tag', required=False, default='macrel.out',
+    parser.add_argument('--tag', '--outtag', required=False, default='macrel.out',
             help='Set output tag', dest='outtag')
     parser.add_argument('-f', '--fasta', required=False,
             help='path to the input FASTA file. This is used in both the peptides command (where the file is expected to contain short amino-acid sequences) and in the contigs command (where the file is expected to contain longer nucleotide contigs)', dest='fasta_file')
