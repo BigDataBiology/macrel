@@ -1,6 +1,0 @@
-include README.md
-include ChangeLog
-include LICENSE
-include macrel/data/*
-include macrel/data/models/*
-

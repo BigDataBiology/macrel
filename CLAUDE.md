@@ -75,7 +75,8 @@ matching locally with MMSeqs2/HMMER.
 
 ## Conventions
 
-- **Version** is single-sourced in `macrel/macrel_version.py`; `setup.py` `exec`s it.
+- **Version** is single-sourced in `macrel/macrel_version.py`; `pyproject.toml`
+  reads it via `[tool.setuptools.dynamic]` (`version = {attr = ...}`).
   Bump it there and add a `ChangeLog` entry when releasing.
 - Slow imports (`onnxruntime`, `AMP_features`, pandas-heavy modules) are imported
   *inside* the `do_*` functions, not at module top level, to keep CLI startup fast.
