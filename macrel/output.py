@@ -163,7 +163,7 @@ There are three modes:
 
 - `exact`: exact match only
 - `mmseqs`: MMSeqs2 match
-- `hmm`: HMMER match
+- `hmmer`: HMMER match
 
 The exact output format will depend on the mode as it will return results from each tool.
 

@@ -78,7 +78,7 @@ macrel peptides \
 In this case, we use `example_seqs/expep.faa.gz` as the input sequence. This should
 be an amino-acid FASTA file. The outputs will be written into a folder called
 `out_peptides`, and Macrel will 4 threads. An example of output using
-this mode can be found at `test/peptides/expected.prediction`.
+this mode can be found at `tests/peptides/expected.prediction`.
 
 To run Macrel on contigs, use the `contigs` subcommand:
 
@@ -90,8 +90,8 @@ macrel contigs \
 
 In this example, we use the example file `excontigs.fna.gz` which is a FASTA
 file with nucleotide sequences, writing the output to `out_contigs`.
-An example of output using this mode can be found at `test/contigs/expected.prediction`
-and `test/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
+An example of output using this mode can be found at `tests/contigs/expected.prediction`
+and `tests/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
 
 Note that the results per contig are only produced when not using the option 
 `cluster`.
@@ -113,8 +113,8 @@ macrel reads \
 The paired-end reads are given as paired files (here, `example_seqs/R1.fq.gz`
 and `example_seqs/R2.fq.gz`). If you only have single-end reads, you can omit
 the `-2` argument. An example of outputs using this mode can be found at
-`test/reads/expected.prediction`, `test/reads/expected.smorfs.faa` and
-`test/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
+`tests/reads/expected.prediction`, `tests/reads/expected.smorfs.faa` and
+`tests/contigs/expected.percontigs`, with the latter you can also calculate AMP density.
 
 Additionally to the prediction table, this mode also produces a contigs fasta file, 
 and the two files containing general gene prediction coordinates and a fasta file
@@ -135,7 +135,7 @@ macrel abundance \
 This mode returns a table of abundances containing two columns, the first with the
 name of the AMPs and the second with the number of reads mapped back to each peptide
 using the given reference. An example of this output using the example file can be found
-at `test/abundances/expected.abundance.txt`.
+at `tests/abundances/expected.abundance.txt`.
 
 ### AMPSphere Querying
 
@@ -151,7 +151,7 @@ macrel query-ampsphere \
 
 1. Exact matching: This is the default mode, and it will search for exact matches of the input sequences in the AMPSphere database. This is the fastest mode (starting with version 1.5.0, can be called with the `--local` flag to use a local database).
 2. MMSeqs2: This mode uses MMSeqs2 to perform approximate matching of the input sequences in the AMPSphere database. This is slower than exact matching but can find more matches. To use this mode, pass the `--query-mode=mmseqs` flag.
-3. HMMER: This mode uses HMMER to search for homologs of the input sequences in the AMPSphere database. This is the slowest mode but can find more distant homologs. To use this mode, pass the `--query-mode=hmm` flag.
+3. HMMER: This mode uses HMMER to search for homologs of the input sequences in the AMPSphere database. This is the slowest mode but can find more distant homologs. To use this mode, pass the `--query-mode=hmmer` flag.
 
 
 #### Remote vs. local
@@ -168,7 +168,7 @@ macrel query-ampsphere \
     --output out_ampsphere
 ```
 
-This will download the AMPSphere database and use it to query the input sequences. The database will stored in `~/.cache/macrel/ampsphere` (you can change it with the `--cache-dir` flag). To use the MMSeqs2 or HHMER modes, you need to have the respective software installed on your system (`conda install bioconda::mmseqs2` or `conda install bioconda::hmmer`).
+This will download the AMPSphere database and use it to query the input sequences. The database will stored in `~/.cache/macrel/ampsphere` (you can change it with the `--cache-dir` flag). To use the MMSeqs2 or HMMER modes, you need to have the respective software installed on your system (`conda install bioconda::mmseqs2` or `conda install bioconda::hmmer`).
 
 As MMSeqs2 is a heuristic method, the results may vary slightly between the local and remote mode (as versions of MMSeqs2 may differ).
 

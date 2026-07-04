@@ -74,7 +74,7 @@ macrel peptides \
 In this case, we use `example_seqs/expep.faa.gz` as the input sequence. This should
 be an amino-acid FASTA file. The outputs will be written into a folder called
 `out_peptides`, and Macrel will 4 threads. An example of output using
-this mode can be found at `test/peptides/expected.prediction`.
+this mode can be found at `tests/peptides/expected.prediction`.
 
 To run Macrel on contigs, use the `contigs` subcommand:
 
@@ -86,7 +86,7 @@ macrel contigs \
 
 In this example, we use the example file `excontigs.fna.gz` which is a FASTA
 file with nucleotide sequences, writing the output to `out_contigs`.
-An example of output using this mode can be found at `test/contigs/expected.prediction`.
+An example of output using this mode can be found at `tests/contigs/expected.prediction`.
 Additionally to the prediction table, this mode also produces two files containing
 general gene prediction information in the contigs and a fasta file containing the
 predicted and filtered small genes (≤ 100 amino acids).
@@ -104,7 +104,7 @@ macrel reads \
 The paired-end reads are given as paired files (here, `example_seqs/R1.fq.gz`
 and `example_seqs/R2.fq.gz`). If you only have single-end reads, you can omit
 the `-2` argument. An example of outputs using this mode can be found at
-`test/reads/expected.prediction` and `test/reads/expected.smorfs.faa`.
+`tests/reads/expected.prediction` and `tests/reads/expected.smorfs.faa`.
 Additionally to the prediction table, this mode also produces a contigs fasta file, 
 and the two files containing general gene prediction coordinates and a fasta file
 containing the predicted and filtered small genes (≤ 100 amino acids).
@@ -124,7 +124,7 @@ macrel abundance \
 This mode returns a table of abundances containing two columns, the first with the
 name of the AMPs and the second with the number of reads mapped back to each peptide
 using the given reference. An example of this output using the example file can be found
-at `test/abundances/expected.abundance.txt`.
+at `tests/abundances/expected.abundance.txt`.
 
 ### AMPSphere Querying
 
@@ -152,7 +152,7 @@ macrel query-ampsphere \
 ```
 
 By default it performs exact matching, but you can also use MMSeqs2 to perform
-approximate matching by using the `--query-mode=mmseqs` (or `--query-mode=hmm`
+approximate matching by using the `--query-mode=mmseqs` (or `--query-mode=hmmer`
 for HMMER).
 
 ### Community
