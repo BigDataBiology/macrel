@@ -1,4 +1,7 @@
 Unreleased
+	* Docs: add an "Unreleased" section to `whatsnew.md` and note the ONNX/
+	  packaging (`pyproject.toml`/pixi, Python 3.10-3.14) changes in the 1.6.0
+	  entry; remove the dead Universal Analytics config from `mkdocs.yml`
 	* Fix output-directory READMEs (`macrel/output.py`): correct the abundance
 	  output filename (`macrel.out.abundance.txt`, not the double-`.out`
 	  `macrel.out.out.abundance.txt`), stop claiming the `percontigs` table has a

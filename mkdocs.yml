@@ -3,7 +3,6 @@ repo_url: "https://github.com/BigDataBiology/macrel"
 repo_name: "GitHub"
 edit_url: null # Eliminate edit button
 copyright: "All rights reserved"
-google_analytics: ['UA-36723568-3', 'mkdocs.org']
 
 theme:
     name: readthedocs

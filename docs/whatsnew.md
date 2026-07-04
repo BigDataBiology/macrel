@@ -1,12 +1,27 @@
 # What's new? (History)
 
+## Unreleased
+
+- Accept `--outtag` as an alias for `--tag`
+- Add `--file-output` support to the `query-ampsphere` command
+- Skip empty sequences and sequences containing non-standard amino acids during
+  feature computation (emitting a warning) instead of crashing
+- More robust AMPSphere querying and `get-examples` downloads: HTTP status is
+  checked on all API requests and downloads, and query sequences are URL-encoded
+- Several bugfixes (AMP-density on empty input, `get-smorfs --file-output`
+  README writing, programmatic `parse_args` invocation, local exact-match
+  accessions) and documentation corrections
+
 ## Version 1.6.0
 
 *Released 24 November 2025*
 
-- Switch to ONNX for model storage. This makes the models more portable between versions
+- Switch to ONNX for model storage. This makes the models more portable between
+  versions, and means Scikit-Learn is no longer required at runtime
 - Fix float counts in Paladin mapping ([#74](https://github.com/BigDataBiology/macrel/issues/74))
 - Fix some issues in MacOS
+- Move packaging to `pyproject.toml` (with a [pixi](https://pixi.sh) environment
+  for development) and support Python 3.10–3.14
 
 ## Version 1.5.0
 
