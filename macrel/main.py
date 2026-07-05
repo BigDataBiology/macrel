@@ -140,7 +140,9 @@ def validate_args(args):
         if args.query_mode not in ['exact', 'mmseqs', 'hmmer']:
             error_exit(args, f"Unknown query mode {args.query_mode} (options: exact, mmseqs, hmmer)")
     else:
-        error_exit(args, "Unknown command {}".format(args.command))
+        available = ['peptides', 'contigs', 'reads', 'abundance',
+                     'get-smorfs', 'query-ampsphere', 'get-examples']
+        error_exit(args, f"Unknown command '{args.command}'.\nAvailable commands: {', '.join(available)}")
     if not args.output and not args.output_file:
         error_exit(args, "Either --output or --file-output argument must be used")
 

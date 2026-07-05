@@ -83,6 +83,8 @@ matching locally with MMSeqs2/HMMER.
   Preserve this pattern.
 - The `.ngl` scripts in `data/scripts/` are NGLess pipelines (trimming, counting)
   shipped as package data and invoked as external `ngless` scripts.
+- Prefer f-strings for string interpolation over `str.format()` or `%`-formatting
+  when writing or updating strings.
 - CI (`.github/workflows/python-app.yml`) runs both `pytest` and `run-tests.sh` across
 - Commits should go to the `main` branch; releases are tagged with `v<version>`
   and pushed to PyPI and Bioconda.
