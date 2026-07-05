@@ -26,7 +26,15 @@ Macrel as a whole is under the **MIT** license.
 ## Install
 
 The recommended method of installation is through
-[bioconda](https://anaconda.org/bioconda/macrel):
+[bioconda](https://anaconda.org/bioconda/macrel), using
+[pixi](https://pixi.sh/):
+
+```bash
+pixi global install -c conda-forge -c bioconda macrel
+macrel -h
+```
+
+Alternatively, you can use conda (or mamba):
 
 ```bash
 conda create --name env_macrel -c bioconda macrel
@@ -34,10 +42,13 @@ conda activate env_macrel
 macrel -h
 ```
 
-Alternatively, just:
+### Run without installing
+
+If you have [pixi](https://pixi.sh/) installed, you can run Macrel directly
+without installing it first:
 
 ```bash
-conda install -c bioconda macrel
+pixi exec -c conda-forge -c bioconda macrel
 ```
 
 To install from source, [read the docs](https://macrel.readthedocs.io/en/latest/install)

@@ -1,11 +1,30 @@
 # Install
 
 The recommended method of installation is through
-[bioconda](https://anaconda.org/bioconda/macrel):
+[bioconda](https://anaconda.org/bioconda/macrel), using
+[pixi](https://pixi.sh/):
+
+```bash
+pixi global install -c conda-forge -c bioconda macrel
+```
+
+You can also install it with conda (or mamba):
 
 ```bash
 conda install -c bioconda macrel
 ```
+
+## Run without installing
+
+If you have [pixi](https://pixi.sh/) installed, you can run Macrel directly
+without installing it first:
+
+```bash
+pixi exec -c conda-forge -c bioconda macrel
+```
+
+This downloads Macrel (and its dependencies) into a temporary environment and
+runs it, which is convenient for one-off usage.
 
 ## Install from source
 
