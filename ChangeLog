@@ -1,4 +1,5 @@
-Unreleased
+Version 1.6.1 2026-07-18
+	* List the available commands when an unknown subcommand is given
 	* Docs: add an "Unreleased" section to `whatsnew.md` and note the ONNX/
 	  packaging (`pyproject.toml`/pixi, Python 3.10-3.14) changes in the 1.6.0
 	  entry; remove the dead Universal Analytics config from `mkdocs.yml`

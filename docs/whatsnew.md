@@ -1,7 +1,10 @@
 # What's new? (History)
 
-## Unreleased
+## Version 1.6.1
 
+*Released 18 July 2026*
+
+- List the available commands when an unknown subcommand is given
 - Accept `--outtag` as an alias for `--tag`
 - Add `--file-output` support to the `query-ampsphere` command
 - Skip empty sequences and sequences containing non-standard amino acids during
