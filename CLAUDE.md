@@ -90,3 +90,19 @@ matching locally with MMSeqs2/HMMER.
   and pushed to PyPI and Bioconda.
 
   Linux/macOS/Windows and Python 3.10–3.13.
+
+## Releasing
+
+Checklist for a new `v<version>`:
+
+1. Bump `__version__` in `macrel/macrel_version.py`.
+2. Turn the `Unreleased` section into a `Version <version> <YYYY-MM-DD>` entry in
+   both `ChangeLog` and `docs/whatsnew.md`.
+3. **Bump the version header in the integration-test expected outputs.** The
+   `expected.prediction`/`expected.percontigs` files embed `# Prediction from
+   macrel v<version>`, so `run-tests.sh` fails until they match. Update them with
+   e.g. `grep -rl 'macrel v<old>' tests/ | xargs sed -i 's/macrel v<old>/macrel v<new>/'`.
+4. Reinstall (`pip install .`) so the `macrel` CLI reports the new version, then
+   confirm: `python -m pytest macrel/tests` and `./run-tests.sh` both pass.
+5. Commit as `Release v<version>` (only the files above) with a human readable
+   summary in the commit message.
