@@ -2,6 +2,9 @@ Unreleased
 	* Require NGLess 1.6 (the bundled `.ngl` scripts now declare `ngless "1.6"`)
 	* Drop support for Python 3.10; test on Python 3.11-3.14
 	* Add a timeout to AMPSphere API queries
+	* Drop the `onnxruntime <=1.25.1` pin from the pixi environments (now tested
+	  with 1.31.1); onnxruntime 1.26 returned invalid probabilities, so add
+	  unit tests checking that predictions are valid and match the reference
 
 Version 1.6.1 2026-07-18
 	* List the available commands when an unknown subcommand is given

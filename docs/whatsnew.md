@@ -5,6 +5,9 @@
 - Require [NGLess](https://ngless.embl.de) 1.6 or later
 - Drop support for Python 3.10; Python 3.11–3.14 are supported and tested
 - Add a timeout to AMPSphere API queries
+- Tested with the latest onnxruntime (1.31). Avoid onnxruntime 1.26, which
+  produces invalid prediction probabilities (all peptides are predicted to be
+  non-AMPs)
 
 ## Version 1.6.1
 

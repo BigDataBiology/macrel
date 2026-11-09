@@ -59,7 +59,7 @@ macrel = { path = ".", editable = true }
 
 [tool.pixi.dependencies]
 python = ">=3.11"
-onnxruntime = "<=1.25.1"
+onnxruntime = "*"
 ngless = ">=1.6"
 megahit = "*"
 paladin = "*"
