@@ -1,0 +1,20 @@
+[workspace]
+authors = ["Luis Pedro Coelho <luis@luispedro.org>"]
+channels = ["conda-forge", "bioconda"]
+name = "macrel_api"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+serve = "uwsgi --ini uwsgi.ini"
+
+[dependencies]
+# conda-forge's uwsgi statically embeds libpython but only depends on
+# "python_abi 3.13.*", so a newer patch release of python breaks it: uwsgi
+# 2.0.31 build 2 embeds CPython 3.13.11, whose static link keeps
+# _PyType_AllocNoTrack local, while python 3.13.15's array.so imports that
+# symbol. Pin python to the version uwsgi was built against.
+python = "3.13.11.*"
+macrel = ">=1.6.1,<2"
+uwsgi = ">=2.0.31,<3"
+flask = ">=3.1.3,<4"

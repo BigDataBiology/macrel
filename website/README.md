@@ -1,34 +1,12 @@
-This is the code running at
+Backend API (`/predict`) behind
 
 https://big-data-biology.org/software/macrel/
 
-# Frontend
-
-## Project setup
-```
-elm init
-```
-
-### Compiles and hot-reloads for development
-```
-elm reactor
-```
-
-### Compiles and minifies for production
-```
-elm make src/Prediction.elm --optimize
-```
-
-
-# Running the backend
-
+## Running
 
 ```bash
-conda create -n macrel.web python=3.8
-source activate macrel.web
-conda config --env --add channels defaults
-conda config --env --add channels bioconda
-conda config --env --add channels conda-forge
-conda install macrel uwsgi flask
+pixi run serve
 ```
 
+This starts uwsgi on `127.0.0.1:8000` speaking the uwsgi protocol (not plain
+HTTP), so it is meant to sit behind nginx (`uwsgi_pass 127.0.0.1:8000;`).
