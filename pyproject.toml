@@ -25,7 +25,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "onnxruntime",
+    # onnxruntime 1.26 has a bug that results in wrong predictions (invalid
+    # probabilities, so every peptide is predicted to be a non-AMP)
+    "onnxruntime!=1.26.*",
     "pandas",
     "pyrodigal",
     "requests",
@@ -59,7 +61,8 @@ macrel = { path = ".", editable = true }
 
 [tool.pixi.dependencies]
 python = ">=3.11"
-onnxruntime = "*"
+# onnxruntime 1.26 has a bug that results in wrong predictions
+onnxruntime = "!=1.26.*"
 ngless = ">=1.6"
 megahit = "*"
 paladin = "*"

@@ -3263,7 +3263,7 @@ packages:
 - pypi: ./
   name: macrel
   requires_dist:
-  - onnxruntime
+  - onnxruntime!=1.26.*
   - pandas
   - pyrodigal
   - requests

@@ -5,6 +5,8 @@ Unreleased
 	* Drop the `onnxruntime <=1.25.1` pin from the pixi environments (now tested
 	  with 1.31.1); onnxruntime 1.26 returned invalid probabilities, so add
 	  unit tests checking that predictions are valid and match the reference
+	* Exclude onnxruntime 1.26 from the dependencies (it results in wrong
+	  predictions)
 
 Version 1.6.1 2026-07-18
 	* List the available commands when an unknown subcommand is given
