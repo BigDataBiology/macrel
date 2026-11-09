@@ -85,11 +85,10 @@ matching locally with MMSeqs2/HMMER.
   shipped as package data and invoked as external `ngless` scripts.
 - Prefer f-strings for string interpolation over `str.format()` or `%`-formatting
   when writing or updating strings.
-- CI (`.github/workflows/python-app.yml`) runs both `pytest` and `run-tests.sh` across
+- CI (`.github/workflows/python-app.yml`) runs both `pytest` and `run-tests.sh` on
+  Linux across Python 3.11–3.14 (one pixi environment per version).
 - Commits should go to the `main` branch; releases are tagged with `v<version>`
   and pushed to PyPI and Bioconda.
-
-  Linux/macOS/Windows and Python 3.10–3.13.
 
 ## Releasing
 

@@ -12,13 +12,12 @@ authors = [
     { name = "Celio Dias Santos-Junior" },
     { name = "Luis Pedro Coelho", email = "luispedro@big-data-biology.org" },
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -59,10 +58,9 @@ macrel = { path = ".", editable = true }
 [tool.pixi.tasks]
 
 [tool.pixi.dependencies]
-python = ">=3.10"
+python = ">=3.11"
 onnxruntime = "<=1.25.1"
-ngless = "*"
-pyrodigal = "*"
+ngless = ">=1.6"
 megahit = "*"
 paladin = "*"
 pandas = "*"
@@ -72,17 +70,17 @@ atomicwrites = "*"
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
 
-[tool.pixi.feature.py310.dependencies]
-python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
 [tool.pixi.feature.py313.dependencies]
 python = "3.13.*"
+[tool.pixi.feature.py314.dependencies]
+python = "3.14.*"
 
 [tool.pixi.environments]
-test310 = ["py310", "test"]
 test311 = ["py311", "test"]
 test312 = ["py312", "test"]
 test313 = ["py313", "test"]
+test314 = ["py314", "test"]

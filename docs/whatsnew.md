@@ -1,5 +1,11 @@
 # What's new? (History)
 
+## Unreleased
+
+- Require [NGLess](https://ngless.embl.de) 1.6 or later
+- Drop support for Python 3.10; Python 3.11–3.14 are supported and tested
+- Add a timeout to AMPSphere API queries
+
 ## Version 1.6.1
 
 *Released 18 July 2026*

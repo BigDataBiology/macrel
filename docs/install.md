@@ -37,7 +37,7 @@ cd macrel
 conda create -n macrel_env
 conda activate macrel_env
 conda install -y -c conda-forge -c bioconda \
-          ngless \
+          'ngless>=1.6' \
           pyrodigal \
           megahit \
           paladin \

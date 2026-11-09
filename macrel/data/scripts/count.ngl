@@ -1,4 +1,4 @@
-ngless "1.0"
+ngless "1.6"
 
 input = samfile(ARGV[1],
              name="MACREL")
